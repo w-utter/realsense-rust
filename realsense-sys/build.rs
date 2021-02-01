@@ -13,10 +13,6 @@ lazy_static! {
 }
 
 fn main() -> Result<()> {
-    if cfg!(feature = "doc-only") {
-        return Ok(());
-    }
-
     // Probe libary
     let library = probe_library("realsense2")?;
 
