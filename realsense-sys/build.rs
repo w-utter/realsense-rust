@@ -13,7 +13,7 @@ lazy_static! {
 }
 
 fn main() -> Result<()> {
-    if cfg!(feature = "doc-only") {
+    if cfg!(feature = "no-realsense-lib") {
         return Ok(());
     }
 
