@@ -10,6 +10,12 @@ homepage = "https://github.com/jerry73204/realsense-rust"
 repository = "https://github.com/jerry73204/realsense-rust"
 
 [dependencies]
+# no-realsense-lib
+# - This avoids calling the build script in realsense-sys. The build script's
+#   original behavior would be to find librealsense, link, and generate
+#   the bindings (if buildtime-bindgen is set). `no-realsense-lib` bypasses all
+#   of that with an early return. Tests _will fail_ as a result.
+no-realsense-lib = []
 
 
 [build-dependencies]
@@ -30,4 +36,4 @@ buildtime-bindgen = ["bindgen"]
 doc-only = []
 
 [package.metadata.docs.rs]
-features = ["doc-only"]
+features = ["no-realsense-lib"]
