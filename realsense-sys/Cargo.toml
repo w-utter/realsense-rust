@@ -20,12 +20,6 @@ default = []
 #   feature is recommended if you're not on the latest version of the RealSense
 #   driver.
 buildtime-bindgen = ["bindgen"]
-# no-realsense-lib
-# - This avoids calling the build script in realsense-sys. The build script's
-#   original behavior would be to find librealsense, link, and generate
-#   the bindings (if buildtime-bindgen is set). `no-realsense-lib` bypasses all
-#   of that with an early return. Tests _will fail_ as a result.
-no-realsense-lib = []
 
 [dependencies]
 # None required. However, access to the RealSense library is necessary.
@@ -41,8 +35,3 @@ pkg-config = {version = "0.3"}
 
 [target.'cfg(target_env = "msvc")'.build-dependencies]
 vcpkg = {version = "0.2"}
-
-# Customizations to Docs.rs
-# https://docs.rs/about/metadata
-[package.metadata.docs.rs]
-features = ["no-realsense-lib"]

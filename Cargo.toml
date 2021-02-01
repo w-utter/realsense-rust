@@ -29,9 +29,5 @@ tokio = {version = "1.1", features = ["rt-multi-thread", "macros"]}
 buildtime-bindgen = ["realsense-sys/buildtime-bindgen"]
 default = ["with-nalgebra", "with-image"]
 device-test = ["with-image"]
-no-realsense-lib = ["realsense-sys/no-realsense-lib"]
 with-image = ["image"]
 with-nalgebra = ["nalgebra"]
-
-[package.metadata.docs.rs]
-features = ["no-realsense-lib"]

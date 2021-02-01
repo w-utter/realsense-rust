@@ -13,10 +13,6 @@ lazy_static! {
 }
 
 fn main() -> Result<()> {
-    if cfg!(feature = "no-realsense-lib") {
-        return Ok(());
-    }
-
     // Probe libary
     let library = probe_library("realsense2")?;
 
