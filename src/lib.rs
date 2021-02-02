@@ -60,6 +60,8 @@ pub mod stream_profile;
 pub mod stream_profile_kind;
 pub mod stream_profile_list;
 
+mod safe;
+
 /// The mod collects common used traits from this crate.
 pub mod prelude {
     pub use crate::frame::{DepthFrameEx, DisparityFrameEx, GenericFrameEx, VideoFrameEx};
