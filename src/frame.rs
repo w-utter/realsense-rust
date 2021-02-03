@@ -12,6 +12,7 @@ use crate::{
     stream_profile::{AnyStreamProfile, StreamProfile},
 };
 
+mod composite;
 /// The trait provides common methods on frames of all kinds.
 pub trait GenericFrameEx
 where
