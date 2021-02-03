@@ -1,6 +1,6 @@
 use super::frame_trait::{ConstructionError, Frame};
 use super::kind::Kind;
-use crate::common::*;
+use crate::{common::*, stream};
 use std::ffi::CStr;
 
 struct DepthFrame<'a> {
@@ -9,6 +9,7 @@ struct DepthFrame<'a> {
     height: usize,
     stride: usize,
     bits_per_pixel: usize,
+    frame_stream_profile: stream::Profile,
     data: &'a [u16],
 }
 
@@ -86,6 +87,24 @@ where
                         .to_string(),
                 ));
             }
+
+            let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
+            if NonNull::new(err).is_some() {
+                return Err(ConstructionError::CouldNotGetFrameStreamProfile(
+                    CStr::from_ptr(sys::rs2_get_error_message(err))
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ));
+            }
+            let nonnull_profile_ptr =
+                NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
+            let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|e| {
+                ConstructionError::CouldNotGetFrameStreamProfile(String::from(
+                    "Could not construct stream profile.",
+                ))
+            })?;
+
             let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
                 return Err(ConstructionError::CouldNotGetDataSize(
@@ -113,6 +132,7 @@ where
                 height: height as usize,
                 stride: stride as usize,
                 bits_per_pixel: bits_per_pixel as usize,
+                frame_stream_profile: profile,
                 data,
             })
         }

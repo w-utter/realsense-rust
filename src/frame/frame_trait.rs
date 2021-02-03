@@ -7,6 +7,7 @@ pub enum ConstructionError {
     CouldNotGetHeight(String),
     CouldNotGetStride(String),
     CouldNotGetBitsPerPixel(String),
+    CouldNotGetFrameStreamProfile(String),
     CouldNotGetDataSize(String),
     CouldNotGetData(String),
 }
