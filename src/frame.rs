@@ -13,6 +13,10 @@ use crate::{
 };
 
 mod composite;
+mod depth;
+mod frame_trait;
+mod kind;
+
 /// The trait provides common methods on frames of all kinds.
 pub trait GenericFrameEx
 where
