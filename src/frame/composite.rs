@@ -2,7 +2,7 @@
 //!
 //! This is what is typically delivered by the pipeline.
 
-use super::{frame_trait::Frame, kind::Kind};
+use super::kind::Kind;
 use crate::common::*;
 
 pub struct CompositeFrame {
@@ -33,7 +33,7 @@ impl CompositeFrame {
 
     pub fn frames_of_kind<K>(&self) -> Vec<K>
     where
-        K: Frame + Kind,
+        K: std::convert::TryFrom<NonNull<sys::rs2_frame>> + Kind,
     {
         let mut frames = Vec::new();
         for i in 0..self.count() {
@@ -54,7 +54,7 @@ impl CompositeFrame {
                     let is_video_frame =
                         sys::rs2_is_frame_extendable_to(ptr.as_ptr(), K::extension(), &mut err);
                     if NonNull::new(err).is_none() && is_video_frame != 0 {
-                        if let Ok(f) = K::new(ptr) {
+                        if let Ok(f) = K::try_from(ptr) {
                             frames.push(f);
                         }
                     }

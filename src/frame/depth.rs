@@ -1,4 +1,4 @@
-use super::frame_trait::{Frame, FrameConstructionError};
+use super::frame_trait::FrameConstructionError;
 use super::kind::Kind;
 use crate::{common::*, stream};
 use std::ffi::CStr;
@@ -14,19 +14,8 @@ struct DepthFrame<'a> {
 }
 
 impl<'a> DepthFrame<'a> {
-    fn width(&self) -> usize {
-        self.width
-    }
-    fn height(&self) -> usize {
-        self.height
-    }
-
-    fn stride(&self) -> usize {
-        self.stride
-    }
-
-    fn bits_per_pixel(&self) -> usize {
-        self.bits_per_pixel
+    fn profile(&'a self) -> &'a stream::Profile {
+        &self.frame_stream_profile
     }
 }
 
@@ -44,13 +33,10 @@ impl<'a> Kind for DepthFrame<'a> {
     }
 }
 
-impl<'a> Frame for DepthFrame<'a>
-where
-    Self: Sized,
-{
-    fn new(
-        frame_ptr: NonNull<sys::rs2_frame>,
-    ) -> std::result::Result<Self, FrameConstructionError> {
+impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for DepthFrame<'a> {
+    type Error = FrameConstructionError;
+
+    fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> std::result::Result<Self, Self::Error> {
         unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
             let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
@@ -138,5 +124,22 @@ where
                 data,
             })
         }
+    }
+}
+
+impl<'a> VideoFrameEx for DepthFrame<'a> {
+    fn width(&self) -> usize {
+        self.width
+    }
+    fn height(&self) -> usize {
+        self.height
+    }
+
+    fn stride(&self) -> usize {
+        self.stride
+    }
+
+    fn bits_per_pixel(&self) -> usize {
+        self.bits_per_pixel
     }
 }

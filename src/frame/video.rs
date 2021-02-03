@@ -1,4 +1,4 @@
-use super::frame_trait::{Frame, FrameConstructionError, PixelIndexOutOfBoundsError};
+use super::frame_trait::{FrameConstructionError, PixelIndexOutOfBoundsError, VideoFrameEx};
 use super::kind::Kind;
 use crate::{common::*, stream};
 use std::ffi::CStr;
@@ -77,23 +77,7 @@ impl<'a> Iterator for Iter<'a> {
 }
 
 impl<'a> VideoFrame<'a> {
-    pub fn width(&self) -> usize {
-        self.width
-    }
-
-    pub fn height(&self) -> usize {
-        self.height
-    }
-
-    pub fn stride(&self) -> usize {
-        self.stride
-    }
-
-    pub fn bits_per_pixel(&self) -> usize {
-        self.bits_per_pixel
-    }
-
-    pub fn profile(&'a self) -> &'a stream::Profile {
+    fn profile(&'a self) -> &'a stream::Profile {
         &self.frame_stream_profile
     }
 
@@ -253,13 +237,10 @@ impl<'a> Kind for VideoFrame<'a> {
     }
 }
 
-impl<'a> Frame for VideoFrame<'a>
-where
-    Self: Sized,
-{
-    fn new(
-        frame_ptr: NonNull<sys::rs2_frame>,
-    ) -> std::result::Result<Self, FrameConstructionError> {
+impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
+    type Error = FrameConstructionError;
+
+    fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> std::result::Result<Self, Self::Error> {
         unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
             let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
@@ -349,5 +330,23 @@ where
                 data,
             })
         }
+    }
+}
+
+impl<'a> VideoFrameEx for VideoFrame<'a> {
+    fn width(&self) -> usize {
+        self.width
+    }
+
+    fn height(&self) -> usize {
+        self.height
+    }
+
+    fn stride(&self) -> usize {
+        self.stride
+    }
+
+    fn bits_per_pixel(&self) -> usize {
+        self.bits_per_pixel
     }
 }

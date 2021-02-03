@@ -14,10 +14,12 @@ pub enum FrameConstructionError {
 
 pub struct PixelIndexOutOfBoundsError();
 
-pub trait Frame
-where
-    Self: Sized,
-{
-    fn new(frame_ptr: NonNull<sys::rs2_frame>)
-        -> std::result::Result<Self, FrameConstructionError>;
+pub trait VideoFrameEx {
+    fn width(&self) -> usize;
+
+    fn height(&self) -> usize;
+
+    fn stride(&self) -> usize;
+
+    fn bits_per_pixel(&self) -> usize;
 }
