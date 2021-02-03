@@ -1,4 +1,4 @@
-use super::frame_trait::{Frame, FrameConstructionError};
+use super::frame_trait::{Frame, FrameConstructionError, PixelIndexOutOfBoundsError};
 use super::kind::Kind;
 use crate::{common::*, stream};
 use std::ffi::CStr;
@@ -67,6 +67,16 @@ impl<'a> VideoFrame<'a> {
     }
 
     fn at(&self, col: usize, row: usize) -> PixelFormat<'a> {
+    fn at(
+    pub fn at(
+        &self,
+        col: usize,
+        row: usize,
+    ) -> std::result::Result<PixelFormat<'a>, PixelIndexOutOfBoundsError> {
+        if col >= self.width || row >= self.height {
+            return Err(PixelIndexOutOfBoundsError());
+        }
+
         // Realsense stores data in col-major format. Normally, we would offset into a uniform
         // array in column major format with the following equation:
         //
@@ -99,11 +109,11 @@ impl<'a> VideoFrame<'a> {
                     &self.data[offset + 2]
                 };
 
-                PixelFormat::Yuyv {
+                Ok(PixelFormat::Yuyv {
                     y,
                     u: &self.data[offset + 1],
                     v: &self.data[offset + 3],
-                }
+                })
             }
             // UYVY follows from the same exact pattern we use for YUYV, since it's more or less a
             // re-ordering of the underlying data.
@@ -117,11 +127,11 @@ impl<'a> VideoFrame<'a> {
                     &self.data[offset + 3]
                 };
 
-                PixelFormat::Uyvy {
+                Ok(PixelFormat::Uyvy {
                     y,
                     u: &self.data[offset],
                     v: &self.data[offset + 2],
-                }
+                })
             }
             // For BGR / RGB, we do a similar trick, but since pixels aren't interleaved as they
             // are with YUYV / UYVY, the multipliers for column and row offsets can be uniform.
@@ -131,46 +141,46 @@ impl<'a> VideoFrame<'a> {
             sys::rs2_format_RS2_FORMAT_BGR8 => {
                 let offset = (col * self.height * 3) + (row * 3);
 
-                PixelFormat::Bgr8 {
+                Ok(PixelFormat::Bgr8 {
                     b: &self.data[offset],
                     g: &self.data[offset + 1],
                     r: &self.data[offset + 2],
-                }
+                })
             }
             // BGR8 is more or less the same, except we use 4 as a multiplier.
             //
             sys::rs2_format_RS2_FORMAT_BGRA8 => {
                 let offset = (col * self.height * 4) + (row * 4);
 
-                PixelFormat::Bgra8 {
+                Ok(PixelFormat::Bgra8 {
                     b: &self.data[offset],
                     g: &self.data[offset + 1],
                     r: &self.data[offset + 2],
                     a: &self.data[offset + 3],
-                }
+                })
             }
             // RGB8 is the same as BGR8, the order is just different.
             //
             sys::rs2_format_RS2_FORMAT_RGB8 => {
                 let offset = (col * self.height * 3) + (row * 3);
 
-                PixelFormat::Bgr8 {
+                Ok(PixelFormat::Bgr8 {
                     r: &self.data[offset],
                     g: &self.data[offset + 1],
                     b: &self.data[offset + 2],
-                }
+                })
             }
             // RGBA8 is the same as BGRA8, the order is just different.
             //
             sys::rs2_format_RS2_FORMAT_RGBA8 => {
                 let offset = (col * self.height * 4) + (row * 4);
 
-                PixelFormat::Bgra8 {
+                Ok(PixelFormat::Bgra8 {
                     r: &self.data[offset],
                     g: &self.data[offset + 1],
                     b: &self.data[offset + 2],
                     a: &self.data[offset + 3],
-                }
+                })
             }
             _ => {
                 panic!("Unsupported video format.");

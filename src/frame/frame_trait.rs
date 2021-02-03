@@ -12,6 +12,8 @@ pub enum FrameConstructionError {
     CouldNotGetData(String),
 }
 
+pub struct PixelIndexOutOfBoundsError();
+
 pub trait Frame
 where
     Self: Sized,
