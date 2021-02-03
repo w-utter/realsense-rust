@@ -1,4 +1,4 @@
-use super::frame_trait::{ConstructionError, Frame};
+use super::frame_trait::{Frame, FrameConstructionError};
 use super::kind::Kind;
 use crate::{common::*, stream};
 use std::ffi::CStr;
@@ -48,12 +48,14 @@ impl<'a> Frame for DepthFrame<'a>
 where
     Self: Sized,
 {
-    fn new(frame_ptr: NonNull<sys::rs2_frame>) -> std::result::Result<Self, ConstructionError> {
+    fn new(
+        frame_ptr: NonNull<sys::rs2_frame>,
+    ) -> std::result::Result<Self, FrameConstructionError> {
         unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
             let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
-                return Err(ConstructionError::CouldNotGetWidth(
+                return Err(FrameConstructionError::CouldNotGetWidth(
                     CStr::from_ptr(sys::rs2_get_error_message(err))
                         .to_str()
                         .unwrap()
@@ -62,7 +64,7 @@ where
             }
             let height = sys::rs2_get_frame_height(frame_ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
-                return Err(ConstructionError::CouldNotGetHeight(
+                return Err(FrameConstructionError::CouldNotGetHeight(
                     CStr::from_ptr(sys::rs2_get_error_message(err))
                         .to_str()
                         .unwrap()
@@ -71,7 +73,7 @@ where
             }
             let bits_per_pixel = sys::rs2_get_frame_bits_per_pixel(frame_ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
-                return Err(ConstructionError::CouldNotGetBitsPerPixel(
+                return Err(FrameConstructionError::CouldNotGetBitsPerPixel(
                     CStr::from_ptr(sys::rs2_get_error_message(err))
                         .to_str()
                         .unwrap()
@@ -80,7 +82,7 @@ where
             }
             let stride = sys::rs2_get_frame_stride_in_bytes(frame_ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
-                return Err(ConstructionError::CouldNotGetStride(
+                return Err(FrameConstructionError::CouldNotGetStride(
                     CStr::from_ptr(sys::rs2_get_error_message(err))
                         .to_str()
                         .unwrap()
@@ -90,7 +92,7 @@ where
 
             let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
-                return Err(ConstructionError::CouldNotGetFrameStreamProfile(
+                return Err(FrameConstructionError::CouldNotGetFrameStreamProfile(
                     CStr::from_ptr(sys::rs2_get_error_message(err))
                         .to_str()
                         .unwrap()
@@ -100,14 +102,14 @@ where
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
             let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|e| {
-                ConstructionError::CouldNotGetFrameStreamProfile(String::from(
+                FrameConstructionError::CouldNotGetFrameStreamProfile(String::from(
                     "Could not construct stream profile.",
                 ))
             })?;
 
             let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
-                return Err(ConstructionError::CouldNotGetDataSize(
+                return Err(FrameConstructionError::CouldNotGetDataSize(
                     CStr::from_ptr(sys::rs2_get_error_message(err))
                         .to_str()
                         .unwrap()
@@ -117,7 +119,7 @@ where
 
             let ptr = sys::rs2_get_frame_data(frame_ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
-                return Err(ConstructionError::CouldNotGetData(
+                return Err(FrameConstructionError::CouldNotGetData(
                     CStr::from_ptr(sys::rs2_get_error_message(err))
                         .to_str()
                         .unwrap()

@@ -2,7 +2,7 @@
 
 use crate::common::*;
 
-pub enum ConstructionError {
+pub enum FrameConstructionError {
     CouldNotGetWidth(String),
     CouldNotGetHeight(String),
     CouldNotGetStride(String),
@@ -16,5 +16,6 @@ pub trait Frame
 where
     Self: Sized,
 {
-    fn new(frame_ptr: NonNull<sys::rs2_frame>) -> std::result::Result<Self, ConstructionError>;
+    fn new(frame_ptr: NonNull<sys::rs2_frame>)
+        -> std::result::Result<Self, FrameConstructionError>;
 }
