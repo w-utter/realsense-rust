@@ -16,6 +16,7 @@ mod composite;
 mod depth;
 mod frame_trait;
 mod kind;
+mod video;
 
 /// The trait provides common methods on frames of all kinds.
 pub trait GenericFrameEx
