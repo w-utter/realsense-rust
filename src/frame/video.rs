@@ -51,23 +51,26 @@ struct VideoFrame<'a> {
 }
 
 impl<'a> VideoFrame<'a> {
-    fn width(&self) -> usize {
+    pub fn width(&self) -> usize {
         self.width
     }
-    fn height(&self) -> usize {
+
+    pub fn height(&self) -> usize {
         self.height
     }
 
-    fn stride(&self) -> usize {
+    pub fn stride(&self) -> usize {
         self.stride
     }
 
-    fn bits_per_pixel(&self) -> usize {
+    pub fn bits_per_pixel(&self) -> usize {
         self.bits_per_pixel
     }
 
-    fn at(&self, col: usize, row: usize) -> PixelFormat<'a> {
-    fn at(
+    pub fn profile(&'a self) -> &'a stream::Profile {
+        &self.frame_stream_profile
+    }
+
     pub fn at(
         &self,
         col: usize,
