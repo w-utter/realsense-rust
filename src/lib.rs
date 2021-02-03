@@ -61,6 +61,7 @@ pub mod stream_profile_kind;
 pub mod stream_profile_list;
 
 mod safe;
+mod stream;
 
 /// The mod collects common used traits from this crate.
 pub mod prelude {
