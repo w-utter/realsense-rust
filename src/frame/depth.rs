@@ -101,7 +101,7 @@ where
             }
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
-            let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|e| {
+            let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|_| {
                 FrameConstructionError::CouldNotGetFrameStreamProfile(String::from(
                     "Could not construct stream profile.",
                 ))
