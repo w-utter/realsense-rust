@@ -1,7 +1,10 @@
-use super::frame_trait::{FrameConstructionError, PixelIndexOutOfBoundsError, VideoFrameEx};
-use super::kind::Kind;
+use super::frame_trait::{
+    FrameConstructionError, PixelIndexOutOfBoundsError, VideoFrameEx, VideoFrameUnsafeEx,
+};
+use super::{iter::ImageIter, kind::Kind};
 use crate::{common::*, stream};
 use std::ffi::CStr;
+use std::result::Result;
 
 // For detailed pixel format information, see
 // https://github.com/IntelRealSense/librealsense/blob/4f37f2ef0874c1716bce223b20e46d00532ffb04/wrappers/nodejs/index.js#L3865
@@ -50,46 +53,134 @@ pub struct VideoFrame<'a> {
     data: &'a [u8],
 }
 
-pub struct Iter<'a> {
-    frame: &'a VideoFrame<'a>,
-    column: usize,
-    row: usize,
-}
-
-impl<'a> Iterator for Iter<'a> {
-    type Item = PixelFormat<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.column >= self.frame.width() || self.row >= self.frame.height() {
-            return None;
-        }
-
-        let next = self.frame.at_no_bounds_check(self.column, self.row);
-
-        self.column += 1;
-
-        if self.column >= self.frame.width() {
-            self.column = 0;
-            self.row += 1;
-        }
-        Some(next)
-    }
-}
-
 impl<'a> VideoFrame<'a> {
     fn profile(&'a self) -> &'a stream::Profile {
         &self.frame_stream_profile
     }
 
-    pub fn iter(&'a self) -> Iter<'a> {
-        Iter {
+    pub fn iter(&'a self) -> ImageIter<'a, VideoFrame<'a>> {
+        ImageIter {
             frame: self,
             column: 0,
             row: 0,
         }
     }
+}
 
-    pub(crate) fn at_no_bounds_check(&self, col: usize, row: usize) -> PixelFormat<'a> {
+impl<'a> Drop for VideoFrame<'a> {
+    fn drop(&mut self) {
+        unsafe {
+            sys::rs2_release_frame(self.frame_ptr.as_ptr());
+        }
+    }
+}
+
+impl<'a> Kind for VideoFrame<'a> {
+    fn extension() -> sys::rs2_extension {
+        sys::rs2_extension_RS2_EXTENSION_VIDEO_FRAME
+    }
+}
+
+impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
+    type Error = FrameConstructionError;
+
+    fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
+        unsafe {
+            let mut err: *mut sys::rs2_error = ptr::null_mut();
+            let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
+            if NonNull::new(err).is_some() {
+                return Err(FrameConstructionError::CouldNotGetWidth(
+                    CStr::from_ptr(sys::rs2_get_error_message(err))
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ));
+            }
+            let height = sys::rs2_get_frame_height(frame_ptr.as_ptr(), &mut err);
+            if NonNull::new(err).is_some() {
+                return Err(FrameConstructionError::CouldNotGetHeight(
+                    CStr::from_ptr(sys::rs2_get_error_message(err))
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ));
+            }
+            let bits_per_pixel = sys::rs2_get_frame_bits_per_pixel(frame_ptr.as_ptr(), &mut err);
+            if NonNull::new(err).is_some() {
+                return Err(FrameConstructionError::CouldNotGetBitsPerPixel(
+                    CStr::from_ptr(sys::rs2_get_error_message(err))
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ));
+            }
+
+            let stride = sys::rs2_get_frame_stride_in_bytes(frame_ptr.as_ptr(), &mut err);
+            if NonNull::new(err).is_some() {
+                return Err(FrameConstructionError::CouldNotGetStride(
+                    CStr::from_ptr(sys::rs2_get_error_message(err))
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ));
+            }
+
+            let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
+            if NonNull::new(err).is_some() {
+                return Err(FrameConstructionError::CouldNotGetFrameStreamProfile(
+                    CStr::from_ptr(sys::rs2_get_error_message(err))
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ));
+            }
+            let nonnull_profile_ptr =
+                NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
+            let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|_| {
+                FrameConstructionError::CouldNotGetFrameStreamProfile(String::from(
+                    "Could not construct stream profile.",
+                ))
+            })?;
+
+            let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
+            if NonNull::new(err).is_some() {
+                return Err(FrameConstructionError::CouldNotGetDataSize(
+                    CStr::from_ptr(sys::rs2_get_error_message(err))
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ));
+            }
+            debug_assert_eq!(size, width * height * bits_per_pixel / 8);
+
+            let ptr = sys::rs2_get_frame_data(frame_ptr.as_ptr(), &mut err);
+            if NonNull::new(err).is_some() {
+                return Err(FrameConstructionError::CouldNotGetData(
+                    CStr::from_ptr(sys::rs2_get_error_message(err))
+                        .to_str()
+                        .unwrap()
+                        .to_string(),
+                ));
+            }
+            let data = slice::from_raw_parts(ptr.cast::<u8>(), size as usize);
+
+            Ok(VideoFrame {
+                frame_ptr,
+                width: width as usize,
+                height: height as usize,
+                stride: stride as usize,
+                bits_per_pixel: bits_per_pixel as usize,
+                frame_stream_profile: profile,
+                data,
+            })
+        }
+    }
+}
+
+impl<'a> VideoFrameUnsafeEx for VideoFrame<'a> {
+    type Output = PixelFormat<'a>;
+
+    fn at_no_bounds_check(&self, col: usize, row: usize) -> Self::Output {
         // Realsense stores frame data in row-major format. Normally, we would offset into a
         // uniform array in column major format with the following equation:
         //
@@ -200,137 +291,6 @@ impl<'a> VideoFrame<'a> {
             }
         }
     }
-
-    pub fn at(
-        &self,
-        col: usize,
-        row: usize,
-    ) -> std::result::Result<PixelFormat<'a>, PixelIndexOutOfBoundsError> {
-        if col >= self.width || row >= self.height {
-            return Err(PixelIndexOutOfBoundsError());
-        }
-
-        Ok(self.at_no_bounds_check(col, row))
-    }
-}
-
-impl<'a> Drop for VideoFrame<'a> {
-    fn drop(&mut self) {
-        unsafe {
-            sys::rs2_release_frame(self.frame_ptr.as_ptr());
-        }
-    }
-}
-
-impl<'a> IntoIterator for &'a VideoFrame<'a> {
-    type Item = <Iter<'a> as Iterator>::Item;
-    type IntoIter = Iter<'a>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
-    }
-}
-
-impl<'a> Kind for VideoFrame<'a> {
-    fn extension() -> sys::rs2_extension {
-        sys::rs2_extension_RS2_EXTENSION_VIDEO_FRAME
-    }
-}
-
-impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
-    type Error = FrameConstructionError;
-
-    fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> std::result::Result<Self, Self::Error> {
-        unsafe {
-            let mut err: *mut sys::rs2_error = ptr::null_mut();
-            let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetWidth(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
-            let height = sys::rs2_get_frame_height(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetHeight(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
-            let bits_per_pixel = sys::rs2_get_frame_bits_per_pixel(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetBitsPerPixel(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
-
-            let stride = sys::rs2_get_frame_stride_in_bytes(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetStride(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
-
-            let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetFrameStreamProfile(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
-            let nonnull_profile_ptr =
-                NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
-            let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|_| {
-                FrameConstructionError::CouldNotGetFrameStreamProfile(String::from(
-                    "Could not construct stream profile.",
-                ))
-            })?;
-
-            let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetDataSize(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
-            debug_assert_eq!(size, width * height * bits_per_pixel / 8);
-
-            let ptr = sys::rs2_get_frame_data(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetData(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
-            let data = slice::from_raw_parts(ptr.cast::<u8>(), size as usize);
-
-            Ok(VideoFrame {
-                frame_ptr,
-                width: width as usize,
-                height: height as usize,
-                stride: stride as usize,
-                bits_per_pixel: bits_per_pixel as usize,
-                frame_stream_profile: profile,
-                data,
-            })
-        }
-    }
 }
 
 impl<'a> VideoFrameEx for VideoFrame<'a> {
@@ -348,5 +308,22 @@ impl<'a> VideoFrameEx for VideoFrame<'a> {
 
     fn bits_per_pixel(&self) -> usize {
         self.bits_per_pixel
+    }
+
+    fn at(&self, col: usize, row: usize) -> Result<Self::Output, PixelIndexOutOfBoundsError> {
+        if col >= self.width || row >= self.height {
+            Err(PixelIndexOutOfBoundsError())
+        } else {
+            Ok(self.at_no_bounds_check(col, row))
+        }
+    }
+}
+
+impl<'a> IntoIterator for &'a VideoFrame<'a> {
+    type Item = <ImageIter<'a, VideoFrame<'a>> as Iterator>::Item;
+    type IntoIter = ImageIter<'a, VideoFrame<'a>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
     }
 }

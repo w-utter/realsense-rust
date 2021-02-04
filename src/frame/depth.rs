@@ -1,9 +1,12 @@
-use super::frame_trait::FrameConstructionError;
-use super::kind::Kind;
+use super::frame_trait::{
+    FrameConstructionError, PixelIndexOutOfBoundsError, VideoFrameEx, VideoFrameUnsafeEx,
+};
+use super::{iter::ImageIter, kind::Kind};
 use crate::{common::*, stream};
 use std::ffi::CStr;
+use std::result::Result;
 
-struct DepthFrame<'a> {
+pub struct DepthFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
     width: usize,
     height: usize,
@@ -16,6 +19,14 @@ struct DepthFrame<'a> {
 impl<'a> DepthFrame<'a> {
     fn profile(&'a self) -> &'a stream::Profile {
         &self.frame_stream_profile
+    }
+
+    fn iter(&'a self) -> ImageIter<'a, DepthFrame<'a>> {
+        ImageIter {
+            frame: self,
+            column: 0,
+            row: 0,
+        }
     }
 }
 
@@ -36,7 +47,7 @@ impl<'a> Kind for DepthFrame<'a> {
 impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for DepthFrame<'a> {
     type Error = FrameConstructionError;
 
-    fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
             let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
@@ -127,6 +138,15 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for DepthFrame<'a> {
     }
 }
 
+impl<'a> VideoFrameUnsafeEx for DepthFrame<'a> {
+    type Output = &'a u16;
+
+    fn at_no_bounds_check(&self, col: usize, row: usize) -> Self::Output {
+        let offset = row * self.width + col;
+        &self.data[offset]
+    }
+}
+
 impl<'a> VideoFrameEx for DepthFrame<'a> {
     fn width(&self) -> usize {
         self.width
@@ -141,5 +161,22 @@ impl<'a> VideoFrameEx for DepthFrame<'a> {
 
     fn bits_per_pixel(&self) -> usize {
         self.bits_per_pixel
+    }
+
+    fn at(&self, col: usize, row: usize) -> Result<Self::Output, PixelIndexOutOfBoundsError> {
+        if col >= self.width || row >= self.height {
+            Err(PixelIndexOutOfBoundsError())
+        } else {
+            Ok(self.at_no_bounds_check(col, row))
+        }
+    }
+}
+
+impl<'a> IntoIterator for &'a DepthFrame<'a> {
+    type Item = <ImageIter<'a, DepthFrame<'a>> as Iterator>::Item;
+    type IntoIter = ImageIter<'a, DepthFrame<'a>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
     }
 }
