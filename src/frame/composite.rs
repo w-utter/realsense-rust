@@ -51,9 +51,9 @@ impl CompositeFrame {
             if let Some(ptr) = ptr {
                 unsafe {
                     let mut err: *mut sys::rs2_error = ptr::null_mut();
-                    let is_video_frame =
+                    let is_kind =
                         sys::rs2_is_frame_extendable_to(ptr.as_ptr(), K::extension(), &mut err);
-                    if NonNull::new(err).is_none() && is_video_frame != 0 {
+                    if NonNull::new(err).is_none() && is_kind != 0 {
                         if let Ok(f) = K::try_from(ptr) {
                             frames.push(f);
                         }
