@@ -88,26 +88,22 @@ impl Kind for PoseFrame {
 }
 
 impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame {
-    type Error = FrameConstructionError;
+    type Error = anyhow::Error;
 
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
 
             let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile)?;
 
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
-            let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|_| {
-                FrameConstructionError::CouldNotGetFrameStreamProfile(String::from(
-                    "Could not construct stream profile.",
-                ))
-            })?;
+            let profile = stream::Profile::new(nonnull_profile_ptr)?;
 
             let mut pose_data = MaybeUninit::uninit();
             sys::rs2_pose_frame_get_pose_data(frame_ptr.as_ptr(), pose_data.as_mut_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetData);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetData)?;
 
             Ok(PoseFrame {
                 frame_ptr,

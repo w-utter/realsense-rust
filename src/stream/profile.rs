@@ -1,18 +1,29 @@
 //! Type for representing stream information (format, etc)
 
 use crate::common::*;
+use thiserror::Error;
 
+#[derive(Error, Debug)]
 pub enum StreamConstructionError {
+    #[error("Failed to retrieve stream data: {0}")]
     FailedToRetrieveStreamData(String),
+    #[error("Failed to determine if this is the default stream: {0}")]
     FailedToDetermineIsDefault(String),
 }
 
+#[derive(Error, Debug)]
 pub enum DataError {
+    #[error("Failed to get extrinsics: {0}")]
     FailedToGetExtrinsics(String),
+    #[error("Failed to set extrinsics: {0}")]
     FailedToSetExtrinsics(String),
+    #[error("Stream does not have video intrinsics")]
     StreamDoesNotHaveVideoIntrinsics,
+    #[error("Stream does not have motion intrinsics")]
     StreamDoesNotHaveMotionIntrinsics,
+    #[error("Failed to get video intrinsics: {0}")]
     FailedToGetIntrinsics(String),
+    #[error("Failed to get motion intrinsics: {0}")]
     FailedToGetMotionIntrinsics(String),
 }
 

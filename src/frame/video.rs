@@ -87,41 +87,37 @@ impl<'a> Kind for VideoFrame<'a> {
 }
 
 impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
-    type Error = FrameConstructionError;
+    type Error = anyhow::Error;
 
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
             let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetWidth);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetWidth)?;
 
             let height = sys::rs2_get_frame_height(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetHeight);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetHeight)?;
 
             let bits_per_pixel = sys::rs2_get_frame_bits_per_pixel(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetBitsPerPixel);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetBitsPerPixel)?;
 
             let stride = sys::rs2_get_frame_stride_in_bytes(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetStride);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetStride)?;
 
             let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile)?;
 
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
-            let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|_| {
-                FrameConstructionError::CouldNotGetFrameStreamProfile(String::from(
-                    "Could not construct stream profile.",
-                ))
-            })?;
+            let profile = stream::Profile::new(nonnull_profile_ptr)?;
 
             let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetDataSize);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetDataSize)?;
 
             debug_assert_eq!(size, width * height * bits_per_pixel / BITS_PER_BYTE);
 
             let ptr = sys::rs2_get_frame_data(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetData);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetData)?;
 
             let data = slice::from_raw_parts(ptr.cast::<u8>(), size as usize);
 
