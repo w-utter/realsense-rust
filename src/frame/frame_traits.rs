@@ -21,6 +21,8 @@ pub enum FrameConstructionError {
     CouldNotGetData(String),
 }
 
+pub const BITS_PER_BYTE: i32 = 8;
+
 pub trait VideoFrameUnsafeEx {
     type Output: Sized;
 

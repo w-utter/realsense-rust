@@ -1,6 +1,8 @@
 //! Type for representing a video frame taken from a color or IR camera.
 
-use super::frame_traits::{FrameConstructionError, VideoFrameEx, VideoFrameUnsafeEx};
+use super::frame_traits::{
+    FrameConstructionError, VideoFrameEx, VideoFrameUnsafeEx, BITS_PER_BYTE,
+};
 use super::{iter::ImageIter, kind::Kind};
 use crate::{check_rs2_error, common::*, stream};
 use std::result::Result;
@@ -116,7 +118,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
             let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetDataSize);
 
-            debug_assert_eq!(size, width * height * bits_per_pixel / 8);
+            debug_assert_eq!(size, width * height * bits_per_pixel / BITS_PER_BYTE);
 
             let ptr = sys::rs2_get_frame_data(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetData);
