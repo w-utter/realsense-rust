@@ -16,11 +16,11 @@ pub struct DepthFrame<'a> {
 }
 
 impl<'a> DepthFrame<'a> {
-    fn profile(&'a self) -> &'a stream::Profile {
+    pub fn profile(&'a self) -> &'a stream::Profile {
         &self.frame_stream_profile
     }
 
-    fn iter(&'a self) -> ImageIter<'a, DepthFrame<'a>> {
+    pub fn iter(&'a self) -> ImageIter<'a, DepthFrame<'a>> {
         ImageIter {
             frame: self,
             column: 0,
@@ -28,7 +28,7 @@ impl<'a> DepthFrame<'a> {
         }
     }
 
-    fn get_raw(&'a self) -> &'a [u16] {
+    pub fn get_raw(&'a self) -> &'a [u16] {
         self.data
     }
 }

@@ -53,7 +53,7 @@ pub struct VideoFrame<'a> {
 }
 
 impl<'a> VideoFrame<'a> {
-    fn profile(&'a self) -> &'a stream::Profile {
+    pub fn profile(&'a self) -> &'a stream::Profile {
         &self.frame_stream_profile
     }
 
