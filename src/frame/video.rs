@@ -1,4 +1,4 @@
-use super::frame_trait::{
+use super::frame_traits::{
     FrameConstructionError, PixelIndexOutOfBoundsError, VideoFrameEx, VideoFrameUnsafeEx,
 };
 use super::{iter::ImageIter, kind::Kind};
