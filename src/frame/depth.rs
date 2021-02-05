@@ -1,3 +1,5 @@
+//! Type for representing a depth frame taken from a depth camera.
+
 use super::frame_traits::{
     FrameConstructionError, PixelIndexOutOfBoundsError, VideoFrameEx, VideoFrameUnsafeEx,
 };

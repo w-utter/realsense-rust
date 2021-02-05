@@ -1,3 +1,5 @@
+//! Type for representing a video frame taken from a color or IR camera.
+
 use super::frame_traits::{
     FrameConstructionError, PixelIndexOutOfBoundsError, VideoFrameEx, VideoFrameUnsafeEx,
 };
