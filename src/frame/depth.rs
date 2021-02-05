@@ -27,6 +27,10 @@ impl<'a> DepthFrame<'a> {
             row: 0,
         }
     }
+
+    fn get_raw(&'a self) -> &'a [u16] {
+        self.data
+    }
 }
 
 impl<'a> Drop for DepthFrame<'a> {
