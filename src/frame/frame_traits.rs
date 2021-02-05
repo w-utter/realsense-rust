@@ -40,6 +40,7 @@ pub trait VideoFrameEx: VideoFrameUnsafeEx {
 }
 
 #[doc(hidden)]
+#[macro_export]
 macro_rules! check_rs2_error {
     ($rs2_error:expr, $result:expr) => {
         // We make this alias here to type check $rs2_error.

@@ -12,11 +12,9 @@ use crate::{
     stream_profile::{AnyStreamProfile, StreamProfile},
 };
 
-#[macro_use]
-mod frame_traits;
-
 mod composite;
 mod depth;
+mod frame_traits;
 mod iter;
 mod kind;
 mod video;

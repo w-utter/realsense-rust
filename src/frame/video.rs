@@ -2,7 +2,7 @@
 
 use super::frame_traits::{FrameConstructionError, VideoFrameEx, VideoFrameUnsafeEx};
 use super::{iter::ImageIter, kind::Kind};
-use crate::{common::*, stream};
+use crate::{check_rs2_error, common::*, stream};
 use std::result::Result;
 
 // For detailed pixel format information, see
