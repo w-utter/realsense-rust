@@ -1,8 +1,6 @@
 //! Type for representing a depth frame taken from a depth camera.
 
-use super::frame_traits::{
-    FrameConstructionError, PixelIndexOutOfBoundsError, VideoFrameEx, VideoFrameUnsafeEx,
-};
+use super::frame_traits::{FrameConstructionError, VideoFrameEx, VideoFrameUnsafeEx};
 use super::{iter::ImageIter, kind::Kind};
 use crate::{common::*, stream};
 use std::ffi::CStr;
@@ -165,11 +163,11 @@ impl<'a> VideoFrameEx for DepthFrame<'a> {
         self.bits_per_pixel
     }
 
-    fn at(&self, col: usize, row: usize) -> Result<Self::Output, PixelIndexOutOfBoundsError> {
+    fn at(&self, col: usize, row: usize) -> Option<Self::Output> {
         if col >= self.width || row >= self.height {
-            Err(PixelIndexOutOfBoundsError())
+            None
         } else {
-            Ok(self.at_no_bounds_check(col, row))
+            Some(self.at_no_bounds_check(col, row))
         }
     }
 }

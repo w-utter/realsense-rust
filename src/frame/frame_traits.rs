@@ -13,8 +13,6 @@ pub enum FrameConstructionError {
     CouldNotGetData(String),
 }
 
-pub struct PixelIndexOutOfBoundsError();
-
 pub trait VideoFrameUnsafeEx {
     type Output: Sized;
 
@@ -30,5 +28,5 @@ pub trait VideoFrameEx: VideoFrameUnsafeEx {
 
     fn bits_per_pixel(&self) -> usize;
 
-    fn at(&self, col: usize, row: usize) -> Result<Self::Output, PixelIndexOutOfBoundsError>;
+    fn at(&self, col: usize, row: usize) -> Option<Self::Output>;
 }
