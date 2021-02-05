@@ -65,6 +65,10 @@ impl<'a> VideoFrame<'a> {
             row: 0,
         }
     }
+
+    pub fn get_raw(&'a self) -> &'a [u8] {
+        self.data
+    }
 }
 
 impl<'a> Drop for VideoFrame<'a> {
@@ -180,7 +184,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
 impl<'a> VideoFrameUnsafeEx for VideoFrame<'a> {
     type Output = PixelFormat<'a>;
 
-    fn at_no_bounds_check(&self, col: usize, row: usize) -> Self::Output {
+    fn get_unchecked(&self, col: usize, row: usize) -> Self::Output {
         // Realsense stores frame data in row-major format. Normally, we would offset into a
         // uniform array in column major format with the following equation:
         //
@@ -310,11 +314,11 @@ impl<'a> VideoFrameEx for VideoFrame<'a> {
         self.bits_per_pixel
     }
 
-    fn at(&self, col: usize, row: usize) -> Option<Self::Output> {
+    fn get(&self, col: usize, row: usize) -> Option<Self::Output> {
         if col >= self.width || row >= self.height {
             None
         } else {
-            Some(self.at_no_bounds_check(col, row))
+            Some(self.get_unchecked(col, row))
         }
     }
 }

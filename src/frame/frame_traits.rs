@@ -1,8 +1,5 @@
 //! Trait for describing basic frame operations
 
-use crate::common::*;
-use std::result::Result;
-
 pub enum FrameConstructionError {
     CouldNotGetWidth(String),
     CouldNotGetHeight(String),
@@ -16,7 +13,7 @@ pub enum FrameConstructionError {
 pub trait VideoFrameUnsafeEx {
     type Output: Sized;
 
-    fn at_no_bounds_check(&self, col: usize, row: usize) -> Self::Output;
+    fn get_unchecked(&self, col: usize, row: usize) -> Self::Output;
 }
 
 pub trait VideoFrameEx: VideoFrameUnsafeEx {
@@ -28,5 +25,5 @@ pub trait VideoFrameEx: VideoFrameUnsafeEx {
 
     fn bits_per_pixel(&self) -> usize;
 
-    fn at(&self, col: usize, row: usize) -> Option<Self::Output>;
+    fn get(&self, col: usize, row: usize) -> Option<Self::Output>;
 }

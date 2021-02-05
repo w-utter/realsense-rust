@@ -141,7 +141,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for DepthFrame<'a> {
 impl<'a> VideoFrameUnsafeEx for DepthFrame<'a> {
     type Output = &'a u16;
 
-    fn at_no_bounds_check(&self, col: usize, row: usize) -> Self::Output {
+    fn get_unchecked(&self, col: usize, row: usize) -> Self::Output {
         let offset = row * self.width + col;
         &self.data[offset]
     }
@@ -163,11 +163,11 @@ impl<'a> VideoFrameEx for DepthFrame<'a> {
         self.bits_per_pixel
     }
 
-    fn at(&self, col: usize, row: usize) -> Option<Self::Output> {
+    fn get(&self, col: usize, row: usize) -> Option<Self::Output> {
         if col >= self.width || row >= self.height {
             None
         } else {
-            Some(self.at_no_bounds_check(col, row))
+            Some(self.get_unchecked(col, row))
         }
     }
 }

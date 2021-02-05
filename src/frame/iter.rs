@@ -22,7 +22,7 @@ where
             return None;
         }
 
-        let next = self.frame.at_no_bounds_check(self.column, self.row);
+        let next = self.frame.get_unchecked(self.column, self.row);
 
         self.column += 1;
 
