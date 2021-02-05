@@ -31,7 +31,7 @@ impl Profile {
         profile: NonNull<sys::rs2_stream_profile>,
     ) -> std::result::Result<Self, StreamConstructionError> {
         unsafe {
-            let mut err: *mut sys::rs2_error = ptr::null_mut();
+            let mut err = ptr::null_mut::<sys::rs2_error>();
 
             let mut stream = MaybeUninit::uninit();
             let mut format = MaybeUninit::uninit();

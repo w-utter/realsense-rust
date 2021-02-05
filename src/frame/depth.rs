@@ -52,7 +52,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for DepthFrame<'a> {
 
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
-            let mut err: *mut sys::rs2_error = ptr::null_mut();
+            let mut err = ptr::null_mut::<sys::rs2_error>();
             let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetWidth);
 
