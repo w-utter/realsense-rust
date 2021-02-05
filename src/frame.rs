@@ -17,6 +17,7 @@ mod depth;
 mod frame_traits;
 mod iter;
 mod kind;
+mod pose;
 mod video;
 
 /// The trait provides common methods on frames of all kinds.
