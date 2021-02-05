@@ -14,6 +14,7 @@ use crate::{
 
 mod composite;
 mod depth;
+#[macro_use]
 mod frame_traits;
 mod iter;
 mod kind;

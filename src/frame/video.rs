@@ -3,7 +3,6 @@
 use super::frame_traits::{FrameConstructionError, VideoFrameEx, VideoFrameUnsafeEx};
 use super::{iter::ImageIter, kind::Kind};
 use crate::{common::*, stream};
-use std::ffi::CStr;
 use std::result::Result;
 
 // For detailed pixel format information, see
@@ -92,52 +91,20 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
         unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
             let width = sys::rs2_get_frame_width(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetWidth(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetWidth);
+
             let height = sys::rs2_get_frame_height(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetHeight(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetHeight);
+
             let bits_per_pixel = sys::rs2_get_frame_bits_per_pixel(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetBitsPerPixel(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetBitsPerPixel);
 
             let stride = sys::rs2_get_frame_stride_in_bytes(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetStride(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetStride);
 
             let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetFrameStreamProfile(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile);
+
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
             let profile = stream::Profile::new(nonnull_profile_ptr).map_err(|_| {
@@ -147,25 +114,13 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
             })?;
 
             let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetDataSize(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetDataSize);
+
             debug_assert_eq!(size, width * height * bits_per_pixel / 8);
 
             let ptr = sys::rs2_get_frame_data(frame_ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                return Err(FrameConstructionError::CouldNotGetData(
-                    CStr::from_ptr(sys::rs2_get_error_message(err))
-                        .to_str()
-                        .unwrap()
-                        .to_string(),
-                ));
-            }
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetData);
+
             let data = slice::from_raw_parts(ptr.cast::<u8>(), size as usize);
 
             Ok(VideoFrame {
