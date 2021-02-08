@@ -1,7 +1,7 @@
 //! Generic iterator types for implementing frame iterators.
 
 use super::frame_traits::{VideoFrameEx, VideoFrameUnsafeEx};
-use super::pixel::{get_pixel, PixelKind};
+use super::pixel::PixelKind;
 
 pub struct ImageIter<'a, F>
 where
@@ -23,16 +23,7 @@ where
             return None;
         }
 
-        let next = unsafe {
-            get_pixel(
-                self.frame.profile().format(),
-                self.frame.get_raw_size(),
-                self.frame.get_raw(),
-                self.frame.stride(),
-                self.column,
-                self.row,
-            )
-        };
+        let next = self.frame.get_unchecked(self.column, self.row);
 
         self.column += 1;
 
