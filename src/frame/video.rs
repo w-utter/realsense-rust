@@ -94,7 +94,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
 }
 
 impl<'a> VideoFrameUnsafeEx<'a> for VideoFrame<'a> {
-    fn get_unchecked(&self, col: usize, row: usize) -> PixelKind<'a> {
+    fn get_unchecked(&'a self, col: usize, row: usize) -> PixelKind<'a> {
         unsafe {
             get_pixel(
                 self.frame_stream_profile.format(),
@@ -137,7 +137,7 @@ impl<'a> VideoFrameEx<'a> for VideoFrame<'a> {
         &self.frame_stream_profile
     }
 
-    fn get(&self, col: usize, row: usize) -> Option<PixelKind<'a>> {
+    fn get(&'a self, col: usize, row: usize) -> Option<PixelKind<'a>> {
         if col >= self.width || row >= self.height {
             None
         } else {

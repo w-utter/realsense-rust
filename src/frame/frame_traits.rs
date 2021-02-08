@@ -25,7 +25,7 @@ pub enum FrameConstructionError {
 pub const BITS_PER_BYTE: i32 = 8;
 
 pub trait VideoFrameUnsafeEx<'a> {
-    fn get_unchecked(&self, col: usize, row: usize) -> PixelKind<'a>;
+    fn get_unchecked(&'a self, col: usize, row: usize) -> PixelKind<'a>;
 
     fn stride(&self) -> usize;
 
@@ -43,5 +43,5 @@ pub trait VideoFrameEx<'a> {
 
     fn profile(&'a self) -> &'a stream::Profile;
 
-    fn get(&self, col: usize, row: usize) -> Option<PixelKind<'a>>;
+    fn get(&'a self, col: usize, row: usize) -> Option<PixelKind<'a>>;
 }
