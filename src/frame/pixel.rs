@@ -101,15 +101,15 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride_in_bytes) + (col / 2) * 4;
 
             let y = if row % 2 == 0 {
-                &slice[offset]
+                slice.get_unchecked(offset)
             } else {
-                &slice[offset + 2]
+                slice.get_unchecked(offset + 2)
             };
 
             PixelKind::Yuyv {
                 y,
-                u: &slice[offset + 1],
-                v: &slice[offset + 3],
+                u: slice.get_unchecked(offset + 1),
+                v: slice.get_unchecked(offset + 3),
             }
         }
         // UYVY follows from the same exact pattern we use for YUYV, since it's more or less a
@@ -120,15 +120,15 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride_in_bytes) + (col / 2) * 4;
 
             let y = if row % 2 == 0 {
-                &slice[offset + 1]
+                slice.get_unchecked(offset + 1)
             } else {
-                &slice[offset + 3]
+                slice.get_unchecked(offset + 3)
             };
 
             PixelKind::Uyvy {
                 y,
-                u: &slice[offset],
-                v: &slice[offset + 2],
+                u: slice.get_unchecked(offset),
+                v: slice.get_unchecked(offset + 2),
             }
         }
         // For BGR / RGB, we do a similar trick, but since pixels aren't interleaved as they
@@ -139,9 +139,9 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride_in_bytes) + (col * 3);
 
             PixelKind::Bgr8 {
-                b: &slice[offset],
-                g: &slice[offset + 1],
-                r: &slice[offset + 2],
+                b: slice.get_unchecked(offset),
+                g: slice.get_unchecked(offset + 1),
+                r: slice.get_unchecked(offset + 2),
             }
         }
         // BGRA8 is more or less the same as BGR8, except we use 4 as a multiplier.
@@ -151,10 +151,10 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride_in_bytes) + (col * 4);
 
             PixelKind::Bgra8 {
-                b: &slice[offset],
-                g: &slice[offset + 1],
-                r: &slice[offset + 2],
-                a: &slice[offset + 3],
+                b: slice.get_unchecked(offset),
+                g: slice.get_unchecked(offset + 1),
+                r: slice.get_unchecked(offset + 2),
+                a: slice.get_unchecked(offset + 3),
             }
         }
         // RGB8 is the same as BGR8, the order is just different.
@@ -164,9 +164,9 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride_in_bytes) + (col * 3);
 
             PixelKind::Bgr8 {
-                r: &slice[offset],
-                g: &slice[offset + 1],
-                b: &slice[offset + 2],
+                r: slice.get_unchecked(offset),
+                g: slice.get_unchecked(offset + 1),
+                b: slice.get_unchecked(offset + 2),
             }
         }
         // RGBA8 is the same as BGRA8, the order is just different.
@@ -176,10 +176,10 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride_in_bytes) + (col * 4);
 
             PixelKind::Bgra8 {
-                r: &slice[offset],
-                g: &slice[offset + 1],
-                b: &slice[offset + 2],
-                a: &slice[offset + 3],
+                r: slice.get_unchecked(offset),
+                g: slice.get_unchecked(offset + 1),
+                b: slice.get_unchecked(offset + 2),
+                a: slice.get_unchecked(offset + 3),
             }
         }
         sys::rs2_format_RS2_FORMAT_RAW8 => {
@@ -187,14 +187,16 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride_in_bytes) + col;
 
             PixelKind::Raw8 {
-                val: &slice[offset],
+                val: slice.get_unchecked(offset),
             }
         }
         sys::rs2_format_RS2_FORMAT_Y8 => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + col;
 
-            PixelKind::Y8 { y: &slice[offset] }
+            PixelKind::Y8 {
+                y: slice.get_unchecked(offset),
+            }
         }
         sys::rs2_format_RS2_FORMAT_Y16 => {
             let size = data_size_in_bytes / std::mem::size_of::<u16>();
@@ -202,7 +204,9 @@ pub(crate) unsafe fn get_pixel<'a>(
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u16>(), size);
             let offset = (row * stride) + col;
 
-            PixelKind::Y16 { y: &slice[offset] }
+            PixelKind::Y16 {
+                y: slice.get_unchecked(offset),
+            }
         }
         sys::rs2_format_RS2_FORMAT_Z16 => {
             let size = data_size_in_bytes / std::mem::size_of::<u16>();
@@ -211,7 +215,7 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride) + col;
 
             PixelKind::Z16 {
-                depth: &slice[offset],
+                depth: slice.get_unchecked(offset),
             }
         }
         sys::rs2_format_RS2_FORMAT_DISTANCE => {
@@ -221,7 +225,7 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride) + col;
 
             PixelKind::Distance {
-                distance: &slice[offset],
+                distance: slice.get_unchecked(offset),
             }
         }
         sys::rs2_format_RS2_FORMAT_DISPARITY32 => {
@@ -231,7 +235,7 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride) + col;
 
             PixelKind::Disparity32 {
-                disparity: &slice[offset],
+                disparity: slice.get_unchecked(offset),
             }
         }
         sys::rs2_format_RS2_FORMAT_XYZ32F => {
@@ -241,9 +245,9 @@ pub(crate) unsafe fn get_pixel<'a>(
             let offset = (row * stride) + col;
 
             PixelKind::Xyz32f {
-                x: &slice[offset],
-                y: &slice[offset + 1],
-                z: &slice[offset + 2],
+                x: slice.get_unchecked(offset),
+                y: slice.get_unchecked(offset + 1),
+                z: slice.get_unchecked(offset + 2),
             }
         }
         _ => {
