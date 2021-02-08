@@ -1,7 +1,13 @@
 //! Type for representing a depth frame taken from a depth camera.
 
-use super::frame_traits::{FrameConstructionError, VideoFrameEx, VideoFrameUnsafeEx};
-use super::{iter::ImageIter, kind::Kind};
+use super::frame_traits::{
+    FrameConstructionError, VideoFrameEx, VideoFrameUnsafeEx, BITS_PER_BYTE,
+};
+use super::{
+    iter::ImageIter,
+    kind::Kind,
+    pixel::{get_pixel, PixelKind},
+};
 use crate::{check_rs2_error, common::*, stream};
 use std::result::Result;
 
@@ -12,24 +18,17 @@ pub struct DepthFrame<'a> {
     stride: usize,
     bits_per_pixel: usize,
     frame_stream_profile: stream::Profile,
-    data: &'a [u16],
+    data_size_in_bytes: usize,
+    data: &'a std::os::raw::c_void,
 }
 
 impl<'a> DepthFrame<'a> {
-    pub fn profile(&'a self) -> &'a stream::Profile {
-        &self.frame_stream_profile
-    }
-
     pub fn iter(&'a self) -> ImageIter<'a, DepthFrame<'a>> {
         ImageIter {
             frame: self,
             column: 0,
             row: 0,
         }
-    }
-
-    pub fn get_raw(&'a self) -> &'a [u16] {
-        self.data
     }
 }
 
@@ -75,10 +74,10 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for DepthFrame<'a> {
             let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetDataSize)?;
 
+            debug_assert_eq!(size, width * height * bits_per_pixel / BITS_PER_BYTE);
+
             let ptr = sys::rs2_get_frame_data(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetData)?;
-
-            let data = slice::from_raw_parts(ptr.cast::<u16>(), size as usize);
 
             Ok(DepthFrame {
                 frame_ptr,
@@ -87,27 +86,25 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for DepthFrame<'a> {
                 stride: stride as usize,
                 bits_per_pixel: bits_per_pixel as usize,
                 frame_stream_profile: profile,
-                data,
+                data_size_in_bytes: size as usize,
+                data: ptr.as_ref().unwrap(),
             })
         }
     }
 }
 
-impl<'a> VideoFrameUnsafeEx for DepthFrame<'a> {
-    type Output = &'a u16;
-
-    fn get_unchecked(&self, col: usize, row: usize) -> Self::Output {
-        let offset = row * self.width + col;
-        &self.data[offset]
-    }
-}
-
-impl<'a> VideoFrameEx for DepthFrame<'a> {
-    fn width(&self) -> usize {
-        self.width
-    }
-    fn height(&self) -> usize {
-        self.height
+impl<'a> VideoFrameUnsafeEx<'a> for DepthFrame<'a> {
+    fn get_unchecked(&self, col: usize, row: usize) -> PixelKind<'a> {
+        unsafe {
+            get_pixel(
+                self.frame_stream_profile.format(),
+                self.data_size_in_bytes,
+                self.data,
+                self.stride,
+                col,
+                row,
+            )
+        }
     }
 
     fn stride(&self) -> usize {
@@ -118,7 +115,29 @@ impl<'a> VideoFrameEx for DepthFrame<'a> {
         self.bits_per_pixel
     }
 
-    fn get(&self, col: usize, row: usize) -> Option<Self::Output> {
+    fn get_raw_size(&self) -> usize {
+        self.data_size_in_bytes
+    }
+
+    fn get_raw(&'a self) -> &'a std::os::raw::c_void {
+        self.data
+    }
+}
+
+impl<'a> VideoFrameEx<'a> for DepthFrame<'a> {
+    fn width(&self) -> usize {
+        self.width
+    }
+
+    fn height(&self) -> usize {
+        self.height
+    }
+
+    fn profile(&'a self) -> &'a stream::Profile {
+        &self.frame_stream_profile
+    }
+
+    fn get(&self, col: usize, row: usize) -> Option<PixelKind<'a>> {
         if col >= self.width || row >= self.height {
             None
         } else {

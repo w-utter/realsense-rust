@@ -17,6 +17,7 @@ mod depth;
 mod frame_traits;
 mod iter;
 mod kind;
+mod pixel;
 mod pose;
 mod video;
 

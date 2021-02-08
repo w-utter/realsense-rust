@@ -1,6 +1,7 @@
 //! Trait for describing basic frame operations
 
-use crate::common::*;
+use super::pixel::PixelKind;
+use crate::{common::*, stream};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -23,20 +24,24 @@ pub enum FrameConstructionError {
 
 pub const BITS_PER_BYTE: i32 = 8;
 
-pub trait VideoFrameUnsafeEx {
-    type Output: Sized;
-
-    fn get_unchecked(&self, col: usize, row: usize) -> Self::Output;
-}
-
-pub trait VideoFrameEx: VideoFrameUnsafeEx {
-    fn width(&self) -> usize;
-
-    fn height(&self) -> usize;
+pub trait VideoFrameUnsafeEx<'a> {
+    fn get_unchecked(&self, col: usize, row: usize) -> PixelKind<'a>;
 
     fn stride(&self) -> usize;
 
     fn bits_per_pixel(&self) -> usize;
 
-    fn get(&self, col: usize, row: usize) -> Option<Self::Output>;
+    fn get_raw_size(&self) -> usize;
+
+    fn get_raw(&'a self) -> &'a std::os::raw::c_void;
+}
+
+pub trait VideoFrameEx<'a> {
+    fn width(&self) -> usize;
+
+    fn height(&self) -> usize;
+
+    fn profile(&'a self) -> &'a stream::Profile;
+
+    fn get(&self, col: usize, row: usize) -> Option<PixelKind<'a>>;
 }

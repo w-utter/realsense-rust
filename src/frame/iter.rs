@@ -1,10 +1,11 @@
 //! Generic iterator types for implementing frame iterators.
 
 use super::frame_traits::{VideoFrameEx, VideoFrameUnsafeEx};
+use super::pixel::{get_pixel, PixelKind};
 
 pub struct ImageIter<'a, F>
 where
-    F: VideoFrameEx,
+    F: VideoFrameEx<'a> + VideoFrameUnsafeEx<'a>,
 {
     pub(crate) frame: &'a F,
     pub(crate) column: usize,
@@ -13,16 +14,25 @@ where
 
 impl<'a, F> Iterator for ImageIter<'a, F>
 where
-    F: VideoFrameEx,
+    F: VideoFrameEx<'a> + VideoFrameUnsafeEx<'a>,
 {
-    type Item = <F as VideoFrameUnsafeEx>::Output;
+    type Item = PixelKind<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.column >= self.frame.width() || self.row >= self.frame.height() {
             return None;
         }
 
-        let next = self.frame.get_unchecked(self.column, self.row);
+        let next = unsafe {
+            get_pixel(
+                self.frame.profile().format(),
+                self.frame.get_raw_size(),
+                self.frame.get_raw(),
+                self.frame.stride(),
+                self.column,
+                self.row,
+            )
+        };
 
         self.column += 1;
 
