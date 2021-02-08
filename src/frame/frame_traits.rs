@@ -2,7 +2,10 @@
 
 use super::pixel::PixelKind;
 use crate::{common::*, stream};
+use anyhow::Result;
 use thiserror::Error;
+
+pub const BITS_PER_BYTE: i32 = 8;
 
 #[derive(Error, Debug)]
 pub enum FrameConstructionError {
@@ -22,7 +25,27 @@ pub enum FrameConstructionError {
     CouldNotGetData(String),
 }
 
-pub const BITS_PER_BYTE: i32 = 8;
+#[derive(Error, Debug)]
+pub enum DepthError {
+    #[error("Could not get distance. Reason: {0}")]
+    CouldNotGetDistance(String),
+    #[error("Could not get depth units. Reason: {0}")]
+    CouldNotGetDepthUnits(String),
+}
+
+#[derive(Error, Debug)]
+#[error("Could not get baseline. Reason: {0}")]
+pub struct DisparityError(pub String);
+
+pub trait DepthFrameEx {
+    fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError>;
+
+    fn depth_units(&self) -> Result<f32, DepthError>;
+}
+
+pub trait DisparityFrameEx {
+    fn baseline(&self) -> Result<f32, DisparityError>;
+}
 
 pub trait VideoFrameUnsafeEx<'a> {
     fn get_unchecked(&'a self, col: usize, row: usize) -> PixelKind<'a>;

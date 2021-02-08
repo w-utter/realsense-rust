@@ -1,7 +1,8 @@
 //! Type for representing a video frame taken from a color or IR camera.
 
 use super::frame_traits::{
-    FrameConstructionError, VideoFrameEx, VideoFrameUnsafeEx, BITS_PER_BYTE,
+    DepthError, DepthFrameEx, DisparityError, DisparityFrameEx, FrameConstructionError,
+    VideoFrameEx, VideoFrameUnsafeEx, BITS_PER_BYTE,
 };
 use super::{
     iter::ImageIter,
@@ -9,9 +10,13 @@ use super::{
     pixel::{get_pixel, PixelKind},
 };
 use crate::{check_rs2_error, common::*, stream};
-use std::result::Result;
+use anyhow::Result;
 
-pub struct VideoFrame<'a> {
+pub struct Depth;
+pub struct Disparity;
+pub struct Video;
+
+pub struct ImageFrame<'a, Kind> {
     frame_ptr: NonNull<sys::rs2_frame>,
     width: usize,
     height: usize,
@@ -20,10 +25,15 @@ pub struct VideoFrame<'a> {
     frame_stream_profile: stream::Profile,
     data_size_in_bytes: usize,
     data: &'a std::os::raw::c_void,
+    _phantom: PhantomData<Kind>,
 }
 
-impl<'a> VideoFrame<'a> {
-    pub fn iter(&'a self) -> ImageIter<'a, VideoFrame<'a>> {
+pub type DepthFrame<'a> = ImageFrame<'a, Depth>;
+pub type DisparityFrame<'a> = ImageFrame<'a, Disparity>;
+pub type VideoFrame<'a> = ImageFrame<'a, Video>;
+
+impl<'a, K> ImageFrame<'a, K> {
+    pub fn iter(&'a self) -> ImageIter<'a, ImageFrame<'a, K>> {
         ImageIter {
             frame: self,
             column: 0,
@@ -32,7 +42,7 @@ impl<'a> VideoFrame<'a> {
     }
 }
 
-impl<'a> Drop for VideoFrame<'a> {
+impl<'a, K> Drop for ImageFrame<'a, K> {
     fn drop(&mut self) {
         unsafe {
             sys::rs2_release_frame(self.frame_ptr.as_ptr());
@@ -40,13 +50,7 @@ impl<'a> Drop for VideoFrame<'a> {
     }
 }
 
-impl<'a> Kind for VideoFrame<'a> {
-    fn extension() -> sys::rs2_extension {
-        sys::rs2_extension_RS2_EXTENSION_VIDEO_FRAME
-    }
-}
-
-impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
+impl<'a, K> std::convert::TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
     type Error = anyhow::Error;
 
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
@@ -79,7 +83,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
             let ptr = sys::rs2_get_frame_data(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetData)?;
 
-            Ok(VideoFrame {
+            Ok(ImageFrame {
                 frame_ptr,
                 width: width as usize,
                 height: height as usize,
@@ -88,12 +92,86 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for VideoFrame<'a> {
                 frame_stream_profile: profile,
                 data_size_in_bytes: size as usize,
                 data: ptr.as_ref().unwrap(),
+                _phantom: PhantomData::<K> {},
             })
         }
     }
 }
 
-impl<'a> VideoFrameUnsafeEx<'a> for VideoFrame<'a> {
+impl<'a> Kind for DepthFrame<'a> {
+    fn extension() -> sys::rs2_extension {
+        sys::rs2_extension_RS2_EXTENSION_DEPTH_FRAME
+    }
+}
+
+impl<'a> Kind for DisparityFrame<'a> {
+    fn extension() -> sys::rs2_extension {
+        sys::rs2_extension_RS2_EXTENSION_DISPARITY_FRAME
+    }
+}
+
+impl<'a> Kind for VideoFrame<'a> {
+    fn extension() -> sys::rs2_extension {
+        sys::rs2_extension_RS2_EXTENSION_VIDEO_FRAME
+    }
+}
+
+impl<'a> DepthFrameEx for DepthFrame<'a> {
+    fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError> {
+        unsafe {
+            let mut err = ptr::null_mut::<sys::rs2_error>();
+            let distance = sys::rs2_depth_frame_get_distance(
+                self.frame_ptr.as_ptr(),
+                col as c_int,
+                row as c_int,
+                &mut err,
+            );
+            check_rs2_error!(err, DepthError::CouldNotGetDistance)?;
+            Ok(distance)
+        }
+    }
+
+    fn depth_units(&self) -> Result<f32, DepthError> {
+        //let sensor = self.sensor()?;
+        //let depth_units = sensor.get_option(Rs2Option::DepthUnits)?;
+        //Ok(depth_units)
+        unimplemented!();
+    }
+}
+
+impl<'a> DepthFrameEx for DisparityFrame<'a> {
+    fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError> {
+        unsafe {
+            let mut err = ptr::null_mut::<sys::rs2_error>();
+            let distance = sys::rs2_depth_frame_get_distance(
+                self.frame_ptr.as_ptr(),
+                col as c_int,
+                row as c_int,
+                &mut err,
+            );
+            check_rs2_error!(err, DepthError::CouldNotGetDistance)?;
+            Ok(distance)
+        }
+    }
+
+    fn depth_units(&self) -> Result<f32, DepthError> {
+        unimplemented!();
+    }
+}
+
+impl<'a> DisparityFrameEx for DisparityFrame<'a> {
+    fn baseline(&self) -> Result<f32, DisparityError> {
+        unsafe {
+            let mut err = ptr::null_mut::<sys::rs2_error>();
+            let baseline =
+                sys::rs2_depth_stereo_frame_get_baseline(self.frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, DisparityError)?;
+            Ok(baseline)
+        }
+    }
+}
+
+impl<'a, K> VideoFrameUnsafeEx<'a> for ImageFrame<'a, K> {
     fn get_unchecked(&'a self, col: usize, row: usize) -> PixelKind<'a> {
         unsafe {
             get_pixel(
@@ -124,7 +202,7 @@ impl<'a> VideoFrameUnsafeEx<'a> for VideoFrame<'a> {
     }
 }
 
-impl<'a> VideoFrameEx<'a> for VideoFrame<'a> {
+impl<'a, K> VideoFrameEx<'a> for ImageFrame<'a, K> {
     fn width(&self) -> usize {
         self.width
     }
@@ -146,9 +224,9 @@ impl<'a> VideoFrameEx<'a> for VideoFrame<'a> {
     }
 }
 
-impl<'a> IntoIterator for &'a VideoFrame<'a> {
-    type Item = <ImageIter<'a, VideoFrame<'a>> as Iterator>::Item;
-    type IntoIter = ImageIter<'a, VideoFrame<'a>>;
+impl<'a, K> IntoIterator for &'a ImageFrame<'a, K> {
+    type Item = <ImageIter<'a, ImageFrame<'a, K>> as Iterator>::Item;
+    type IntoIter = ImageIter<'a, ImageFrame<'a, K>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()

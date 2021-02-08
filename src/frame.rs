@@ -13,14 +13,12 @@ use crate::{
 };
 
 mod composite;
-mod depth;
-mod disparity;
 mod frame_traits;
+mod image;
 mod iter;
 mod kind;
 mod pixel;
 mod pose;
-mod video;
 
 /// The trait provides common methods on frames of all kinds.
 pub trait GenericFrameEx
