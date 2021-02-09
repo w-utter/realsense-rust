@@ -5,7 +5,7 @@ use realsense_sys as sys;
 
 #[repr(u32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum FrameMetadataValue {
+pub enum Rs2FrameMetadata {
     FrameCounter = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_FRAME_COUNTER,
     FrameTimestamp = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_FRAME_TIMESTAMP,
     SensorTimestamp = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_SENSOR_TIMESTAMP,

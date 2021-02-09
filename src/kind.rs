@@ -6,7 +6,7 @@ mod frame_metadata;
 mod option;
 mod timestamp_domain;
 
-pub use frame_metadata::FrameMetadataValue;
+pub use frame_metadata::Rs2FrameMetadata;
 pub use option::Rs2Option;
 pub use timestamp_domain::TimestampDomain;
 
