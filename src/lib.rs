@@ -17,13 +17,13 @@
 //!
 //! ```no_run
 //! use anyhow::Result;
-//! use realsense_rust::{Config, Format, Pipeline, Rs2StreamKind};
+//! use realsense_rust::{Config, Rs2Format, Pipeline, Rs2StreamKind};
 //!
 //! fn main() -> anyhow::Result<()> {
 //!     let pipeline = Pipeline::new()?;
 //!     let config = Config::new()?
-//!         .enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Format::Z16, 30)?
-//!         .enable_stream(Rs2StreamKind::Color, 0, 640, 0, Format::Rgb8, 30)?;
+//!         .enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Rs2Format::Z16, 30)?
+//!         .enable_stream(Rs2StreamKind::Color, 0, 640, 0, Rs2Format::Rgb8, 30)?;
 //!     let mut pipeline = pipeline.start(&config)?;
 //!
 //!     let frames = pipeline.wait(None)?.unwrap();
@@ -83,7 +83,7 @@ pub use frame::{
 };
 pub use frame_queue::FrameQueue;
 pub use kind::{
-    ColorScheme, Format, HoleFillingMode, PersistenceControl, Rs2CameraInfo, Rs2Extension,
+    ColorScheme, HoleFillingMode, PersistenceControl, Rs2CameraInfo, Rs2Extension, Rs2Format,
     Rs2FrameMetadata, Rs2Option, Rs2StreamKind, TimestampDomain,
 };
 pub use options::{OptionHandle, ToOptions};

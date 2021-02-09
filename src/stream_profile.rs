@@ -4,7 +4,7 @@ use crate::{
     base::{Extrinsics, Intrinsics, MotionIntrinsics, Resolution, StreamProfileData},
     common::*,
     error::{ErrorChecker, Result},
-    kind::{Format, Rs2StreamKind},
+    kind::{Rs2Format, Rs2StreamKind},
     stream_profile_kind,
 };
 
@@ -73,7 +73,7 @@ where
 
             let data = StreamProfileData {
                 stream: Rs2StreamKind::from_u32(stream.assume_init()).unwrap(),
-                format: Format::from_u32(format.assume_init()).unwrap(),
+                format: Rs2Format::from_u32(format.assume_init()).unwrap(),
                 index: index.assume_init() as usize,
                 unique_id: unique_id.assume_init(),
                 framerate: framerate.assume_init(),

@@ -12,7 +12,7 @@ mod timestamp_domain;
 
 pub use camera_info::Rs2CameraInfo;
 pub use extension::Rs2Extension;
-pub use format::Format;
+pub use format::Rs2Format;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use option::Rs2Option;
 pub use stream_kind::Rs2StreamKind;

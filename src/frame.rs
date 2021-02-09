@@ -7,7 +7,7 @@ use crate::{
     common::*,
     error::{ErrorChecker, Result},
     frame_kind,
-    kind::{Format, Rs2FrameMetadata, Rs2StreamKind, TimestampDomain},
+    kind::{Rs2Format, Rs2FrameMetadata, Rs2StreamKind, TimestampDomain},
     sensor::{AnySensor, DepthSensor},
     stream_profile::{AnyStreamProfile, StreamProfile},
 };
@@ -208,7 +208,7 @@ where
         debug_assert_eq!(raw_data.len() % stride_in_bytes, 0, "please report bug");
 
         let image = match format {
-            Format::Bgr8 => {
+            Rs2Format::Bgr8 => {
                 let channels = 3;
 
                 let sample_size = mem::size_of::<u8>();
@@ -237,7 +237,7 @@ where
                 let image = flat.try_into_buffer().unwrap();
                 Rs2Image::Bgr8(image)
             }
-            Format::Bgra8 => {
+            Rs2Format::Bgra8 => {
                 let channels = 4;
 
                 let sample_size = mem::size_of::<u8>();
@@ -266,7 +266,7 @@ where
                 let image = flat.try_into_buffer().unwrap();
                 Rs2Image::Bgra8(image)
             }
-            Format::Rgb8 => {
+            Rs2Format::Rgb8 => {
                 let channels = 3;
 
                 let sample_size = mem::size_of::<u8>();
@@ -295,7 +295,7 @@ where
                 let image = flat.try_into_buffer().unwrap();
                 Rs2Image::Rgb8(image)
             }
-            Format::Rgba8 => {
+            Rs2Format::Rgba8 => {
                 let channels = 4;
 
                 let sample_size = mem::size_of::<u8>();
@@ -324,7 +324,7 @@ where
                 let image = flat.try_into_buffer().unwrap();
                 Rs2Image::Rgba8(image)
             }
-            Format::Z16 => {
+            Rs2Format::Z16 => {
                 let sample_size = mem::size_of::<u16>();
                 debug_assert_eq!(stride_in_bytes % sample_size, 0, "please report bug");
 

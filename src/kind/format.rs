@@ -5,7 +5,7 @@ use realsense_sys as sys;
 
 #[repr(u32)]
 #[derive(FromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Format {
+pub enum Rs2Format {
     Any = sys::rs2_format_RS2_FORMAT_ANY,
     Yuyv = sys::rs2_format_RS2_FORMAT_YUYV,
     Uyvy = sys::rs2_format_RS2_FORMAT_UYVY,
@@ -38,5 +38,3 @@ pub enum Format {
     //
     // Count = sys::rs2_format_RS2_FORMAT_COUNT,
 }
-
-

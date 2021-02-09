@@ -256,7 +256,7 @@ pub struct Resolution {
 #[derive(Debug)]
 pub struct StreamProfileData {
     pub stream: Rs2StreamKind,
-    pub format: Format,
+    pub format: Rs2Format,
     pub index: usize,
     pub unique_id: i32,
     pub framerate: i32,

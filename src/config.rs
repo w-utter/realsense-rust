@@ -4,7 +4,7 @@ use crate::{
     base::TryIntoCowCStr,
     common::*,
     error::{ErrorChecker, Result},
-    kind::{Format, Rs2StreamKind},
+    kind::{Rs2Format, Rs2StreamKind},
     pipeline::Pipeline,
     pipeline_kind::PipelineState,
     pipeline_profile::PipelineProfile,
@@ -38,7 +38,7 @@ impl Config {
         index: usize,
         width: usize,
         height: usize,
-        format: Format,
+        format: Rs2Format,
         framerate: usize,
     ) -> Result<Self> {
         unsafe {
