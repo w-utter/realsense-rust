@@ -3,37 +3,10 @@
 use crate::common::*;
 
 mod option;
+mod timestamp_domain;
 
 pub use option::Rs2Option;
-
-/// The enumeration of timestamp domains.
-#[repr(u32)]
-#[derive(FromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum TimestampDomain {
-    HardwareClock = sys::rs2_timestamp_domain_RS2_TIMESTAMP_DOMAIN_HARDWARE_CLOCK,
-    SystemTime = sys::rs2_timestamp_domain_RS2_TIMESTAMP_DOMAIN_SYSTEM_TIME,
-    GlobalTime = sys::rs2_timestamp_domain_RS2_TIMESTAMP_DOMAIN_GLOBAL_TIME,
-    Count = sys::rs2_timestamp_domain_RS2_TIMESTAMP_DOMAIN_COUNT,
-}
-
-impl TimestampDomain {
-    pub fn as_cstr(&self) -> &'static CStr {
-        unsafe {
-            let ptr = sys::rs2_timestamp_domain_to_string(*self as sys::rs2_timestamp_domain);
-            CStr::from_ptr(ptr)
-        }
-    }
-
-    pub fn as_str(&self) -> &'static str {
-        self.as_cstr().to_str().unwrap()
-    }
-}
-
-impl ToString for TimestampDomain {
-    fn to_string(&self) -> String {
-        self.as_str().to_owned()
-    }
-}
+pub use timestamp_domain::TimestampDomain;
 
 /// The enumeration of metadata kinds of a frame.
 #[repr(u32)]

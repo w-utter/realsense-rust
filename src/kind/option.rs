@@ -1,13 +1,12 @@
 //! Enumeration of RS2 sensor options.
 
-use num_derive::FromPrimitive;
-use num_traits::FromPrimitive;
+use num_derive::{FromPrimitive, ToPrimitive};
 use realsense_sys as sys;
 use std::ffi::CStr;
 
 /// The enumeration of options.
 #[repr(u32)]
-#[derive(FromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2Option {
     BacklightCompensation = sys::rs2_option_RS2_OPTION_BACKLIGHT_COMPENSATION,
     Brightness = sys::rs2_option_RS2_OPTION_BRIGHTNESS,
