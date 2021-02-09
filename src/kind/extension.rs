@@ -5,7 +5,7 @@ use realsense_sys as sys;
 
 #[repr(u32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Extension {
+pub enum Rs2Extension {
     // sensor
     ColorSensor = sys::rs2_extension_RS2_EXTENSION_COLOR_SENSOR,
     MotionSensor = sys::rs2_extension_RS2_EXTENSION_MOTION_SENSOR,
