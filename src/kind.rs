@@ -8,7 +8,7 @@ mod frame_metadata;
 mod option;
 mod timestamp_domain;
 
-pub use camera_info::CameraInfo;
+pub use camera_info::Rs2CameraInfo;
 pub use extension::Rs2Extension;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use option::Rs2Option;

@@ -5,7 +5,7 @@ use realsense_sys as sys;
 
 #[repr(u32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum CameraInfo {
+pub enum Rs2CameraInfo {
     Name = sys::rs2_camera_info_RS2_CAMERA_INFO_NAME,
     SerialNumber = sys::rs2_camera_info_RS2_CAMERA_INFO_SERIAL_NUMBER,
     FirmwareVersion = sys::rs2_camera_info_RS2_CAMERA_INFO_FIRMWARE_VERSION,
@@ -23,5 +23,3 @@ pub enum CameraInfo {
     //
     // Count = sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT,
 }
-
-

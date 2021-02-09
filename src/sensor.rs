@@ -4,7 +4,7 @@ use crate::{
     common::*,
     device::Device,
     error::{ErrorChecker, Result},
-    kind::{CameraInfo, Rs2Option},
+    kind::{Rs2CameraInfo, Rs2Option},
     options::ToOptions,
     processing_block_list::ProcessingBlockList,
     sensor_kind,
@@ -193,58 +193,54 @@ where
     }
 
     pub fn name(&self) -> Result<&str> {
-        self.info(CameraInfo::Name)
+        self.info(Rs2CameraInfo::Name)
     }
 
     pub fn serial_number(&self) -> Result<&str> {
-        self.info(CameraInfo::SerialNumber)
+        self.info(Rs2CameraInfo::SerialNumber)
     }
 
     pub fn recommended_firmware_version(&self) -> Result<&str> {
-        self.info(CameraInfo::RecommendedFirmwareVersion)
+        self.info(Rs2CameraInfo::RecommendedFirmwareVersion)
     }
 
     pub fn physical_port(&self) -> Result<&str> {
-        self.info(CameraInfo::PhysicalPort)
+        self.info(Rs2CameraInfo::PhysicalPort)
     }
 
     pub fn debug_op_code(&self) -> Result<&str> {
-        self.info(CameraInfo::DebugOpCode)
+        self.info(Rs2CameraInfo::DebugOpCode)
     }
 
     pub fn advanced_mode(&self) -> Result<&str> {
-        self.info(CameraInfo::AdvancedMode)
+        self.info(Rs2CameraInfo::AdvancedMode)
     }
 
     pub fn product_id(&self) -> Result<&str> {
-        self.info(CameraInfo::ProductId)
+        self.info(Rs2CameraInfo::ProductId)
     }
 
     pub fn camera_locked(&self) -> Result<&str> {
-        self.info(CameraInfo::CameraLocked)
+        self.info(Rs2CameraInfo::CameraLocked)
     }
 
     pub fn usb_type_descriptor(&self) -> Result<&str> {
-        self.info(CameraInfo::UsbTypeDescriptor)
+        self.info(Rs2CameraInfo::UsbTypeDescriptor)
     }
 
     pub fn product_line(&self) -> Result<&str> {
-        self.info(CameraInfo::ProductLine)
+        self.info(Rs2CameraInfo::ProductLine)
     }
 
     pub fn asic_serial_number(&self) -> Result<&str> {
-        self.info(CameraInfo::AsicSerialNumber)
+        self.info(Rs2CameraInfo::AsicSerialNumber)
     }
 
     pub fn firmware_update_id(&self) -> Result<&str> {
-        self.info(CameraInfo::FirmwareUpdateId)
+        self.info(Rs2CameraInfo::FirmwareUpdateId)
     }
 
-    pub fn count(&self) -> Result<&str> {
-        self.info(CameraInfo::Count)
-    }
-
-    pub fn info(&self, kind: CameraInfo) -> Result<&str> {
+    pub fn info(&self, kind: Rs2CameraInfo) -> Result<&str> {
         let ptr = unsafe {
             let mut checker = ErrorChecker::new();
             let ptr = sys::rs2_get_sensor_info(
@@ -260,7 +256,7 @@ where
         Ok(string)
     }
 
-    pub fn is_info_supported(&self, kind: CameraInfo) -> Result<bool> {
+    pub fn is_info_supported(&self, kind: Rs2CameraInfo) -> Result<bool> {
         let val = unsafe {
             let mut checker = ErrorChecker::new();
             let val = sys::rs2_supports_sensor_info(

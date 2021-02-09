@@ -83,7 +83,7 @@ pub use frame::{
 };
 pub use frame_queue::FrameQueue;
 pub use kind::{
-    CameraInfo, ColorScheme, Format, HoleFillingMode, PersistenceControl, Rs2Extension,
+    ColorScheme, Format, HoleFillingMode, PersistenceControl, Rs2CameraInfo, Rs2Extension,
     Rs2FrameMetadata, Rs2Option, StreamKind, TimestampDomain,
 };
 pub use options::{OptionHandle, ToOptions};
