@@ -7,7 +7,7 @@ use crate::{
     common::*,
     error::{ErrorChecker, Result},
     frame_kind,
-    kind::{Format, Rs2FrameMetadata, StreamKind, TimestampDomain},
+    kind::{Format, Rs2FrameMetadata, Rs2StreamKind, TimestampDomain},
     sensor::{AnySensor, DepthSensor},
     stream_profile::{AnyStreamProfile, StreamProfile},
 };
@@ -629,7 +629,7 @@ impl CompositeFrame {
         Ok(iter)
     }
 
-    pub fn first_of<Kind>(&self, stream: StreamKind) -> Result<Option<Frame<Kind>>>
+    pub fn first_of<Kind>(&self, stream: Rs2StreamKind) -> Result<Option<Frame<Kind>>>
     where
         Kind: frame_kind::NonAnyFrameKind,
     {
@@ -645,15 +645,15 @@ impl CompositeFrame {
     }
 
     pub fn color_frame(&self) -> Result<Option<VideoFrame>> {
-        self.first_of::<frame_kind::Video>(StreamKind::Color)
+        self.first_of::<frame_kind::Video>(Rs2StreamKind::Color)
     }
 
     pub fn depth_frame(&self) -> Result<Option<DepthFrame>> {
-        self.first_of::<frame_kind::Depth>(StreamKind::Depth)
+        self.first_of::<frame_kind::Depth>(Rs2StreamKind::Depth)
     }
 
     pub fn pose_frame(&self) -> Result<Option<PoseFrame>> {
-        self.first_of::<frame_kind::Pose>(StreamKind::Pose)
+        self.first_of::<frame_kind::Pose>(Rs2StreamKind::Pose)
     }
 }
 

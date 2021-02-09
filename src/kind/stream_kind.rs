@@ -5,7 +5,7 @@ use realsense_sys as sys;
 
 #[repr(u32)]
 #[derive(FromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum StreamKind {
+pub enum Rs2StreamKind {
     Any = sys::rs2_stream_RS2_STREAM_ANY,
     Depth = sys::rs2_stream_RS2_STREAM_DEPTH,
     Color = sys::rs2_stream_RS2_STREAM_COLOR,

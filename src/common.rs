@@ -1,4 +1,4 @@
-pub use crate::kind::{Format, StreamKind};
+pub use crate::kind::{Format, Rs2StreamKind};
 #[cfg(feature = "with-image")]
 pub use image::{
     buffer::ConvertBuffer,

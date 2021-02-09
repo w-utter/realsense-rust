@@ -13,7 +13,7 @@ pub use camera_info::Rs2CameraInfo;
 pub use extension::Rs2Extension;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use option::Rs2Option;
-pub use stream_kind::StreamKind;
+pub use stream_kind::Rs2StreamKind;
 pub use timestamp_domain::TimestampDomain;
 
 /// The enumeration of frame data format.
