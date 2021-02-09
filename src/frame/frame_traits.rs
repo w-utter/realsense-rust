@@ -1,4 +1,4 @@
-//! Trait for describing basic frame operations
+//! Trait for describing frame operations.
 
 use super::pixel::PixelKind;
 use crate::{common::*, stream};
