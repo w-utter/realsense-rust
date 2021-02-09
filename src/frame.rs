@@ -7,7 +7,7 @@ use crate::{
     common::*,
     error::{ErrorChecker, Result},
     frame_kind,
-    kind::{Rs2Format, Rs2FrameMetadata, Rs2StreamKind, TimestampDomain},
+    kind::{Rs2Format, Rs2FrameMetadata, Rs2StreamKind, Rs2TimestampDomain},
     sensor::{AnySensor, DepthSensor},
     stream_profile::{AnyStreamProfile, StreamProfile},
 };
@@ -70,7 +70,7 @@ where
     }
 
     /// Gets the domain of timestamp.
-    fn timestamp_domain(&self) -> Result<TimestampDomain> {
+    fn timestamp_domain(&self) -> Result<Rs2TimestampDomain> {
         let val = unsafe {
             let mut checker = ErrorChecker::new();
             let val =
@@ -78,7 +78,7 @@ where
             checker.check()?;
             val
         };
-        let domain = TimestampDomain::from_u32(val).unwrap();
+        let domain = Rs2TimestampDomain::from_u32(val).unwrap();
         Ok(domain)
     }
 

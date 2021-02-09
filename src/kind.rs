@@ -18,7 +18,7 @@ pub use format::Rs2Format;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use option::Rs2Option;
 pub use stream_kind::Rs2StreamKind;
-pub use timestamp_domain::TimestampDomain;
+pub use timestamp_domain::Rs2TimestampDomain;
 
 /// The enumeration of persistence controls.
 #[repr(usize)]

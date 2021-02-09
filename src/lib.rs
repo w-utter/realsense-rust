@@ -84,7 +84,7 @@ pub use frame::{
 pub use frame_queue::FrameQueue;
 pub use kind::{
     ColorScheme, HoleFillingMode, PersistenceControl, Rs2CameraInfo, Rs2Extension, Rs2Format,
-    Rs2FrameMetadata, Rs2Option, Rs2StreamKind, TimestampDomain,
+    Rs2FrameMetadata, Rs2Option, Rs2StreamKind, Rs2TimestampDomain,
 };
 pub use options::{OptionHandle, ToOptions};
 pub use pipeline::{ActivePipeline, InactivePipeline, Pipeline};
