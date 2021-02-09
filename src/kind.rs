@@ -1,7 +1,5 @@
 //! Defines the common used enums.
 
-use crate::common::*;
-
 mod camera_info;
 mod color_scheme;
 mod extension;
