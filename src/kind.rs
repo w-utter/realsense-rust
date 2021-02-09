@@ -8,6 +8,7 @@ mod extension;
 mod format;
 mod frame_metadata;
 mod option;
+mod persistence_control;
 mod stream_kind;
 mod timestamp_domain;
 
@@ -17,23 +18,9 @@ pub use extension::Rs2Extension;
 pub use format::Rs2Format;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use option::Rs2Option;
+pub use persistence_control::PersistenceControl;
 pub use stream_kind::Rs2StreamKind;
 pub use timestamp_domain::Rs2TimestampDomain;
-
-/// The enumeration of persistence controls.
-#[repr(usize)]
-#[derive(FromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum PersistenceControl {
-    Disabled = 0,
-    Valid8OutOf8 = 1,
-    Valid2OutOf3 = 2,
-    Valid2OutOf4 = 3,
-    Valid2OutOf8 = 4,
-    Valid1OutOf2 = 5,
-    Valid1OutOf5 = 6,
-    Valid1OutOf8 = 7,
-    Indefinitely = 8,
-}
 
 /// The enumeration of persistence controls.
 #[repr(usize)]
