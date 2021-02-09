@@ -6,30 +6,15 @@ mod camera_info;
 mod extension;
 mod frame_metadata;
 mod option;
+mod stream_kind;
 mod timestamp_domain;
 
 pub use camera_info::Rs2CameraInfo;
 pub use extension::Rs2Extension;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use option::Rs2Option;
+pub use stream_kind::StreamKind;
 pub use timestamp_domain::TimestampDomain;
-
-/// The enumeration of all categories of stream.
-#[repr(u32)]
-#[derive(FromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum StreamKind {
-    Any = sys::rs2_stream_RS2_STREAM_ANY,
-    Depth = sys::rs2_stream_RS2_STREAM_DEPTH,
-    Color = sys::rs2_stream_RS2_STREAM_COLOR,
-    Infrared = sys::rs2_stream_RS2_STREAM_INFRARED,
-    Fisheye = sys::rs2_stream_RS2_STREAM_FISHEYE,
-    Gyro = sys::rs2_stream_RS2_STREAM_GYRO,
-    Accel = sys::rs2_stream_RS2_STREAM_ACCEL,
-    Gpio = sys::rs2_stream_RS2_STREAM_GPIO,
-    Pose = sys::rs2_stream_RS2_STREAM_POSE,
-    Confidence = sys::rs2_stream_RS2_STREAM_CONFIDENCE,
-    Count = sys::rs2_stream_RS2_STREAM_COUNT,
-}
 
 /// The enumeration of frame data format.
 #[repr(u32)]
