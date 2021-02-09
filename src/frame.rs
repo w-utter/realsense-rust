@@ -7,7 +7,7 @@ use crate::{
     common::*,
     error::{ErrorChecker, Result},
     frame_kind,
-    kind::{Format, FrameMetaDataValue, StreamKind, TimestampDomain},
+    kind::{Format, FrameMetadataValue, StreamKind, TimestampDomain},
     sensor::{AnySensor, DepthSensor},
     stream_profile::{AnyStreamProfile, StreamProfile},
 };
@@ -26,7 +26,7 @@ where
     Self: Sized,
 {
     /// Obtains the metadata of frame.
-    fn metadata(&self, kind: FrameMetaDataValue) -> Result<u64> {
+    fn metadata(&self, kind: FrameMetadataValue) -> Result<u64> {
         unsafe {
             let mut checker = ErrorChecker::new();
             let val = sys::rs2_get_frame_metadata(
