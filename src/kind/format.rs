@@ -4,7 +4,7 @@ use num_derive::{FromPrimitive, ToPrimitive};
 use realsense_sys as sys;
 
 #[repr(u32)]
-#[derive(FromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2Format {
     Any = sys::rs2_format_RS2_FORMAT_ANY,
     Yuyv = sys::rs2_format_RS2_FORMAT_YUYV,
