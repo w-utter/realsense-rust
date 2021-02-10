@@ -1,6 +1,7 @@
 //! Type for representing stream information (format, etc)
 
 use crate::common::*;
+use anyhow::Result;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -27,7 +28,9 @@ pub enum DataError {
     FailedToGetMotionIntrinsics(String),
 }
 
-pub struct StreamProfile {
+pub struct StreamProfile<'a> {
+    // TODO: describe why dropping this pointer is a BAD IDEA (TM)
+    // See: docs for rs2_delete_stream_profile
     ptr: NonNull<sys::rs2_stream_profile>,
     stream: sys::rs2_stream,
     format: sys::rs2_format,
@@ -35,9 +38,11 @@ pub struct StreamProfile {
     unique_id: i32,
     framerate: i32,
     is_default: bool,
+    // TODO: describe why this is necessary
+    _phantom: PhantomData<&'a ()>,
 }
 
-impl std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfile {
+impl<'a> std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfile<'a> {
     type Error = StreamConstructionError;
 
     fn try_from(stream_profile_ptr: NonNull<sys::rs2_stream_profile>) -> Result<Self, Self::Error> {
@@ -88,13 +93,14 @@ impl std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfile {
                     unique_id: unique_id.assume_init(),
                     framerate: framerate.assume_init(),
                     is_default: is_default != 0,
+                    _phantom: PhantomData {},
                 })
             }
         }
     }
 }
 
-impl StreamProfile {
+impl<'a> StreamProfile<'a> {
     pub fn is_default(&self) -> bool {
         self.is_default
     }
@@ -122,7 +128,7 @@ impl StreamProfile {
     pub fn get_extrinsics(
         &self,
         to_profile: &StreamProfile,
-    ) -> std::result::Result<sys::rs2_extrinsics, DataError> {
+    ) -> Result<sys::rs2_extrinsics, DataError> {
         unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
             let mut extrinsics = MaybeUninit::<sys::rs2_extrinsics>::uninit();
@@ -173,7 +179,7 @@ impl StreamProfile {
         }
     }
 
-    pub fn intrinsics(&self) -> std::result::Result<sys::rs2_intrinsics, DataError> {
+    pub fn intrinsics(&self) -> Result<sys::rs2_intrinsics, DataError> {
         match self.stream {
             sys::rs2_stream_RS2_STREAM_DEPTH => (),
             sys::rs2_stream_RS2_STREAM_COLOR => (),
@@ -206,9 +212,7 @@ impl StreamProfile {
         }
     }
 
-    pub fn motion_intrinsics(
-        &self,
-    ) -> std::result::Result<sys::rs2_motion_device_intrinsic, DataError> {
+    pub fn motion_intrinsics(&self) -> Result<sys::rs2_motion_device_intrinsic, DataError> {
         match self.stream {
             sys::rs2_stream_RS2_STREAM_GYRO => (),
             sys::rs2_stream_RS2_STREAM_ACCEL => (),
@@ -230,14 +234,6 @@ impl StreamProfile {
             } else {
                 Ok(intrinsics.assume_init())
             }
-        }
-    }
-}
-
-impl Drop for StreamProfile {
-    fn drop(&mut self) {
-        unsafe {
-            sys::rs2_delete_stream_profile(self.ptr.as_ptr());
         }
     }
 }

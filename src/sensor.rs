@@ -2,7 +2,7 @@
 
 use crate::{
     check_rs2_error,
-    device::Device,
+    device::{Device, DeviceConstructionError},
     kind::{
         extension::SENSOR_EXTENSIONS, OptionNotSupportedError, Rs2CameraInfo, Rs2Extension,
         Rs2Option,
@@ -105,7 +105,7 @@ impl Sensor {
         }
     }
 
-    pub fn stream_profiles(&self) -> Vec<StreamProfile> {
+    pub fn stream_profiles<'a>(&'a self) -> Vec<StreamProfile<'a>> {
         let mut profiles = Vec::new();
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();

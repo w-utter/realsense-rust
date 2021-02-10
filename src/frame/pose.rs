@@ -8,9 +8,9 @@ use crate::{
     stream::StreamProfile,
 };
 
-pub struct PoseFrame {
+pub struct PoseFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
-    frame_stream_profile: StreamProfile,
+    frame_stream_profile: StreamProfile<'a>,
     data: sys::rs2_pose,
 }
 
@@ -21,8 +21,8 @@ pub enum Confidence {
     High,
 }
 
-impl PoseFrame {
-    pub fn profile(&self) -> &StreamProfile {
+impl<'a> PoseFrame<'a> {
+    pub fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 
@@ -77,7 +77,7 @@ impl PoseFrame {
     }
 }
 
-impl Drop for PoseFrame {
+impl<'a> Drop for PoseFrame<'a> {
     fn drop(&mut self) {
         unsafe {
             sys::rs2_release_frame(self.frame_ptr.as_ptr());
@@ -85,15 +85,15 @@ impl Drop for PoseFrame {
     }
 }
 
-unsafe impl Send for PoseFrame {}
+unsafe impl<'a> Send for PoseFrame<'a> {}
 
-impl Kind for PoseFrame {
+impl<'a> Kind for PoseFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::PoseFrame
     }
 }
 
-impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame {
+impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
     type Error = anyhow::Error;
 
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {

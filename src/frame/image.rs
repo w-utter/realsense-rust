@@ -26,7 +26,7 @@ pub struct ImageFrame<'a, Kind> {
     height: usize,
     stride: usize,
     bits_per_pixel: usize,
-    frame_stream_profile: StreamProfile,
+    frame_stream_profile: StreamProfile<'a>,
     data_size_in_bytes: usize,
     data: &'a std::os::raw::c_void,
     _phantom: PhantomData<Kind>,
@@ -217,7 +217,7 @@ impl<'a, K> VideoFrameEx<'a> for ImageFrame<'a, K> {
         self.height
     }
 
-    fn profile(&'a self) -> &'a StreamProfile {
+    fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 
