@@ -13,14 +13,23 @@ use anyhow::Result;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
 use std::{convert::TryFrom, ffi::CStr, ptr::NonNull};
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum StreamConstructionError {
+    #[error("Could not generate stream profile list for sensor. Reason: {0}")]
+    CouldNotGenerateStreamProfileList(String),
+}
 
 pub struct Sensor {
     sensor_ptr: NonNull<sys::rs2_sensor>,
+    stream_profiles_ptr: NonNull<sys::rs2_stream_profile_list>,
 }
 
 impl Drop for Sensor {
     fn drop(&mut self) {
         unsafe {
+            sys::rs2_delete_stream_profiles_list(self.stream_profiles_ptr.as_ptr());
             sys::rs2_delete_sensor(self.sensor_ptr.as_ptr());
         }
     }
@@ -28,15 +37,36 @@ impl Drop for Sensor {
 
 unsafe impl Send for Sensor {}
 
-impl std::convert::From<NonNull<sys::rs2_sensor>> for Sensor {
-    fn from(sensor_ptr: NonNull<sys::rs2_sensor>) -> Self {
-        Sensor { sensor_ptr }
+impl std::convert::TryFrom<NonNull<sys::rs2_sensor>> for Sensor {
+    type Error = StreamConstructionError;
+
+    fn try_from(sensor_ptr: NonNull<sys::rs2_sensor>) -> Result<Self, Self::Error> {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+
+            let stream_profiles_ptr = sys::rs2_get_stream_profiles(sensor_ptr.as_ptr(), &mut err);
+            check_rs2_error!(
+                err,
+                StreamConstructionError::CouldNotGenerateStreamProfileList
+            )?;
+
+            Ok(Sensor {
+                sensor_ptr,
+                stream_profiles_ptr: NonNull::new(stream_profiles_ptr).unwrap(),
+            })
+        }
     }
 }
 
 impl Sensor {
     pub fn device(&self) -> Result<Device> {
-        Device::try_from(self)
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let device_ptr = sys::rs2_create_device_from_sensor(self.sensor_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, DeviceConstructionError::CouldNotCreateDeviceFromSensor)?;
+
+            Ok(Device::try_from(NonNull::new(device_ptr).unwrap())?)
+        }
     }
 
     pub fn extensions(&self) -> Vec<Rs2Extension> {
@@ -79,21 +109,17 @@ impl Sensor {
         let mut profiles = Vec::new();
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
-            let stream_profiles_ptr =
-                sys::rs2_get_stream_profiles(self.sensor_ptr.as_ptr(), &mut err);
 
-            if err.as_ref().is_some() {
-                return profiles;
-            }
-
-            let len = sys::rs2_get_stream_profiles_count(stream_profiles_ptr, &mut err);
+            let len =
+                sys::rs2_get_stream_profiles_count(self.stream_profiles_ptr.as_ptr(), &mut err);
 
             if err.as_ref().is_some() {
                 return profiles;
             }
 
             for i in 0..len {
-                let profile_ptr = sys::rs2_get_stream_profile(stream_profiles_ptr, i, &mut err);
+                let profile_ptr =
+                    sys::rs2_get_stream_profile(self.stream_profiles_ptr.as_ptr(), i, &mut err);
 
                 if err.as_ref().is_some() {
                     err = std::ptr::null_mut();
@@ -107,7 +133,7 @@ impl Sensor {
                     Ok(s) => {
                         profiles.push(s);
                     }
-                    Err(e) => {
+                    Err(_) => {
                         continue;
                     }
                 }
