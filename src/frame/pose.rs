@@ -8,7 +8,7 @@ use crate::{
     stream,
 };
 
-struct PoseFrame {
+pub struct PoseFrame {
     frame_ptr: NonNull<sys::rs2_frame>,
     frame_stream_profile: stream::Profile,
     data: sys::rs2_pose,
@@ -85,6 +85,8 @@ impl Drop for PoseFrame {
     }
 }
 
+unsafe impl Send for PoseFrame {}
+
 impl Kind for PoseFrame {
     fn extension() -> Rs2Extension {
         Rs2Extension::PoseFrame
@@ -103,7 +105,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame {
 
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
-            let profile = stream::Profile::new(nonnull_profile_ptr)?;
+            let profile = stream::Profile::try_from(nonnull_profile_ptr)?;
 
             let mut pose_data = MaybeUninit::uninit();
             sys::rs2_pose_frame_get_pose_data(frame_ptr.as_ptr(), pose_data.as_mut_ptr(), &mut err);

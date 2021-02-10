@@ -54,6 +54,8 @@ impl<'a, K> Drop for ImageFrame<'a, K> {
     }
 }
 
+unsafe impl<'a, K> Send for ImageFrame<'a, K> {}
+
 impl<'a, K> std::convert::TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
     type Error = anyhow::Error;
 
@@ -77,7 +79,7 @@ impl<'a, K> std::convert::TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K>
 
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
-            let profile = stream::Profile::new(nonnull_profile_ptr)?;
+            let profile = stream::Profile::try_from(nonnull_profile_ptr)?;
 
             let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetDataSize)?;

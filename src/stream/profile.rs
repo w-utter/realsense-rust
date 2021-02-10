@@ -37,10 +37,10 @@ pub struct Profile {
     is_default: bool,
 }
 
-impl Profile {
-    pub(crate) fn new(
-        profile: NonNull<sys::rs2_stream_profile>,
-    ) -> std::result::Result<Self, StreamConstructionError> {
+impl std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for Profile {
+    type Error = StreamConstructionError;
+
+    fn try_from(stream_profile_ptr: NonNull<sys::rs2_stream_profile>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
 
@@ -51,7 +51,7 @@ impl Profile {
             let mut framerate = MaybeUninit::uninit();
 
             sys::rs2_get_stream_profile_data(
-                profile.as_ptr(),
+                stream_profile_ptr.as_ptr(),
                 stream.as_mut_ptr(),
                 format.as_mut_ptr(),
                 index.as_mut_ptr(),
@@ -69,7 +69,8 @@ impl Profile {
                 ));
             }
 
-            let is_default = sys::rs2_is_stream_profile_default(profile.as_ptr(), &mut err);
+            let is_default =
+                sys::rs2_is_stream_profile_default(stream_profile_ptr.as_ptr(), &mut err);
 
             if NonNull::new(err).is_some() {
                 Err(StreamConstructionError::FailedToDetermineIsDefault(
@@ -80,7 +81,7 @@ impl Profile {
                 ))
             } else {
                 Ok(Profile {
-                    ptr: profile,
+                    ptr: stream_profile_ptr,
                     stream: stream.assume_init(),
                     format: format.assume_init(),
                     index: index.assume_init() as usize,
@@ -91,7 +92,9 @@ impl Profile {
             }
         }
     }
+}
 
+impl Profile {
     pub fn is_default(&self) -> bool {
         self.is_default
     }
