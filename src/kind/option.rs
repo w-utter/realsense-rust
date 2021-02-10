@@ -3,6 +3,11 @@
 use num_derive::{FromPrimitive, ToPrimitive};
 use realsense_sys as sys;
 use std::ffi::CStr;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+#[error("Option not supported on this sensor. {0}")]
+pub struct OptionNotSupportedError(pub String);
 
 /// The enumeration of options.
 #[repr(u32)]

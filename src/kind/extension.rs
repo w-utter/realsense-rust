@@ -61,3 +61,66 @@ pub enum Rs2Extension {
     //
     // Count = sys::rs2_extension_RS2_EXTENSION_COUNT,
 }
+
+pub const SENSOR_EXTENSIONS: [Rs2Extension; 9] = [
+    Rs2Extension::ColorSensor,
+    Rs2Extension::MotionSensor,
+    Rs2Extension::FishEyeSensor,
+    Rs2Extension::DepthSensor,
+    Rs2Extension::DepthStereoSensor,
+    Rs2Extension::SoftwareSensor,
+    Rs2Extension::PoseSensor,
+    Rs2Extension::L500DepthSensor,
+    Rs2Extension::Tm2Sensor,
+];
+
+pub const FRAME_EXTENSIONS: [Rs2Extension; 7] = [
+    Rs2Extension::VideoFrame,
+    Rs2Extension::MotionFrame,
+    Rs2Extension::CompositeFrame,
+    Rs2Extension::DepthFrame,
+    Rs2Extension::DisparityFrame,
+    Rs2Extension::PoseFrame,
+    Rs2Extension::Points,
+];
+
+pub const FILTER_EXTENSIONS: [Rs2Extension; 8] = [
+    Rs2Extension::DecimationFilter,
+    Rs2Extension::ThresholdFilter,
+    Rs2Extension::DisparityFilter,
+    Rs2Extension::SpatialFilter,
+    Rs2Extension::TemporalFilter,
+    Rs2Extension::HoleFillingFilter,
+    Rs2Extension::ZeroOrderFilter,
+    Rs2Extension::RecommendedFilters,
+];
+
+pub const PROFILE_EXTENSIONS: [Rs2Extension; 3] = [
+    Rs2Extension::VideoProfile,
+    Rs2Extension::MotionProfile,
+    Rs2Extension::PoseProfile,
+];
+
+pub const DEVICE_EXTENSIONS: [Rs2Extension; 3] = [
+    Rs2Extension::SoftwareDevice,
+    Rs2Extension::UpdateDevice,
+    Rs2Extension::AutoCalibratedDevice,
+];
+
+pub const MISC_EXTENSIONS: [Rs2Extension; 15] = [
+    Rs2Extension::AdvancedMode,
+    Rs2Extension::Record,
+    Rs2Extension::Playback,
+    Rs2Extension::Pose,
+    Rs2Extension::WheelOdometer,
+    Rs2Extension::GlobalTimer,
+    Rs2Extension::Updatable,
+    Rs2Extension::Tm2,
+    Rs2Extension::Unknown,
+    Rs2Extension::Debug,
+    Rs2Extension::Info,
+    Rs2Extension::Motion,
+    Rs2Extension::Options,
+    Rs2Extension::Video,
+    Rs2Extension::Roi,
+];

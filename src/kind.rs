@@ -2,7 +2,7 @@
 
 mod camera_info;
 mod color_scheme;
-mod extension;
+pub mod extension;
 mod format;
 mod frame_metadata;
 mod hole_filling;
@@ -18,7 +18,7 @@ pub use extension::Rs2Extension;
 pub use format::Rs2Format;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use hole_filling::HoleFillingMode;
-pub use option::Rs2Option;
+pub use option::{OptionNotSupportedError, Rs2Option};
 pub use persistence_control::PersistenceControl;
 pub use prelude::*;
 pub use stream_kind::Rs2StreamKind;
