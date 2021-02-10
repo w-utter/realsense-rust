@@ -27,7 +27,7 @@ pub enum DataError {
     FailedToGetMotionIntrinsics(String),
 }
 
-pub struct Profile {
+pub struct StreamProfile {
     ptr: NonNull<sys::rs2_stream_profile>,
     stream: sys::rs2_stream,
     format: sys::rs2_format,
@@ -37,7 +37,7 @@ pub struct Profile {
     is_default: bool,
 }
 
-impl std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for Profile {
+impl std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfile {
     type Error = StreamConstructionError;
 
     fn try_from(stream_profile_ptr: NonNull<sys::rs2_stream_profile>) -> Result<Self, Self::Error> {
@@ -80,7 +80,7 @@ impl std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for Profile {
                         .to_string(),
                 ))
             } else {
-                Ok(Profile {
+                Ok(StreamProfile {
                     ptr: stream_profile_ptr,
                     stream: stream.assume_init(),
                     format: format.assume_init(),
@@ -94,7 +94,7 @@ impl std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for Profile {
     }
 }
 
-impl Profile {
+impl StreamProfile {
     pub fn is_default(&self) -> bool {
         self.is_default
     }
@@ -121,7 +121,7 @@ impl Profile {
 
     pub fn get_extrinsics(
         &self,
-        to_profile: &Profile,
+        to_profile: &StreamProfile,
     ) -> std::result::Result<sys::rs2_extrinsics, DataError> {
         unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
@@ -149,7 +149,7 @@ impl Profile {
 
     pub fn set_extrinsics(
         &self,
-        to_profile: &Profile,
+        to_profile: &StreamProfile,
         extrinsics: sys::rs2_extrinsics,
     ) -> Result<(), DataError> {
         unsafe {
@@ -234,7 +234,7 @@ impl Profile {
     }
 }
 
-impl Drop for Profile {
+impl Drop for StreamProfile {
     fn drop(&mut self) {
         unsafe {
             sys::rs2_delete_stream_profile(self.ptr.as_ptr());

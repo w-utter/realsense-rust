@@ -7,7 +7,7 @@ use crate::{
         extension::SENSOR_EXTENSIONS, OptionNotSupportedError, Rs2CameraInfo, Rs2Extension,
         Rs2Option,
     },
-    stream,
+    stream::StreamProfile,
 };
 use anyhow::Result;
 use num_traits::ToPrimitive;
@@ -75,7 +75,7 @@ impl Sensor {
         }
     }
 
-    pub fn stream_profiles(&self) -> Vec<stream::Profile> {
+    pub fn stream_profiles(&self) -> Vec<StreamProfile> {
         let mut profiles = Vec::new();
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -103,7 +103,7 @@ impl Sensor {
                 let nonnull_ptr =
                     NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
 
-                match stream::Profile::try_from(nonnull_ptr) {
+                match StreamProfile::try_from(nonnull_ptr) {
                     Ok(s) => {
                         profiles.push(s);
                     }

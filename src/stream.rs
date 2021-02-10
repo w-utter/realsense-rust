@@ -2,4 +2,4 @@
 
 mod profile;
 
-pub use profile::Profile;
+pub use profile::StreamProfile;

@@ -12,7 +12,7 @@ use crate::{
     check_rs2_error,
     common::*,
     kind::{Kind, Rs2Extension},
-    stream,
+    stream::StreamProfile,
 };
 use anyhow::Result;
 
@@ -26,7 +26,7 @@ pub struct ImageFrame<'a, Kind> {
     height: usize,
     stride: usize,
     bits_per_pixel: usize,
-    frame_stream_profile: stream::Profile,
+    frame_stream_profile: StreamProfile,
     data_size_in_bytes: usize,
     data: &'a std::os::raw::c_void,
     _phantom: PhantomData<Kind>,
@@ -79,7 +79,7 @@ impl<'a, K> std::convert::TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K>
 
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
-            let profile = stream::Profile::try_from(nonnull_profile_ptr)?;
+            let profile = StreamProfile::try_from(nonnull_profile_ptr)?;
 
             let size = sys::rs2_get_frame_data_size(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetDataSize)?;
@@ -217,7 +217,7 @@ impl<'a, K> VideoFrameEx<'a> for ImageFrame<'a, K> {
         self.height
     }
 
-    fn profile(&'a self) -> &'a stream::Profile {
+    fn profile(&'a self) -> &'a StreamProfile {
         &self.frame_stream_profile
     }
 

@@ -5,12 +5,12 @@ use crate::{
     check_rs2_error,
     common::*,
     kind::{Kind, Rs2Extension},
-    stream,
+    stream::StreamProfile,
 };
 
 pub struct PoseFrame {
     frame_ptr: NonNull<sys::rs2_frame>,
-    frame_stream_profile: stream::Profile,
+    frame_stream_profile: StreamProfile,
     data: sys::rs2_pose,
 }
 
@@ -22,7 +22,7 @@ pub enum Confidence {
 }
 
 impl PoseFrame {
-    pub fn profile(&self) -> &stream::Profile {
+    pub fn profile(&self) -> &StreamProfile {
         &self.frame_stream_profile
     }
 
@@ -105,7 +105,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame {
 
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
-            let profile = stream::Profile::try_from(nonnull_profile_ptr)?;
+            let profile = StreamProfile::try_from(nonnull_profile_ptr)?;
 
             let mut pose_data = MaybeUninit::uninit();
             sys::rs2_pose_frame_get_pose_data(frame_ptr.as_ptr(), pose_data.as_mut_ptr(), &mut err);

@@ -1,7 +1,7 @@
 //! Trait for describing frame operations.
 
 use super::pixel::PixelKind;
-use crate::{common::*, stream};
+use crate::{common::*, stream::StreamProfile};
 use anyhow::Result;
 use thiserror::Error;
 
@@ -64,7 +64,7 @@ pub trait VideoFrameEx<'a> {
 
     fn height(&self) -> usize;
 
-    fn profile(&'a self) -> &'a stream::Profile;
+    fn profile(&'a self) -> &'a StreamProfile;
 
     fn get(&'a self, col: usize, row: usize) -> Option<PixelKind<'a>>;
 }
