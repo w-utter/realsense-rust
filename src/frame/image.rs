@@ -6,10 +6,14 @@ use super::frame_traits::{
 };
 use super::{
     iter::ImageIter,
-    kind::Kind,
     pixel::{get_pixel, PixelKind},
 };
-use crate::{check_rs2_error, common::*, stream};
+use crate::{
+    check_rs2_error,
+    common::*,
+    kind::{Kind, Rs2Extension},
+    stream,
+};
 use anyhow::Result;
 
 pub struct Depth;
@@ -99,20 +103,20 @@ impl<'a, K> std::convert::TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K>
 }
 
 impl<'a> Kind for DepthFrame<'a> {
-    fn extension() -> sys::rs2_extension {
-        sys::rs2_extension_RS2_EXTENSION_DEPTH_FRAME
+    fn extension() -> Rs2Extension {
+        Rs2Extension::DepthFrame
     }
 }
 
 impl<'a> Kind for DisparityFrame<'a> {
-    fn extension() -> sys::rs2_extension {
-        sys::rs2_extension_RS2_EXTENSION_DISPARITY_FRAME
+    fn extension() -> Rs2Extension {
+        Rs2Extension::DisparityFrame
     }
 }
 
 impl<'a> Kind for VideoFrame<'a> {
-    fn extension() -> sys::rs2_extension {
-        sys::rs2_extension_RS2_EXTENSION_VIDEO_FRAME
+    fn extension() -> Rs2Extension {
+        Rs2Extension::VideoFrame
     }
 }
 

@@ -2,8 +2,8 @@
 //!
 //! This is what is typically delivered by the pipeline.
 
-use super::kind::Kind;
-use crate::common::*;
+use crate::{common::*, kind::Kind};
+use num_traits::ToPrimitive;
 
 pub struct CompositeFrame {
     pub(crate) ptr: NonNull<sys::rs2_frame>,
@@ -51,8 +51,11 @@ impl CompositeFrame {
             if let Some(ptr) = ptr {
                 unsafe {
                     let mut err: *mut sys::rs2_error = ptr::null_mut();
-                    let is_kind =
-                        sys::rs2_is_frame_extendable_to(ptr.as_ptr(), K::extension(), &mut err);
+                    let is_kind = sys::rs2_is_frame_extendable_to(
+                        ptr.as_ptr(),
+                        K::extension().to_u32().unwrap(),
+                        &mut err,
+                    );
                     if NonNull::new(err).is_none() && is_kind != 0 {
                         if let Ok(f) = K::try_from(ptr) {
                             frames.push(f);

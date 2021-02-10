@@ -16,7 +16,6 @@ mod composite;
 mod frame_traits;
 mod image;
 mod iter;
-mod kind;
 mod pixel;
 mod pose;
 

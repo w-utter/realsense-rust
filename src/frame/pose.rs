@@ -1,8 +1,12 @@
 //! Type for representing a pose frame taken from an IMU or pose-sensor.
 
 use super::frame_traits::FrameConstructionError;
-use super::kind::Kind;
-use crate::{check_rs2_error, common::*, stream};
+use crate::{
+    check_rs2_error,
+    common::*,
+    kind::{Kind, Rs2Extension},
+    stream,
+};
 
 struct PoseFrame {
     frame_ptr: NonNull<sys::rs2_frame>,
@@ -82,8 +86,8 @@ impl Drop for PoseFrame {
 }
 
 impl Kind for PoseFrame {
-    fn extension() -> sys::rs2_extension {
-        sys::rs2_extension_RS2_EXTENSION_POSE_FRAME
+    fn extension() -> Rs2Extension {
+        Rs2Extension::PoseFrame
     }
 }
 
