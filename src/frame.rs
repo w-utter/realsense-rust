@@ -3,15 +3,17 @@
 mod composite;
 mod image;
 mod iter;
+mod motion;
 mod pixel;
 mod pose;
 mod prelude;
 
 pub use self::image::{DepthFrame, DisparityFrame, VideoFrame};
+pub use self::motion::MotionFrame;
 pub use composite::CompositeFrame;
 pub use pixel::PixelKind;
 pub use pose::PoseFrame;
-pub use prelude::{DepthFrameEx, DisparityFrameEx, VideoFrameEx};
+pub use prelude::{DepthFrameEx, DisparityFrameEx, VideoFrameEx, MotionFrameEx};
 
 // UV texture coordinates.
 // #[repr(C)]
