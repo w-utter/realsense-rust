@@ -1,6 +1,6 @@
 //! Type for representing a pose frame taken from an IMU or pose-sensor.
 
-use super::frame_traits::FrameConstructionError;
+use super::prelude::FrameConstructionError;
 use crate::{
     check_rs2_error,
     common::*,

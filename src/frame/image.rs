@@ -1,6 +1,6 @@
 //! Type for representing a video frame taken from a color or IR camera.
 
-use super::frame_traits::{
+use super::prelude::{
     DepthError, DepthFrameEx, DisparityError, DisparityFrameEx, FrameConstructionError,
     VideoFrameEx, VideoFrameUnsafeEx, BITS_PER_BYTE,
 };
