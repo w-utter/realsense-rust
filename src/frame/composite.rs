@@ -2,7 +2,7 @@
 //!
 //! This is what is typically delivered by the pipeline.
 
-use crate::{common::*, kind::Kind};
+use crate::{common::*, kind::Extension};
 use num_traits::ToPrimitive;
 
 pub struct CompositeFrame {
@@ -33,7 +33,7 @@ impl CompositeFrame {
 
     pub fn frames_of_kind<K>(&self) -> Vec<K>
     where
-        K: std::convert::TryFrom<NonNull<sys::rs2_frame>> + Kind,
+        K: std::convert::TryFrom<NonNull<sys::rs2_frame>> + Extension,
     {
         let mut frames = Vec::new();
         for i in 0..self.count() {

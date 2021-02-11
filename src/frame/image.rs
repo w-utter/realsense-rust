@@ -11,7 +11,7 @@ use super::{
 use crate::{
     check_rs2_error,
     common::*,
-    kind::{Kind, Rs2Extension},
+    kind::{Extension, Rs2Extension},
     stream::StreamProfile,
 };
 use anyhow::Result;
@@ -108,19 +108,19 @@ impl<'a, K> std::convert::TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K>
     }
 }
 
-impl<'a> Kind for DepthFrame<'a> {
+impl<'a> Extension for DepthFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::DepthFrame
     }
 }
 
-impl<'a> Kind for DisparityFrame<'a> {
+impl<'a> Extension for DisparityFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::DisparityFrame
     }
 }
 
-impl<'a> Kind for VideoFrame<'a> {
+impl<'a> Extension for VideoFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::VideoFrame
     }

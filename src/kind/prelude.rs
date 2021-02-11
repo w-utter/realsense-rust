@@ -2,6 +2,6 @@
 
 use super::extension::Rs2Extension;
 
-pub trait Kind {
+pub trait Extension {
     fn extension() -> Rs2Extension;
 }

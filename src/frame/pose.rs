@@ -4,7 +4,7 @@ use super::prelude::{FrameConstructionError, FrameEx};
 use crate::{
     check_rs2_error,
     common::*,
-    kind::{Kind, Rs2Extension},
+    kind::{Extension, Rs2Extension},
     stream::StreamProfile,
 };
 
@@ -86,7 +86,7 @@ impl<'a> Drop for PoseFrame<'a> {
 
 unsafe impl<'a> Send for PoseFrame<'a> {}
 
-impl<'a> Kind for PoseFrame<'a> {
+impl<'a> Extension for PoseFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::PoseFrame
     }
