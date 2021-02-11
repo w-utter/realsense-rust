@@ -1,7 +1,7 @@
 //! Type for representing the various pixel formats.
 
-use crate::common::*;
-use std::os::raw::c_void;
+use crate::kind::Rs2Format;
+use std::{os::raw::c_void, slice};
 
 // For detailed pixel format information, see
 // https://github.com/IntelRealSense/librealsense/blob/4f37f2ef0874c1716bce223b20e46d00532ffb04/wrappers/nodejs/index.js#L3865
@@ -64,7 +64,7 @@ pub enum PixelKind<'a> {
 }
 
 pub(crate) unsafe fn get_pixel<'a>(
-    format: sys::rs2_format,
+    format: Rs2Format,
     data_size_in_bytes: usize,
     data: &'a c_void,
     stride_in_bytes: usize,
@@ -96,7 +96,7 @@ pub(crate) unsafe fn get_pixel<'a>(
         //
         // NOTE: Order matters because we are taking advantage of integer division here.
         //
-        sys::rs2_format_RS2_FORMAT_YUYV => {
+        Rs2Format::Yuyv => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + (col / 2) * 4;
 
@@ -115,7 +115,7 @@ pub(crate) unsafe fn get_pixel<'a>(
         // UYVY follows from the same exact pattern we use for YUYV, since it's more or less a
         // re-ordering of the underlying data.
         //
-        sys::rs2_format_RS2_FORMAT_UYVY => {
+        Rs2Format::Uyvy => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + (col / 2) * 4;
 
@@ -134,7 +134,7 @@ pub(crate) unsafe fn get_pixel<'a>(
         // For BGR / RGB, we do a similar trick, but since pixels aren't interleaved as they
         // are with YUYV / UYVY, the multipliers for column and row offsets can be uniform.
         //
-        sys::rs2_format_RS2_FORMAT_BGR8 => {
+        Rs2Format::Bgr8 => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + (col * 3);
 
@@ -146,7 +146,7 @@ pub(crate) unsafe fn get_pixel<'a>(
         }
         // BGRA8 is more or less the same as BGR8, except we use 4 as a multiplier.
         //
-        sys::rs2_format_RS2_FORMAT_BGRA8 => {
+        Rs2Format::Bgra8 => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + (col * 4);
 
@@ -159,7 +159,7 @@ pub(crate) unsafe fn get_pixel<'a>(
         }
         // RGB8 is the same as BGR8, the order is just different.
         //
-        sys::rs2_format_RS2_FORMAT_RGB8 => {
+        Rs2Format::Rgb8 => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + (col * 3);
 
@@ -171,7 +171,7 @@ pub(crate) unsafe fn get_pixel<'a>(
         }
         // RGBA8 is the same as BGRA8, the order is just different.
         //
-        sys::rs2_format_RS2_FORMAT_RGBA8 => {
+        Rs2Format::Rgba8 => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + (col * 4);
 
@@ -182,7 +182,7 @@ pub(crate) unsafe fn get_pixel<'a>(
                 a: slice.get_unchecked(offset + 3),
             }
         }
-        sys::rs2_format_RS2_FORMAT_RAW8 => {
+        Rs2Format::Raw8 => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + col;
 
@@ -190,7 +190,7 @@ pub(crate) unsafe fn get_pixel<'a>(
                 val: slice.get_unchecked(offset),
             }
         }
-        sys::rs2_format_RS2_FORMAT_Y8 => {
+        Rs2Format::Y8 => {
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u8>(), data_size_in_bytes);
             let offset = (row * stride_in_bytes) + col;
 
@@ -198,7 +198,7 @@ pub(crate) unsafe fn get_pixel<'a>(
                 y: slice.get_unchecked(offset),
             }
         }
-        sys::rs2_format_RS2_FORMAT_Y16 => {
+        Rs2Format::Y16 => {
             let size = data_size_in_bytes / std::mem::size_of::<u16>();
             let stride = stride_in_bytes / std::mem::size_of::<u16>();
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u16>(), size);
@@ -208,7 +208,7 @@ pub(crate) unsafe fn get_pixel<'a>(
                 y: slice.get_unchecked(offset),
             }
         }
-        sys::rs2_format_RS2_FORMAT_Z16 => {
+        Rs2Format::Z16 => {
             let size = data_size_in_bytes / std::mem::size_of::<u16>();
             let stride = stride_in_bytes / std::mem::size_of::<u16>();
             let slice = slice::from_raw_parts(data_as_ptr.cast::<u16>(), size);
@@ -218,7 +218,7 @@ pub(crate) unsafe fn get_pixel<'a>(
                 depth: slice.get_unchecked(offset),
             }
         }
-        sys::rs2_format_RS2_FORMAT_DISTANCE => {
+        Rs2Format::Distance => {
             let size = data_size_in_bytes / std::mem::size_of::<f32>();
             let stride = stride_in_bytes / std::mem::size_of::<f32>();
             let slice = slice::from_raw_parts(data_as_ptr.cast::<f32>(), size);
@@ -228,7 +228,7 @@ pub(crate) unsafe fn get_pixel<'a>(
                 distance: slice.get_unchecked(offset),
             }
         }
-        sys::rs2_format_RS2_FORMAT_DISPARITY32 => {
+        Rs2Format::Disparity32 => {
             let size = data_size_in_bytes / std::mem::size_of::<f32>();
             let stride = stride_in_bytes / std::mem::size_of::<f32>();
             let slice = slice::from_raw_parts(data_as_ptr.cast::<f32>(), size);
@@ -238,7 +238,7 @@ pub(crate) unsafe fn get_pixel<'a>(
                 disparity: slice.get_unchecked(offset),
             }
         }
-        sys::rs2_format_RS2_FORMAT_XYZ32F => {
+        Rs2Format::Xyz32F => {
             let size = data_size_in_bytes / std::mem::size_of::<f32>();
             let stride = stride_in_bytes / std::mem::size_of::<f32>();
             let slice = slice::from_raw_parts(data_as_ptr.cast::<f32>(), size);
