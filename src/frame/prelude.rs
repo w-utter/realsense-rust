@@ -3,6 +3,7 @@
 use super::pixel::PixelKind;
 use crate::{common::*, stream::StreamProfile};
 use anyhow::Result;
+use realsense_sys as sys;
 use thiserror::Error;
 
 pub const BITS_PER_BYTE: i32 = 8;
@@ -39,6 +40,8 @@ pub struct DisparityError(pub String);
 
 pub trait FrameEx<'a> {
     fn profile(&'a self) -> &'a StreamProfile<'a>;
+
+    fn get_owned_frame_ptr(self) -> NonNull<sys::rs2_frame>;
 }
 
 pub trait DepthFrameEx {

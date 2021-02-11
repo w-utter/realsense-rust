@@ -29,6 +29,7 @@ pub struct ImageFrame<'a, Kind> {
     frame_stream_profile: StreamProfile<'a>,
     data_size_in_bytes: usize,
     data: &'a std::os::raw::c_void,
+    should_drop: bool,
     _phantom: PhantomData<Kind>,
 }
 
@@ -49,7 +50,9 @@ impl<'a, K> ImageFrame<'a, K> {
 impl<'a, K> Drop for ImageFrame<'a, K> {
     fn drop(&mut self) {
         unsafe {
-            sys::rs2_release_frame(self.frame_ptr.as_ptr());
+            if self.should_drop {
+                sys::rs2_release_frame(self.frame_ptr.as_ptr());
+            }
         }
     }
 }
@@ -98,6 +101,7 @@ impl<'a, K> std::convert::TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K>
                 frame_stream_profile: profile,
                 data_size_in_bytes: size as usize,
                 data: ptr.as_ref().unwrap(),
+                should_drop: true,
                 _phantom: PhantomData::<K> {},
             })
         }
@@ -125,6 +129,12 @@ impl<'a> Kind for VideoFrame<'a> {
 impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
     fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
+    }
+
+    fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
+        self.should_drop = false;
+
+        self.frame_ptr
     }
 }
 

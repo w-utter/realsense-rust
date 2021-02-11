@@ -12,6 +12,7 @@ pub struct PoseFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
     frame_stream_profile: StreamProfile<'a>,
     data: sys::rs2_pose,
+    should_drop: bool,
 }
 
 pub enum Confidence {
@@ -76,7 +77,9 @@ impl<'a> PoseFrame<'a> {
 impl<'a> Drop for PoseFrame<'a> {
     fn drop(&mut self) {
         unsafe {
-            sys::rs2_release_frame(self.frame_ptr.as_ptr());
+            if self.should_drop {
+                sys::rs2_release_frame(self.frame_ptr.as_ptr());
+            }
         }
     }
 }
@@ -111,6 +114,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
                 frame_ptr,
                 frame_stream_profile: profile,
                 data: pose_data.assume_init(),
+                should_drop: true,
             })
         }
     }
@@ -119,5 +123,11 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
 impl<'a> FrameEx<'a> for PoseFrame<'a> {
     fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
+    }
+
+    fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
+        self.should_drop = false;
+
+        self.frame_ptr
     }
 }
