@@ -22,10 +22,6 @@ pub enum Confidence {
 }
 
 impl<'a> PoseFrame<'a> {
-    pub fn profile(&'a self) -> &'a StreamProfile<'a> {
-        &self.frame_stream_profile
-    }
-
     pub fn translation(&self) -> [f32; 3] {
         let sys::rs2_vector { x, y, z } = self.data.translation;
         [x, y, z]
@@ -117,5 +113,11 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
                 data: pose_data.assume_init(),
             })
         }
+    }
+}
+
+impl<'a> FrameEx<'a> for PoseFrame<'a> {
+    pub fn profile(&'a self) -> &'a StreamProfile<'a> {
+        &self.frame_stream_profile
     }
 }

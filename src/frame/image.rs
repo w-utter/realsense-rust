@@ -1,7 +1,7 @@
 //! Type for representing a video frame taken from a color or IR camera.
 
 use super::prelude::{
-    DepthError, DepthFrameEx, DisparityError, DisparityFrameEx, FrameConstructionError,
+    DepthError, DepthFrameEx, DisparityError, DisparityFrameEx, FrameConstructionError, FrameEx,
     VideoFrameEx, VideoFrameUnsafeEx, BITS_PER_BYTE,
 };
 use super::{
@@ -122,6 +122,12 @@ impl<'a> Kind for VideoFrame<'a> {
     }
 }
 
+impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
+    fn profile(&'a self) -> &'a StreamProfile<'a> {
+        &self.frame_stream_profile
+    }
+}
+
 impl<'a> DepthFrameEx for DepthFrame<'a> {
     fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError> {
         unsafe {
@@ -215,10 +221,6 @@ impl<'a, K> VideoFrameEx<'a> for ImageFrame<'a, K> {
 
     fn height(&self) -> usize {
         self.height
-    }
-
-    fn profile(&'a self) -> &'a StreamProfile<'a> {
-        &self.frame_stream_profile
     }
 
     fn get(&'a self, col: usize, row: usize) -> Option<PixelKind<'a>> {

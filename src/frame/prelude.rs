@@ -37,6 +37,10 @@ pub enum DepthError {
 #[error("Could not get baseline. Reason: {0}")]
 pub struct DisparityError(pub String);
 
+pub trait FrameEx<'a> {
+    fn profile(&'a self) -> &'a StreamProfile<'a>;
+}
+
 pub trait DepthFrameEx {
     fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError>;
 
@@ -63,8 +67,6 @@ pub trait VideoFrameEx<'a> {
     fn width(&self) -> usize;
 
     fn height(&self) -> usize;
-
-    fn profile(&'a self) -> &'a StreamProfile;
 
     fn get(&'a self, col: usize, row: usize) -> Option<PixelKind<'a>>;
 }
