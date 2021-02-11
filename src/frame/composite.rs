@@ -12,18 +12,17 @@ pub struct CompositeFrame {
 impl CompositeFrame {
     /// Gets the number of frames included in the composite frame.
     pub fn count(&self) -> usize {
-        let count = unsafe {
+        unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
 
             let count = sys::rs2_embedded_frames_count(self.ptr.as_ptr(), &mut err);
 
-            if let Some(_) = NonNull::new(err) {
+            if NonNull::new(err).is_some() {
                 0
             } else {
                 count as usize
             }
-        };
-        count
+        }
     }
 
     /// Checks if the composite-frame contains no sub-frames.
