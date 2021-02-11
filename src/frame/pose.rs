@@ -125,7 +125,7 @@ impl<'a> FrameEx<'a> for PoseFrame<'a> {
         &self.frame_stream_profile
     }
 
-    fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
+    unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
         self.should_drop = false;
 
         self.frame_ptr

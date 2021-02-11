@@ -41,7 +41,7 @@ pub struct DisparityError(pub String);
 pub trait FrameEx<'a> {
     fn profile(&'a self) -> &'a StreamProfile<'a>;
 
-    fn get_owned_frame_ptr(self) -> NonNull<sys::rs2_frame>;
+    unsafe fn get_owned_frame_ptr(self) -> NonNull<sys::rs2_frame>;
 }
 
 pub trait DepthFrameEx {
