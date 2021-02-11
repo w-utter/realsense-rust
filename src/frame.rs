@@ -1,17 +1,17 @@
 //! Defines the frame type including sensor data.
 
 mod composite;
-mod frame_traits;
 mod image;
 mod iter;
 mod pixel;
 mod pose;
+mod prelude;
 
 pub use self::image::{DepthFrame, DisparityFrame, VideoFrame};
 pub use composite::CompositeFrame;
-pub use frame_traits::{DepthFrameEx, DisparityFrameEx, VideoFrameEx};
 pub use pixel::PixelKind;
 pub use pose::PoseFrame;
+pub use prelude::{DepthFrameEx, DisparityFrameEx, VideoFrameEx};
 
 // UV texture coordinates.
 // #[repr(C)]

@@ -1,6 +1,6 @@
 //! Type for representing a pose frame taken from an IMU or pose-sensor.
 
-use super::prelude::FrameConstructionError;
+use super::prelude::{FrameConstructionError, FrameEx};
 use crate::{
     check_rs2_error,
     common::*,
@@ -117,7 +117,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
 }
 
 impl<'a> FrameEx<'a> for PoseFrame<'a> {
-    pub fn profile(&'a self) -> &'a StreamProfile<'a> {
+    fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 }

@@ -1,7 +1,7 @@
 //! Generic iterator types for implementing frame iterators.
 
-use super::frame_traits::{VideoFrameEx, VideoFrameUnsafeEx};
 use super::pixel::PixelKind;
+use super::prelude::{VideoFrameEx, VideoFrameUnsafeEx};
 
 pub struct ImageIter<'a, F>
 where
