@@ -73,3 +73,7 @@ pub trait VideoFrameEx<'a> {
 
     fn get(&'a self, col: usize, row: usize) -> Option<PixelKind<'a>>;
 }
+
+pub trait MotionFrameEx<'a> {
+    fn motion(&self) -> &[f32; 3];
+}
