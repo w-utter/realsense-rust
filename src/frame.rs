@@ -1,7 +1,7 @@
 //! Defines the frame type including sensor data.
 
 mod composite;
-mod image;
+pub mod image;
 mod iter;
 mod motion;
 mod pixel;
@@ -16,5 +16,6 @@ pub use composite::CompositeFrame;
 pub use pixel::PixelKind;
 pub use pose::PoseFrame;
 pub use prelude::{
-    DepthFrameEx, DisparityFrameEx, FrameEx, MotionFrameEx, PointsFrameEx, VideoFrameEx,
+    DepthFrameEx, DisparityFrameEx, FrameConstructionError, FrameEx, MotionFrameEx, PointsFrameEx,
+    VideoFrameEx,
 };
