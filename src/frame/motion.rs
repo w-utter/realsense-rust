@@ -3,7 +3,7 @@
 //! Motion data for any Motion frame is held as a 3-vector. This data (retrieved
 //! through `motion()`) represents different things depending on the device recorded.
 //!
-//! See the [motion] docs for more.
+//! See the docs for [MotionFrame::motion] for more.
 
 use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx, MotionFrameEx};
 use crate::{
@@ -202,15 +202,15 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
 ///
 /// ## Gyroscope
 ///
-/// motion[0] - The pitch of the device in radians. Positive X is towards the right of the device.
-/// motion[1] - The yaw of the device in radians. Positive Y is upwards towards the top of the device.
-/// motion[2] - The roll of the device in radians. Positive Z is inwards towards the back of the device.
+/// `motion[0]` - The pitch of the device in radians. Positive X is towards the right of the device.
+/// `motion[1]` - The yaw of the device in radians. Positive Y is upwards towards the top of the device.
+/// `motion[2]` - The roll of the device in radians. Positive Z is inwards towards the back of the device.
 ///
 /// ## Accelerometer
 ///
-/// motion[0] - Acceleration in m/s^2. Positive X is towards the right of the device.
-/// motion[1] - Acceleration in m/s^2. Positive Y is downwards towards the bottom of the device.
-/// motion[2] - Acceleration in m/s^2. Positive Z is forwards away from the device.
+/// `motion[0]` - Acceleration in m/s^2. Positive X is towards the right of the device.
+/// `motion[1]` - Acceleration in m/s^2. Positive Y is downwards towards the bottom of the device.
+/// `motion[2]` - Acceleration in m/s^2. Positive Z is forwards away from the device.
 ///
 /// Read more about the coordinate frames of RealSense motion in
 /// [the RealSense docs](https://www.intelrealsense.com/how-to-getting-imu-data-from-d435i-and-t265/)
