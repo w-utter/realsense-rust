@@ -33,6 +33,8 @@ pub enum FrameConstructionError {
     CouldNotGetDataSize(String),
     #[error("Could not get pointer to frame data. Reason: {0}")]
     CouldNotGetData(String),
+    #[error("Could not get number of points: {0}")]
+    CouldNotGetPointCount(String),
 }
 
 #[derive(Error, Debug)]
@@ -99,4 +101,13 @@ pub trait VideoFrameEx<'a> {
 
 pub trait MotionFrameEx<'a> {
     fn motion(&self) -> &[f32; 3];
+}
+
+pub trait PointsFrameEx<'a> {
+    /// Gets vertices of point cloud.
+    fn vertices(&'a self) -> &'a [sys::rs2_vertex];
+    /// Gets texture coordinates of each point of point cloud.
+    fn texture_coordinates(&'a self) -> &'a [[f32; 2]];
+    /// Gets number of points in frame.
+    fn points_count(&self) -> usize;
 }
