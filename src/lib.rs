@@ -63,7 +63,7 @@ pub mod prelude {
 
 #[cfg(feature = "with-image")]
 pub use base::Rs2Image;
-pub use base::{Extrinsics, Intrinsics, MotionIntrinsics, PoseData, Resolution, StreamProfileData};
+pub use base::{Extrinsics, Intrinsics, MotionIntrinsics};
 // pub use config::Config;
 // pub use context::Context;
 pub use device::Device;
