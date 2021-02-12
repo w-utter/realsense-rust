@@ -13,6 +13,8 @@ use std::convert::TryFrom;
 
 pub struct MotionFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
+    timestamp: f64,
+    timestamp_domain: Rs2TimestampDomain,
     frame_stream_profile: StreamProfile<'a>,
     motion: [f32; 3],
     should_drop: bool,
@@ -42,6 +44,14 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
+
+            let timestamp = sys::rs2_get_frame_timestamp(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestamp)?;
+
+            let timestamp_domain =
+                sys::rs2_get_frame_timestamp_domain(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestampDomain)?;
+
             let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile)?;
 
@@ -63,6 +73,8 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
 
             Ok(MotionFrame {
                 frame_ptr,
+                timestamp,
+                timestamp_domain: Rs2TimestampDomain::from_u32(timestamp_domain).unwrap(),
                 frame_stream_profile: profile,
                 motion: [motion_raw[0], motion_raw[1], motion_raw[2]],
                 should_drop: true,
@@ -87,11 +99,11 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
     }
 
     fn timestamp(&self) -> f64 {
-        unimplemented!();
+        self.timestamp
     }
 
     fn timestamp_domain(&self) -> Rs2TimestampDomain {
-        unimplemented!();
+        self.timestamp_domain
     }
 
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
