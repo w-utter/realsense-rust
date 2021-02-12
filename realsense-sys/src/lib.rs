@@ -74,7 +74,9 @@
 //! for your version of librealsense2 is different with regards to what the realsense-rust crate is
 //! expecting.
 //!
-#![allow(non_upper_case_globals)]
-#![allow(non_camel_case_types)]
-#![allow(non_snake_case)]
+
+// Allow all warnings here -- Bindgen generates this file, we really don't care about individual
+// warnings since we can't really do much about them, we'd have to fix bindgen upstream or
+// librealsense2 itself.
+#![allow(warnings)]
 include!(concat!(env!("CARGO_MANIFEST_DIR"), "/bindings/bindings.rs"));
