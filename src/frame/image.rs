@@ -28,6 +28,8 @@ pub struct ImageFrame<'a, Kind> {
     height: usize,
     stride: usize,
     bits_per_pixel: usize,
+    timestamp: f64,
+    timestamp_domain: Rs2TimestampDomain,
     frame_stream_profile: StreamProfile<'a>,
     data_size_in_bytes: usize,
     data: &'a std::os::raw::c_void,
@@ -79,6 +81,13 @@ impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
             let stride = sys::rs2_get_frame_stride_in_bytes(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetStride)?;
 
+            let timestamp = sys::rs2_get_frame_timestamp(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestamp)?;
+
+            let timestamp_domain =
+                sys::rs2_get_frame_timestamp_domain(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestampDomain)?;
+
             let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile)?;
 
@@ -100,6 +109,8 @@ impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
                 height: height as usize,
                 stride: stride as usize,
                 bits_per_pixel: bits_per_pixel as usize,
+                timestamp,
+                timestamp_domain: Rs2TimestampDomain::from_u32(timestamp_domain).unwrap(),
                 frame_stream_profile: profile,
                 data_size_in_bytes: size as usize,
                 data: ptr.as_ref().unwrap(),
@@ -144,11 +155,11 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
     }
 
     fn timestamp(&self) -> f64 {
-        unimplemented!();
+        self.timestamp
     }
 
     fn timestamp_domain(&self) -> Rs2TimestampDomain {
-        unimplemented!();
+        self.timestamp_domain
     }
 
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {

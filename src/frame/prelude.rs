@@ -23,6 +23,10 @@ pub enum FrameConstructionError {
     CouldNotGetStride(String),
     #[error("Could not get bits-per-pixel: {0}")]
     CouldNotGetBitsPerPixel(String),
+    #[error("Could not get timestamp: {0}")]
+    CouldNotGetTimestamp(String),
+    #[error("Could not get timestamp domain: {0}")]
+    CouldNotGetTimestampDomain(String),
     #[error("Could not get frame stream profile: {0}")]
     CouldNotGetFrameStreamProfile(String),
     #[error("Could not get data size (in bytes): {0}")]
