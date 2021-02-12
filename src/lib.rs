@@ -105,7 +105,7 @@
 //! hood). This allows the use of all the things that vectors provide, rather than making our own
 //! managed list types.
 //!
-//! #### Errors
+//! ### Errors
 //!
 //! The last thing we do with regards to keeping types Rusty concerns how we handle error types.
 //! More on this is written below.
