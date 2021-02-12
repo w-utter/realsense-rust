@@ -104,15 +104,15 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
 
-            let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
-            check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile)?;
-
             let timestamp = sys::rs2_get_frame_timestamp(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestamp)?;
 
             let timestamp_domain =
                 sys::rs2_get_frame_timestamp_domain(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestampDomain)?;
+
+            let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile)?;
 
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
