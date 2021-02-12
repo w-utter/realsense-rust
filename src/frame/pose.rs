@@ -13,6 +13,8 @@ use std::convert::TryFrom;
 
 pub struct PoseFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
+    timestamp: f64,
+    timestamp_domain: Rs2TimestampDomain,
     frame_stream_profile: StreamProfile<'a>,
     data: sys::rs2_pose,
     should_drop: bool,
@@ -105,6 +107,13 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
             let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile)?;
 
+            let timestamp = sys::rs2_get_frame_timestamp(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestamp)?;
+
+            let timestamp_domain =
+                sys::rs2_get_frame_timestamp_domain(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestampDomain)?;
+
             let nonnull_profile_ptr =
                 NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
             let profile = StreamProfile::try_from(nonnull_profile_ptr)?;
@@ -115,6 +124,8 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
 
             Ok(PoseFrame {
                 frame_ptr,
+                timestamp,
+                timestamp_domain: Rs2TimestampDomain::from_u32(timestamp_domain).unwrap(),
                 frame_stream_profile: profile,
                 data: pose_data.assume_init(),
                 should_drop: true,
@@ -139,11 +150,11 @@ impl<'a> FrameEx<'a> for PoseFrame<'a> {
     }
 
     fn timestamp(&self) -> f64 {
-        unimplemented!();
+        self.timestamp
     }
 
     fn timestamp_domain(&self) -> Rs2TimestampDomain {
-        unimplemented!();
+        self.timestamp_domain
     }
 
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
