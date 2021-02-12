@@ -200,17 +200,21 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
 /// This function will return different data conventions entirely depending on the device
 /// used to create the measurement.
 ///
-/// ## Gyroscope
+/// Gyroscope measurements are reported in radians.
 ///
-/// `motion[0]` - The pitch of the device in radians. Positive X is towards the right of the device.
-/// `motion[1]` - The yaw of the device in radians. Positive Y is upwards towards the top of the device.
-/// `motion[2]` - The roll of the device in radians. Positive Z is inwards towards the back of the device.
+/// Accelerometer readings are reported in m/s^2.
 ///
-/// ## Accelerometer
+/// # Intel RealSense D435i
 ///
-/// `motion[0]` - Acceleration in m/s^2. Positive X is towards the right of the device.
-/// `motion[1]` - Acceleration in m/s^2. Positive Y is downwards towards the bottom of the device.
-/// `motion[2]` - Acceleration in m/s^2. Positive Z is forwards away from the device.
+/// - `motion[0]`: Positive x-axis points to the right.
+/// - `motion[1]`: Positive y-axis points down.
+/// - `motion[2]`: Positive z-axis points forward.
+///
+/// # Intel RealSense T265
+///
+/// - Positive X direction is towards right imager.
+/// - Positive Y direction is upwards toward the top of the device.
+/// - Positive Z direction is inwards toward the back of the device.
 ///
 /// Read more about the coordinate frames of RealSense motion in
 /// [the RealSense docs](https://www.intelrealsense.com/how-to-getting-imu-data-from-d435i-and-t265/)
