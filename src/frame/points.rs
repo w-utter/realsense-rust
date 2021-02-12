@@ -1,13 +1,15 @@
 //! Type for representing a points frame
 
-use super::prelude::{FrameConstructionError, FrameEx, PointsFrameEx};
+use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx, PointsFrameEx};
 use crate::{
     check_rs2_error,
     common::*,
-    kind::{Extension, Rs2Extension},
+    kind::{Extension, Rs2Extension, Rs2FrameMetadata, Rs2TimestampDomain},
+    sensor::Sensor,
     stream::StreamProfile,
 };
 use anyhow::Result;
+use std::convert::TryFrom;
 
 pub struct PointsFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
@@ -27,6 +29,32 @@ impl<'a> Extension for PointsFrame<'a> {
 impl<'a> FrameEx<'a> for PointsFrame<'a> {
     fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
+    }
+
+    fn sensor(&self) -> Result<Sensor> {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let sensor_ptr = sys::rs2_get_frame_sensor(self.frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, CouldNotGetFrameSensorError)?;
+
+            Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
+        }
+    }
+
+    fn timestamp(&self) -> f64 {
+        unimplemented!();
+    }
+
+    fn timestamp_domain(&self) -> Rs2TimestampDomain {
+        unimplemented!();
+    }
+
+    fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
+        unimplemented!();
+    }
+
+    fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool {
+        unimplemented!();
     }
 
     unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
