@@ -1,13 +1,15 @@
 //! Type for representing a motion frame
 
-use super::prelude::{FrameConstructionError, MotionFrameEx};
+use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx, MotionFrameEx};
 use crate::{
     check_rs2_error,
     common::*,
     kind::{Extension, Rs2Extension},
+    sensor::Sensor,
     stream::StreamProfile,
 };
 use anyhow::Result;
+use std::convert::TryFrom;
 
 pub struct MotionFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
@@ -15,6 +17,7 @@ pub struct MotionFrame<'a> {
     data_size_in_bytes: usize,
     motion: [f32; 3],
     // data: &'a std::os::raw::c_void,
+    should_drop: bool,
 }
 
 impl<'a> Extension for MotionFrame<'a> {
@@ -26,14 +29,16 @@ impl<'a> Extension for MotionFrame<'a> {
 impl<'a> Drop for MotionFrame<'a> {
     fn drop(&mut self) {
         unsafe {
-            sys::rs2_release_frame(self.frame_ptr.as_ptr());
+            if self.should_drop {
+                sys::rs2_release_frame(self.frame_ptr.as_ptr());
+            }
         }
     }
 }
 
 unsafe impl<'a> Send for MotionFrame<'a> {}
 
-impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
+impl<'a> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
     type Error = anyhow::Error;
 
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
@@ -63,8 +68,31 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
                 frame_stream_profile: profile,
                 data_size_in_bytes: size as usize,
                 motion: [motion_raw[0], motion_raw[1], motion_raw[2]],
+                should_drop: true,
             })
         }
+    }
+}
+
+impl<'a> FrameEx<'a> for MotionFrame<'a> {
+    fn profile(&'a self) -> &'a StreamProfile<'a> {
+        &self.frame_stream_profile
+    }
+
+    fn sensor(&self) -> Result<Sensor> {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let sensor_ptr = sys::rs2_get_frame_sensor(self.frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, CouldNotGetFrameSensorError)?;
+
+            Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
+        }
+    }
+
+    unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
+        self.should_drop = false;
+
+        self.frame_ptr
     }
 }
 

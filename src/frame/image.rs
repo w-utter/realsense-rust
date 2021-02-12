@@ -1,8 +1,8 @@
 //! Type for representing a video frame taken from a color or IR camera.
 
 use super::prelude::{
-    DepthError, DepthFrameEx, DisparityError, DisparityFrameEx, FrameConstructionError, FrameEx,
-    VideoFrameEx, VideoFrameUnsafeEx, BITS_PER_BYTE,
+    CouldNotGetFrameSensorError, DepthError, DepthFrameEx, DisparityError, DisparityFrameEx,
+    FrameConstructionError, FrameEx, VideoFrameEx, VideoFrameUnsafeEx, BITS_PER_BYTE,
 };
 use super::{
     iter::ImageIter,
@@ -12,9 +12,11 @@ use crate::{
     check_rs2_error,
     common::*,
     kind::{Extension, Rs2Extension},
+    sensor::Sensor,
     stream::StreamProfile,
 };
 use anyhow::Result;
+use std::convert::TryFrom;
 
 pub struct Depth;
 pub struct Disparity;
@@ -59,7 +61,7 @@ impl<'a, K> Drop for ImageFrame<'a, K> {
 
 unsafe impl<'a, K> Send for ImageFrame<'a, K> {}
 
-impl<'a, K> std::convert::TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
+impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
     type Error = anyhow::Error;
 
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
@@ -129,6 +131,16 @@ impl<'a> Extension for VideoFrame<'a> {
 impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
     fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
+    }
+
+    fn sensor(&self) -> Result<Sensor> {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let sensor_ptr = sys::rs2_get_frame_sensor(self.frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, CouldNotGetFrameSensorError)?;
+
+            Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
+        }
     }
 
     unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {

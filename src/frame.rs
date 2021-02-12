@@ -13,7 +13,7 @@ pub use self::motion::MotionFrame;
 pub use composite::CompositeFrame;
 pub use pixel::PixelKind;
 pub use pose::PoseFrame;
-pub use prelude::{DepthFrameEx, DisparityFrameEx, VideoFrameEx, MotionFrameEx};
+pub use prelude::{DepthFrameEx, DisparityFrameEx, FrameEx, MotionFrameEx, VideoFrameEx};
 
 // UV texture coordinates.
 // #[repr(C)]

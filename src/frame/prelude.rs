@@ -1,7 +1,7 @@
 //! Trait for describing frame operations.
 
 use super::pixel::PixelKind;
-use crate::{common::*, stream::StreamProfile};
+use crate::{common::*, sensor::Sensor, stream::StreamProfile};
 use anyhow::Result;
 use realsense_sys as sys;
 use thiserror::Error;
@@ -38,8 +38,14 @@ pub enum DepthError {
 #[error("Could not get baseline. Reason: {0}")]
 pub struct DisparityError(pub String);
 
+#[derive(Error, Debug)]
+#[error("Could not get frame sensor. Reason: {0}")]
+pub struct CouldNotGetFrameSensorError(pub String);
+
 pub trait FrameEx<'a> {
     fn profile(&'a self) -> &'a StreamProfile<'a>;
+
+    fn sensor(&self) -> Result<Sensor>;
 
     unsafe fn get_owned_frame_ptr(self) -> NonNull<sys::rs2_frame>;
 }
