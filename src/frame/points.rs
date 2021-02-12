@@ -9,6 +9,7 @@ use crate::{
     stream::StreamProfile,
 };
 use anyhow::Result;
+use num_traits::ToPrimitive;
 use std::convert::TryFrom;
 
 pub struct PointsFrame<'a> {
@@ -56,7 +57,17 @@ impl<'a> FrameEx<'a> for PointsFrame<'a> {
     }
 
     fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool {
-        unimplemented!();
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+
+            let supports_metadata = sys::rs2_supports_frame_metadata(
+                self.frame_ptr.as_ptr(),
+                metadata_kind.to_u32().unwrap(),
+                &mut err,
+            );
+
+            err.as_ref().is_none() && supports_metadata != 0
+        }
     }
 
     unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
