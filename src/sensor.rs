@@ -117,10 +117,10 @@ impl Sensor {
                     &mut err,
                 );
 
-                if let Some(_) = err.as_ref() {
+                if err.as_ref().is_some() {
                     None
                 } else if is_extendable != 0 {
-                    Some(ext.clone())
+                    Some(*ext)
                 } else {
                     None
                 }
@@ -142,7 +142,7 @@ impl Sensor {
         }
     }
 
-    pub fn stream_profiles<'a>(&'a self) -> Vec<StreamProfile<'a>> {
+    pub fn stream_profiles(&self) -> Vec<StreamProfile> {
         let mut profiles = Vec::new();
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
