@@ -13,6 +13,8 @@ use std::convert::TryFrom;
 
 pub struct PointsFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
+    timestamp: f64,
+    timestamp_domain: Rs2TimestampDomain,
     frame_stream_profile: StreamProfile<'a>,
     num_points: usize,
     vertices_data_ptr: NonNull<sys::rs2_vertex>,
@@ -42,11 +44,11 @@ impl<'a> FrameEx<'a> for PointsFrame<'a> {
     }
 
     fn timestamp(&self) -> f64 {
-        unimplemented!();
+        self.timestamp
     }
 
     fn timestamp_domain(&self) -> Rs2TimestampDomain {
-        unimplemented!();
+        self.timestamp_domain
     }
 
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
@@ -85,6 +87,13 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PointsFrame<'a> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
 
+            let timestamp = sys::rs2_get_frame_timestamp(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestamp)?;
+
+            let timestamp_domain =
+                sys::rs2_get_frame_timestamp_domain(frame_ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, FrameConstructionError::CouldNotGetTimestampDomain)?;
+
             let profile_ptr = sys::rs2_get_frame_stream_profile(frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, FrameConstructionError::CouldNotGetFrameStreamProfile)?;
 
@@ -103,6 +112,8 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PointsFrame<'a> {
 
             Ok(PointsFrame {
                 frame_ptr,
+                timestamp,
+                timestamp_domain: Rs2TimestampDomain::from_u32(timestamp_domain).unwrap(),
                 frame_stream_profile: profile,
                 num_points: num_points as usize,
                 vertices_data_ptr: NonNull::new(vertices_ptr).unwrap(),
