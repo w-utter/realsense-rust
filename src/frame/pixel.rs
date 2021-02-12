@@ -63,14 +63,14 @@ pub enum PixelKind<'a> {
     },
 }
 
-pub(crate) unsafe fn get_pixel<'a>(
+pub(crate) unsafe fn get_pixel(
     format: Rs2Format,
     data_size_in_bytes: usize,
-    data: &'a c_void,
+    data: &c_void,
     stride_in_bytes: usize,
     col: usize,
     row: usize,
-) -> PixelKind<'a> {
+) -> PixelKind {
     let data_as_ptr = data as *const std::os::raw::c_void;
 
     // Realsense stores frame data in row-major format. Normally, we would offset into a
