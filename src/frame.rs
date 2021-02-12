@@ -15,4 +15,6 @@ pub use self::points::PointsFrame;
 pub use composite::CompositeFrame;
 pub use pixel::PixelKind;
 pub use pose::PoseFrame;
-pub use prelude::{DepthFrameEx, DisparityFrameEx, FrameEx, MotionFrameEx, VideoFrameEx};
+pub use prelude::{
+    DepthFrameEx, DisparityFrameEx, FrameEx, MotionFrameEx, PointsFrameEx, VideoFrameEx,
+};
