@@ -15,23 +15,23 @@ pub const BITS_PER_BYTE: i32 = 8;
 
 #[derive(Error, Debug)]
 pub enum FrameConstructionError {
-    #[error("Could not get frame width: {0}")]
+    #[error("Could not get frame width. Reason: {0}")]
     CouldNotGetWidth(String),
-    #[error("Could not get frame height: {0}")]
+    #[error("Could not get frame height. Reason: {0}")]
     CouldNotGetHeight(String),
-    #[error("Could not get stride: {0}")]
+    #[error("Could not get stride. Reason: {0}")]
     CouldNotGetStride(String),
-    #[error("Could not get bits-per-pixel: {0}")]
+    #[error("Could not get bits-per-pixel. Reason: {0}")]
     CouldNotGetBitsPerPixel(String),
-    #[error("Could not get timestamp: {0}")]
+    #[error("Could not get timestamp. Reason: {0}")]
     CouldNotGetTimestamp(String),
-    #[error("Could not get timestamp domain: {0}")]
+    #[error("Could not get timestamp domain. Reason: {0}")]
     CouldNotGetTimestampDomain(String),
-    #[error("Could not get frame stream profile: {0}")]
+    #[error("Could not get frame stream profile. Reason: {0}")]
     CouldNotGetFrameStreamProfile(String),
-    #[error("Could not get data size (in bytes): {0}")]
+    #[error("Could not get data size (in bytes). Reason: {0}")]
     CouldNotGetDataSize(String),
-    #[error("Could not get pointer to frame data: {0}")]
+    #[error("Could not get pointer to frame data. Reason: {0}")]
     CouldNotGetData(String),
 }
 
