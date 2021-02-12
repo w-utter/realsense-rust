@@ -14,9 +14,7 @@ use std::convert::TryFrom;
 pub struct MotionFrame<'a> {
     frame_ptr: NonNull<sys::rs2_frame>,
     frame_stream_profile: StreamProfile<'a>,
-    data_size_in_bytes: usize,
     motion: [f32; 3],
-    // data: &'a std::os::raw::c_void,
     should_drop: bool,
 }
 
@@ -66,7 +64,6 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
             Ok(MotionFrame {
                 frame_ptr,
                 frame_stream_profile: profile,
-                data_size_in_bytes: size as usize,
                 motion: [motion_raw[0], motion_raw[1], motion_raw[2]],
                 should_drop: true,
             })
