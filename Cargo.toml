@@ -1,5 +1,5 @@
 [package]
-authors = ["jerry73204 <jerry73204@gmail.com>"]
+authors = ["jerry73204 <jerry73204@gmail.com>", "Jeremy Steward <jeremy.steward@tangramvision.com>", "Brandon Minor <brandon@tangramvision.com>"]
 description = "High-level RealSense library in Rust"
 documentation = "https://docs.rs/realsense-rust/"
 edition = "2018"
