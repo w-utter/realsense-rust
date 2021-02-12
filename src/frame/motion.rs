@@ -1,4 +1,9 @@
-//! Type for representing a motion frame
+//! Type for representing a RealSense Motion frame
+//!
+//! Motion data for any Motion frame is held as a 3-vector. This data (retrieved
+//! through `motion()`) represents different things depending on the device recorded.
+//!
+//! See the [motion] docs for more.
 
 use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx, MotionFrameEx};
 use crate::{
@@ -12,22 +17,37 @@ use anyhow::Result;
 use num_traits::ToPrimitive;
 use std::convert::TryFrom;
 
+/// Holds raw data pointer and derived data from an rs2 Motion Frame
+///
+/// All fields in this struct are initialized during struct creation (via `try_from`).
+/// Everything called from here during runtime should be valid as long as the
+/// Frame is in scope... like normal Rust.
 pub struct MotionFrame<'a> {
+    /// The raw data pointer from the original rs2 frame.
     frame_ptr: NonNull<sys::rs2_frame>,
+    /// The timestamp of the frame.
     timestamp: f64,
+    /// The RealSense time domain from which the timestamp is derived.
     timestamp_domain: Rs2TimestampDomain,
+    /// The Stream Profile that created the frame.
     frame_stream_profile: StreamProfile<'a>,
+    /// The motion data held in this Motion Frame. Motion data is represented as a
+    /// 3-vector, with different conventions depending on the device recorded.
     motion: [f32; 3],
+    /// A boolean used during `Drop` calls. This allows for proper handling of the pointer
+    /// during ownership transfer.
     should_drop: bool,
 }
 
 impl<'a> Extension for MotionFrame<'a> {
+    /// Identifies the proper RS2 extension for Motion.
     fn extension() -> Rs2Extension {
         Rs2Extension::MotionFrame
     }
 }
 
 impl<'a> Drop for MotionFrame<'a> {
+    /// Drop the raw pointer stored with this struct whenever it goes out of scope.
     fn drop(&mut self) {
         unsafe {
             if self.should_drop {
@@ -42,6 +62,22 @@ unsafe impl<'a> Send for MotionFrame<'a> {}
 impl<'a> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
     type Error = anyhow::Error;
 
+    /// Attempt to create an Image frame of extension K from the raw `rs2_frame`. All
+    /// members of the ImageFrame struct are validated and populated during this call.
+    ///
+    /// # Errors
+    ///
+    /// There are a number of errors that may occur if the data in the `rs2_frame` is not
+    /// valid, all of type [FrameConstructionError].
+    ///
+    /// - [CouldNotGetTimestamp](FrameConstructionError::CouldNotGetTimestamp)
+    /// - [CouldNotGetTimestampDomain](FrameConstructionError::CouldNotGetTimestampDomain)
+    /// - [CouldNotGetFrameStreamProfile](FrameConstructionError::CouldNotGetFrameStreamProfile)
+    /// - [CouldNotGetDataSize](FrameConstructionError::CouldNotGetDataSize)
+    /// - [CouldNotGetData](FrameConstructionError::CouldNotGetData)
+    ///
+    /// See [FrameConstructionError] documentation for more details.
+    ///
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
@@ -85,10 +121,12 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
 }
 
 impl<'a> FrameEx<'a> for MotionFrame<'a> {
+    /// Get the stream profile of the object.
     fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 
+    /// Get the frame sensor.
     fn sensor(&self) -> Result<Sensor> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -98,15 +136,17 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
             Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
         }
     }
-
+    /// Get the timestamp.
     fn timestamp(&self) -> f64 {
         self.timestamp
     }
 
+    /// Get the RealSenseo timestamp domain for the current timestamp.
     fn timestamp_domain(&self) -> Rs2TimestampDomain {
         self.timestamp_domain
     }
 
+    /// Get the frame metadata.
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
         if !self.supports_metadata(metadata_kind) {
             return None;
@@ -126,6 +166,7 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
         }
     }
 
+    /// Test whether the metadata arguemnt is supported by the frame.
     fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -140,6 +181,13 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
         }
     }
 
+    /// Transfers ownership of the underlying frame data pointer
+    ///
+    /// # Safety
+    ///
+    /// This does not destroy the underlying frame pointer once self
+    /// goes out of scope. Instead, the program expects that whatever
+    /// object was assigned to by this function now manages the lifetime.
     unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
         self.should_drop = false;
 
@@ -147,6 +195,26 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
     }
 }
 
+/// Returns a 3-item array representing the sensor motion recorded in the Motion frame.
+///
+/// This function will return different data conventions entirely depending on the device
+/// used to create the measurement.
+///
+/// ## Gyroscope
+///
+/// motion[0] - The pitch of the device in radians. Positive X is towards the right of the device.
+/// motion[1] - The yaw of the device in radians. Positive Y is upwards towards the top of the device.
+/// motion[2] - The roll of the device in radians. Positive Z is inwards towards the back of the device.
+///
+/// ## Accelerometer
+///
+/// motion[0] - Acceleration in m/s^2. Positive X is towards the right of the device.
+/// motion[1] - Acceleration in m/s^2. Positive Y is downwards towards the bottom of the device.
+/// motion[2] - Acceleration in m/s^2. Positive Z is forwards away from the device.
+///
+/// Read more about the coordinate frames of RealSense motion in
+/// [the RealSense docs](https://www.intelrealsense.com/how-to-getting-imu-data-from-d435i-and-t265/)
+///
 impl<'a> MotionFrameEx<'a> for MotionFrame<'a> {
     fn motion(&self) -> &[f32; 3] {
         &self.motion
