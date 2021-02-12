@@ -53,7 +53,7 @@ pub trait FrameEx<'a> {
 pub trait DepthFrameEx {
     fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError>;
 
-    fn depth_units(&self) -> Result<f32, DepthError>;
+    fn depth_units(&self) -> Result<f32>;
 }
 
 pub trait DisparityFrameEx {
