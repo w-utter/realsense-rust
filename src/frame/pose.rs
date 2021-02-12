@@ -159,7 +159,22 @@ impl<'a> FrameEx<'a> for PoseFrame<'a> {
     }
 
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
-        unimplemented!();
+        if !self.supports_metadata(metadata_kind) {
+            return None;
+        }
+
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+
+            let val = sys::rs2_get_frame_metadata(
+                self.frame_ptr.as_ptr(),
+                metadata_kind.to_u32().unwrap(),
+                &mut err,
+            );
+            err.as_ref()?;
+
+            Some(val)
+        }
     }
 
     fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool {
