@@ -35,7 +35,7 @@ pub struct Disparity;
 /// A unit struct defining a Video frame.
 pub struct Video;
 
-/// A struct holding the raw pointer and derived metadata for an RS2 Image frame.
+/// A struct holding the raw pointer and derived data for an RS2 Image frame.
 ///
 /// All fields in this struct are initialized during struct creation (via `try_from`).
 /// Everything called from here during runtime should be valid as long as the
@@ -53,7 +53,7 @@ pub struct ImageFrame<'a, Kind> {
     bits_per_pixel: usize,
     /// The timestamp of the frame.
     timestamp: f64,
-    /// The RealSense domain from which the timestamp is derived.
+    /// The RealSense time domain from which the timestamp is derived.
     timestamp_domain: Rs2TimestampDomain,
     /// The Stream Profile that created the frame.
     frame_stream_profile: StreamProfile<'a>,
@@ -109,28 +109,28 @@ impl<'a, K> Drop for ImageFrame<'a, K> {
     }
 }
 
-/// Attempt to create an Image frame of extension K from the raw `rs2_frame`. All
-/// members of the ImageFrame struct are validated and populated during this call.
-///
-/// # Errors
-///
-/// There are a number of errors that may occur if the data in the `rs2_frame` is not
-/// valid, all of type [FrameConstructionError].
-///
-/// - [CouldNotGetWidth](FrameConstructionError::CouldNotGetWidth)
-/// - [CouldNotGetHeight](FrameConstructionError::CouldNotGetHeight)
-/// - [CouldNotGetBitsPerPixel](FrameConstructionError::CouldNotGetBitsPerPixel)
-/// - [CouldNotGetStride](FrameConstructionError::CouldNotGetStride)
-/// - [CouldNotGetTimestamp](FrameConstructionError::CouldNotGetTimestamp)
-/// - [CouldNotGetTimestampDomain](FrameConstructionError::CouldNotGetTimestampDomain)
-/// - [CouldNotGetFrameStreamProfile](FrameConstructionError::CouldNotGetFrameStreamProfile)
-/// - [CouldNotGetDataSize](FrameConstructionError::CouldNotGetDataSize)
-/// - [CouldNotGetData](FrameConstructionError::CouldNotGetData)
-///
-/// See [FrameConstructionError] documentation for more details.
-///
 impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
     type Error = anyhow::Error;
+    /// Attempt to create an Image frame of extension K from the raw `rs2_frame`. All
+    /// members of the ImageFrame struct are validated and populated during this call.
+    ///
+    /// # Errors
+    ///
+    /// There are a number of errors that may occur if the data in the `rs2_frame` is not
+    /// valid, all of type [FrameConstructionError].
+    ///
+    /// - [CouldNotGetWidth](FrameConstructionError::CouldNotGetWidth)
+    /// - [CouldNotGetHeight](FrameConstructionError::CouldNotGetHeight)
+    /// - [CouldNotGetBitsPerPixel](FrameConstructionError::CouldNotGetBitsPerPixel)
+    /// - [CouldNotGetStride](FrameConstructionError::CouldNotGetStride)
+    /// - [CouldNotGetTimestamp](FrameConstructionError::CouldNotGetTimestamp)
+    /// - [CouldNotGetTimestampDomain](FrameConstructionError::CouldNotGetTimestampDomain)
+    /// - [CouldNotGetFrameStreamProfile](FrameConstructionError::CouldNotGetFrameStreamProfile)
+    /// - [CouldNotGetDataSize](FrameConstructionError::CouldNotGetDataSize)
+    /// - [CouldNotGetData](FrameConstructionError::CouldNotGetData)
+    ///
+    /// See [FrameConstructionError] documentation for more details.
+    ///
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
@@ -186,22 +186,22 @@ impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
     }
 }
 
-/// Identifies the proper RS2 extension for Depth.
 impl<'a> Extension for DepthFrame<'a> {
+    /// Identifies the proper RS2 extension for Depth.
     fn extension() -> Rs2Extension {
         Rs2Extension::DepthFrame
     }
 }
 
-/// Identifies the proper RS2 extension for Disparity.
 impl<'a> Extension for DisparityFrame<'a> {
+    /// Identifies the proper RS2 extension for Disparity.
     fn extension() -> Rs2Extension {
         Rs2Extension::DisparityFrame
     }
 }
 
-/// Identifies the proper RS2 extension for Video Frames.
 impl<'a> Extension for VideoFrame<'a> {
+    /// Identifies the proper RS2 extension for Video Frames.
     fn extension() -> Rs2Extension {
         Rs2Extension::VideoFrame
     }
@@ -223,12 +223,13 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
             Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
         }
     }
+
     /// Get the timestamp.
     fn timestamp(&self) -> f64 {
         self.timestamp
     }
 
-    /// Get the timestamp domain (see [Rs2TimestampDomain]).
+    /// Get the RealSenseo timestamp domain for the current timestamp.
     fn timestamp_domain(&self) -> Rs2TimestampDomain {
         self.timestamp_domain
     }
