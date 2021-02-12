@@ -18,6 +18,7 @@ where
 {
     type Item = PixelKind<'a>;
 
+    /// Provides a row-major iterator over an entire Image.
     fn next(&mut self) -> Option<Self::Item> {
         if self.column >= self.frame.width() || self.row >= self.frame.height() {
             return None;
