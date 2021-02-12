@@ -1,22 +1,25 @@
-//! Composite frame type containing all other potential frame types
+//! Composite frame type containing all other potential frame types.
 //!
-//! This is what is typically delivered by the pipeline.
+//! Each Pipeline produces a synchronized collection of frames for all streams
+//! configured for its allocated device. These frames will be presented to the user as
+//! a collection via the Composite Frame type.
+//!
+//! This is typically what is delivered from the pipeline.
 
 use crate::{common::*, kind::Extension};
 use num_traits::ToPrimitive;
 
+/// A struct holding the raw poiner from an RS2 Composite frame type.
 pub struct CompositeFrame {
     pub(crate) ptr: NonNull<sys::rs2_frame>,
 }
 
 impl CompositeFrame {
-    /// Gets the number of frames included in the composite frame.
+    /// Gets the number of individual frames included in the composite frame.
     pub fn count(&self) -> usize {
         unsafe {
             let mut err: *mut sys::rs2_error = ptr::null_mut();
-
             let count = sys::rs2_embedded_frames_count(self.ptr.as_ptr(), &mut err);
-
             if NonNull::new(err).is_some() {
                 0
             } else {
@@ -25,12 +28,15 @@ impl CompositeFrame {
         }
     }
 
-    /// Checks if the composite-frame contains no sub-frames.
+    /// Checks if the Composite frame collection is empty.
     pub fn is_empty(&self) -> bool {
         self.count() == 0
     }
 
-    pub fn frames_of_kind<K>(&self) -> Vec<K>
+    /// Retrieves all frames in the Composite frame collection with the Extension provided.
+    ///
+    /// Returns `None` if the Composite frame collection does not contain the Extension
+    /// requested.
     pub fn frames_of_extension<E>(&self) -> Option<Vec<E>>
     where
         E: std::convert::TryFrom<NonNull<sys::rs2_frame>> + Extension,
@@ -73,6 +79,7 @@ impl CompositeFrame {
 }
 
 impl Drop for CompositeFrame {
+    /// Drop the raw pointer stored with this struct whenever it goes out of scope.
     fn drop(&mut self) {
         unsafe {
             sys::rs2_release_frame(self.ptr.as_ptr());
