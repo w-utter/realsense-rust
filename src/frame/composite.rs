@@ -31,8 +31,9 @@ impl CompositeFrame {
     }
 
     pub fn frames_of_kind<K>(&self) -> Vec<K>
+    pub fn frames_of_extension<E>(&self) -> Option<Vec<E>>
     where
-        K: std::convert::TryFrom<NonNull<sys::rs2_frame>> + Extension,
+        E: std::convert::TryFrom<NonNull<sys::rs2_frame>> + Extension,
     {
         let mut frames = Vec::new();
         for i in 0..self.count() {
@@ -52,18 +53,22 @@ impl CompositeFrame {
                     let mut err: *mut sys::rs2_error = ptr::null_mut();
                     let is_kind = sys::rs2_is_frame_extendable_to(
                         ptr.as_ptr(),
-                        K::extension().to_u32().unwrap(),
+                        E::extension().to_u32().unwrap(),
                         &mut err,
                     );
                     if NonNull::new(err).is_none() && is_kind != 0 {
-                        if let Ok(f) = K::try_from(ptr) {
+                        if let Ok(f) = E::try_from(ptr) {
                             frames.push(f);
                         }
                     }
                 }
             }
         }
-        frames
+        if frames.is_empty() {
+            None
+        } else {
+            Some(frames)
+        }
     }
 }
 
