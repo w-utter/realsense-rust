@@ -9,9 +9,19 @@
 use crate::{common::*, kind::Extension};
 use num_traits::ToPrimitive;
 
-/// A struct holding the raw poiner from an RS2 Composite frame type.
+/// A struct holding the raw pointer from an RS2 Composite frame type.
 pub struct CompositeFrame {
+    /// The raw data pointer from the original rs2 frame
     pub(crate) ptr: NonNull<sys::rs2_frame>,
+}
+
+impl Drop for CompositeFrame {
+    /// Drop the raw pointer stored with this struct whenever it goes out of scope.
+    fn drop(&mut self) {
+        unsafe {
+            sys::rs2_release_frame(self.ptr.as_ptr());
+        }
+    }
 }
 
 impl CompositeFrame {
@@ -74,15 +84,6 @@ impl CompositeFrame {
             None
         } else {
             Some(frames)
-        }
-    }
-}
-
-impl Drop for CompositeFrame {
-    /// Drop the raw pointer stored with this struct whenever it goes out of scope.
-    fn drop(&mut self) {
-        unsafe {
-            sys::rs2_release_frame(self.ptr.as_ptr());
         }
     }
 }
