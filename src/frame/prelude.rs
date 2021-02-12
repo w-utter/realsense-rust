@@ -1,7 +1,12 @@
 //! Trait for describing frame operations.
 
 use super::pixel::PixelKind;
-use crate::{common::*, sensor::Sensor, stream::StreamProfile};
+use crate::{
+    common::*,
+    kind::{Rs2FrameMetadata, Rs2TimestampDomain},
+    sensor::Sensor,
+    stream::StreamProfile,
+};
 use anyhow::Result;
 use realsense_sys as sys;
 use thiserror::Error;
@@ -46,6 +51,14 @@ pub trait FrameEx<'a> {
     fn profile(&'a self) -> &'a StreamProfile<'a>;
 
     fn sensor(&self) -> Result<Sensor>;
+
+    fn timestamp(&self) -> f64;
+
+    fn timestamp_domain(&self) -> Rs2TimestampDomain;
+
+    fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong>;
+
+    fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool;
 
     unsafe fn get_owned_frame_ptr(self) -> NonNull<sys::rs2_frame>;
 }

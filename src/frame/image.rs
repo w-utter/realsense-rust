@@ -11,7 +11,7 @@ use super::{
 use crate::{
     check_rs2_error,
     common::*,
-    kind::{Extension, Rs2Extension},
+    kind::{Extension, Rs2Extension, Rs2FrameMetadata, Rs2Option, Rs2TimestampDomain},
     sensor::Sensor,
     stream::StreamProfile,
 };
@@ -143,6 +143,22 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
         }
     }
 
+    fn timestamp(&self) -> f64 {
+        unimplemented!();
+    }
+
+    fn timestamp_domain(&self) -> Rs2TimestampDomain {
+        unimplemented!();
+    }
+
+    fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
+        unimplemented!();
+    }
+
+    fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool {
+        unimplemented!();
+    }
+
     unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
         self.should_drop = false;
 
@@ -187,7 +203,7 @@ impl<'a> DepthFrameEx for DisparityFrame<'a> {
         }
     }
 
-    fn depth_units(&self) -> Result<f32, DepthError> {
+    fn depth_units(&self) -> Result<f32> {
         let sensor = self.sensor()?;
         let depth_units = sensor.get_option(Rs2Option::DepthUnits)?;
         Ok(depth_units)

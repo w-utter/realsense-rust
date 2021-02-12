@@ -4,7 +4,7 @@ use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameE
 use crate::{
     check_rs2_error,
     common::*,
-    kind::{Extension, Rs2Extension},
+    kind::{Extension, Rs2Extension, Rs2FrameMetadata, Rs2TimestampDomain},
     sensor::Sensor,
     stream::StreamProfile,
 };
@@ -136,6 +136,22 @@ impl<'a> FrameEx<'a> for PoseFrame<'a> {
 
             Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
         }
+    }
+
+    fn timestamp(&self) -> f64 {
+        unimplemented!();
+    }
+
+    fn timestamp_domain(&self) -> Rs2TimestampDomain {
+        unimplemented!();
+    }
+
+    fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
+        unimplemented!();
+    }
+
+    fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool {
+        unimplemented!();
     }
 
     unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
