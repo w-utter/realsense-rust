@@ -1,7 +1,7 @@
 //! Defines the frame type including sensor data.
 
 mod composite;
-pub mod image;
+mod image;
 mod iter;
 mod motion;
 mod pixel;
