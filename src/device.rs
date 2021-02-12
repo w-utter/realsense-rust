@@ -65,15 +65,7 @@ impl Device {
             }
 
             for i in 0..len {
-                let sensor_ptr = sys::rs2_create_sensor(self.sensor_list_ptr.as_ptr(), i, &mut err);
-
-                if err.as_ref().is_some() {
-                    continue;
-                }
-
-                let nonnull_ptr = NonNull::new(sensor_ptr).unwrap();
-
-                match Sensor::try_from(nonnull_ptr) {
+                match Sensor::try_create(&self.sensor_list_ptr, i) {
                     Ok(s) => {
                         sensors.push(s);
                     }
