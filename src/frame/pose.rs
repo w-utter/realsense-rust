@@ -1,4 +1,8 @@
 //! Type for representing a pose frame taken from an IMU or pose-sensor.
+//!
+//! A Pose frame holds information describing the motion and position of a device
+//! at a point in time. See the member and function declarations for how these values are stored
+//! and retrieved.
 
 use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx};
 use crate::{
@@ -12,53 +16,73 @@ use anyhow::Result;
 use num_traits::ToPrimitive;
 use std::convert::TryFrom;
 
+/// Holds information describing the motion and position of a device at a point in time.
 pub struct PoseFrame<'a> {
+    /// The raw data pointer from the original rs2 frame.
     frame_ptr: NonNull<sys::rs2_frame>,
+    /// The timestamp of the frame.
     timestamp: f64,
+    /// The RealSense time domain from which the timestamp is derived.
     timestamp_domain: Rs2TimestampDomain,
+    /// The Stream Profile that created the frame.
     frame_stream_profile: StreamProfile<'a>,
+    // The rs2 Pose data
     data: sys::rs2_pose,
+    /// A boolean used during `Drop` calls. This allows for proper handling of the pointer
+    /// during ownership transfer.
     should_drop: bool,
 }
 
+/// Used by the tracker and mapper to estimate the certainty in this pose.
 pub enum Confidence {
+    /// The tracker/mapper has failed. This information is probably not reliable.
     Failed,
+    /// The tracker/mapper confidence is low.
     Low,
+    /// The tracker/mapper confidence is marginal.
     Medium,
+    /// The tracker/mapper confidence is high.
     High,
 }
 
 impl<'a> PoseFrame<'a> {
+    /// X, Y, Z values of translation, in meters (relative to initial position)
     pub fn translation(&self) -> [f32; 3] {
         let sys::rs2_vector { x, y, z } = self.data.translation;
         [x, y, z]
     }
 
+    /// X, Y, Z values of velocity, in meters/sec
     pub fn velocity(&self) -> [f32; 3] {
         let sys::rs2_vector { x, y, z } = self.data.velocity;
         [x, y, z]
     }
 
+    /// X, Y, Z values of acceleration, in meters/sec^2
     pub fn acceleration(&self) -> [f32; 3] {
         let sys::rs2_vector { x, y, z } = self.data.acceleration;
         [x, y, z]
     }
 
+    /// Qi, Qj, Qk, Qr components of rotation as represented in quaternion rotation (relative to initial position)
     pub fn rotation(&self) -> [f32; 4] {
         let sys::rs2_quaternion { x, y, z, w } = self.data.rotation;
         [x, y, z, w]
     }
 
+    /// X, Y, Z values of angular velocity, in radians/sec
     pub fn angular_velocity(&self) -> [f32; 3] {
         let sys::rs2_vector { x, y, z } = self.data.angular_velocity;
         [x, y, z]
     }
 
+    /// X, Y, Z values of angular acceleration, in radians/sec^2
     pub fn angular_acceleration(&self) -> [f32; 3] {
         let sys::rs2_vector { x, y, z } = self.data.angular_acceleration;
         [x, y, z]
     }
 
+    /// Pose confidence from [Confidence::Failed] to [Confidence::High]
     pub fn tracker_confidence(&self) -> Confidence {
         match self.data.tracker_confidence {
             0x0 => Confidence::Failed,
@@ -69,6 +93,7 @@ impl<'a> PoseFrame<'a> {
         }
     }
 
+    /// Pose map confidence from [Confidence::Failed] to [Confidence::High]
     pub fn mapper_confidence(&self) -> Confidence {
         match self.data.tracker_confidence {
             0x0 => Confidence::Failed,
@@ -81,6 +106,7 @@ impl<'a> PoseFrame<'a> {
 }
 
 impl<'a> Drop for PoseFrame<'a> {
+    /// Drop the raw pointer stored with this struct whenever it goes out of scope.
     fn drop(&mut self) {
         unsafe {
             if self.should_drop {
