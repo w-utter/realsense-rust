@@ -187,33 +187,28 @@ impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
 }
 
 impl<'a> Extension for DepthFrame<'a> {
-    /// Identifies the proper RS2 extension for Depth.
     fn extension() -> Rs2Extension {
         Rs2Extension::DepthFrame
     }
 }
 
 impl<'a> Extension for DisparityFrame<'a> {
-    /// Identifies the proper RS2 extension for Disparity.
     fn extension() -> Rs2Extension {
         Rs2Extension::DisparityFrame
     }
 }
 
 impl<'a> Extension for VideoFrame<'a> {
-    /// Identifies the proper RS2 extension for Video Frames.
     fn extension() -> Rs2Extension {
         Rs2Extension::VideoFrame
     }
 }
 
 impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
-    /// Get the stream profile of the object.
     fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 
-    /// Get the frame sensor.
     fn sensor(&self) -> Result<Sensor> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -224,17 +219,14 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
         }
     }
 
-    /// Get the timestamp.
     fn timestamp(&self) -> f64 {
         self.timestamp
     }
 
-    /// Get the RealSenseo timestamp domain for the current timestamp.
     fn timestamp_domain(&self) -> Rs2TimestampDomain {
         self.timestamp_domain
     }
 
-    /// Get the frame metadata.
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
         if !self.supports_metadata(metadata_kind) {
             return None;
@@ -254,7 +246,6 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
         }
     }
 
-    /// Test whether the passed metadata is supported by the frame.
     fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -269,13 +260,6 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
         }
     }
 
-    /// Transfers ownership of the underlying frame data pointer
-    ///
-    /// # Safety
-    ///
-    /// This does not destroy the underlying frame pointer once self
-    /// goes out of scope. Instead, the program expects that whatever
-    /// object was assigned to by this function now manages the lifetime.
     unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
         self.should_drop = false;
 
@@ -284,7 +268,6 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
 }
 
 impl<'a> DepthFrameEx for DepthFrame<'a> {
-    /// Given the 2D depth coordinate (x,y) provide the corresponding depth in metric units.
     fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
@@ -299,7 +282,6 @@ impl<'a> DepthFrameEx for DepthFrame<'a> {
         }
     }
 
-    /// Get the metric units currently used for reporting depth information.
     fn depth_units(&self) -> Result<f32> {
         let sensor = self.sensor()?;
         let depth_units = sensor.get_option(Rs2Option::DepthUnits)?;
@@ -308,7 +290,6 @@ impl<'a> DepthFrameEx for DepthFrame<'a> {
 }
 
 impl<'a> DepthFrameEx for DisparityFrame<'a> {
-    /// Given the 2D depth coordinate (x,y) provide the corresponding depth in metric units.
     fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
@@ -323,7 +304,6 @@ impl<'a> DepthFrameEx for DisparityFrame<'a> {
         }
     }
 
-    /// Get the metric units currently used for reporting depth information.
     fn depth_units(&self) -> Result<f32> {
         let sensor = self.sensor()?;
         let depth_units = sensor.get_option(Rs2Option::DepthUnits)?;
@@ -332,7 +312,6 @@ impl<'a> DepthFrameEx for DisparityFrame<'a> {
 }
 
 impl<'a> DisparityFrameEx for DisparityFrame<'a> {
-    /// Get the baseline used during construction of the Disparity frame
     fn baseline(&self) -> Result<f32, DisparityError> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
@@ -345,12 +324,6 @@ impl<'a> DisparityFrameEx for DisparityFrame<'a> {
 }
 
 impl<'a, K> VideoFrameUnsafeEx<'a> for ImageFrame<'a, K> {
-    /// Get a pixel value from the Video Frame.
-    ///
-    /// # Safety
-    ///
-    /// This makes a call directly to the underlying data pointer inherited from
-    /// the `rs2_frame`.
     fn get_unchecked(&'a self, col: usize, row: usize) -> PixelKind<'a> {
         unsafe {
             get_pixel(
@@ -364,39 +337,32 @@ impl<'a, K> VideoFrameUnsafeEx<'a> for ImageFrame<'a, K> {
         }
     }
 
-    /// Get the stride of this Video frame's pixel in bytes.
     fn stride(&self) -> usize {
         self.stride
     }
 
-    /// Get the bits per pixel.
     fn bits_per_pixel(&self) -> usize {
         self.bits_per_pixel
     }
 
-    /// Get the size of the data in this Video frame in bytes.
     fn get_raw_size(&self) -> usize {
         self.data_size_in_bytes
     }
 
-    /// Get a reference to the raw data held by this Video frame.
     fn get_raw(&'a self) -> &'a std::os::raw::c_void {
         self.data
     }
 }
 
 impl<'a, K> VideoFrameEx<'a> for ImageFrame<'a, K> {
-    /// Get the width of this Video frame in pixels
     fn width(&self) -> usize {
         self.width
     }
 
-    /// Get the height of this Video frame in pixels
     fn height(&self) -> usize {
         self.height
     }
 
-    /// Given a row and column index, Get a pixel value from this frame.
     fn get(&'a self, col: usize, row: usize) -> Option<PixelKind<'a>> {
         if col >= self.width || row >= self.height {
             None
