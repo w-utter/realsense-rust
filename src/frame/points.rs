@@ -1,6 +1,8 @@
-//! Type for representing a points frame
+//! Type for representing a Points frame.
+//!
+//! A Points frame is a RealSense point cloud storage class.
 
-use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx, PointsFrameEx};
+use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx};
 use crate::{
     check_rs2_error,
     common::*,
@@ -12,14 +14,28 @@ use anyhow::Result;
 use num_traits::ToPrimitive;
 use std::convert::TryFrom;
 
+/// Holds the raw data pointer and derived data for an RS2 Points frame.
+///
+/// All fields in this struct are initialized during struct creation (via `try_from`).
+/// Everything called from here during runtime should be valid as long as the
+/// Frame is in scope... like normal Rust.
 pub struct PointsFrame<'a> {
+    /// The raw data pointer from the original rs2 frame.
     frame_ptr: NonNull<sys::rs2_frame>,
+    /// The timestamp of the frame.
     timestamp: f64,
+    /// The RealSense time domain from which the timestamp is derived.
     timestamp_domain: Rs2TimestampDomain,
+    /// The Stream Profile that created the frame.
     frame_stream_profile: StreamProfile<'a>,
+    /// The number of points represented in the Points frame.
     num_points: usize,
+    /// The raw pointer to the vertex data.
     vertices_data_ptr: NonNull<sys::rs2_vertex>,
+    /// The raw pointer to the texture data.
     texture_data_ptr: NonNull<sys::rs2_pixel>,
+    /// A boolean used during `Drop` calls. This allows for proper handling of the pointer
+    /// during ownership transfer.
     should_drop: bool,
 }
 
@@ -93,11 +109,12 @@ impl<'a> FrameEx<'a> for PointsFrame<'a> {
 }
 
 impl<'a> Drop for PointsFrame<'a> {
+    /// Drop the raw pointer stored with this struct whenever it goes out of scope.
     fn drop(&mut self) {
         unsafe {
             if self.should_drop {
-                // Vertices and Texture pointer lifetimes are managed by the
-                // frame, so dropping the frame should suffice.
+                // Note: Vertices and Texture pointer lifetimes are managed by the
+                // frame itself, so dropping the frame should suffice.
                 sys::rs2_release_frame(self.frame_ptr.as_ptr());
             }
         }
@@ -150,7 +167,8 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PointsFrame<'a> {
     }
 }
 
-impl<'a> PointsFrameEx<'a> for PointsFrame<'a> {
+impl<'a> PointsFrame<'a> {
+    /// Gets vertices of the point cloud.
     fn vertices(&'a self) -> &'a [sys::rs2_vertex] {
         unsafe {
             slice::from_raw_parts::<sys::rs2_vertex>(
@@ -160,11 +178,15 @@ impl<'a> PointsFrameEx<'a> for PointsFrame<'a> {
         }
     }
 
-    // SAFETY:
-    // The librealsense2 C++ API directly casts the rs2_pixel* returned from
-    // rs2_get_frame_texture_coordinates() into a texture_coordinate*, thereby
-    // re-interpreting [[c_int; 2]; N] as [[c_float; 2]; N] values.
-    // Note that C does not generally guarantee that sizeof(int) == sizeof(float).
+    /// Retrieve the texture coordinates (uv map) for the point cloud.
+    ///
+    /// # SAFETY
+    ///
+    /// The librealsense2 C++ API directly casts the rs2_pixel* returned from
+    /// rs2_get_frame_texture_coordinates() into a texture_coordinate*, thereby
+    /// re-interpreting [[c_int; 2]; N] as [[c_float; 2]; N] values.
+    /// Note that C does not generally guarantee that sizeof(int) == sizeof(float).
+    ///
     fn texture_coordinates(&'a self) -> &'a [[f32; 2]] {
         unsafe {
             slice::from_raw_parts::<[f32; 2]>(
@@ -173,6 +195,8 @@ impl<'a> PointsFrameEx<'a> for PointsFrame<'a> {
             )
         }
     }
+
+    /// Gets number of points in the point cloud.
     fn points_count(&self) -> usize {
         self.num_points
     }
