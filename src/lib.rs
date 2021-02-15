@@ -81,7 +81,7 @@
 //! the ability to be "extended" to support certain interfaces. This is masking some of the
 //! inheritance based structure from the underlying C++ code that is the basis of librealsense2. In
 //! any case, extensions to frames, sensors, filters, etc. are all made possible through the
-//! `rs2_extension` enumeration (See [`enum.Rs2Extension.html`] for how we handle this on the Rust
+//! `rs2_extension` enumeration (See [Rs2Extension] for how we handle this on the Rust
 //! side). What's unfortunate here is that all these extensions are contained within a single
 //! enumeration, as opposed to having a separate enumeration for frames, sensors, etc. This is
 //! awkward to use when actually programming, as the natural way to know exactly what type you have
@@ -105,12 +105,12 @@
 //! hood). This allows the use of all the things that vectors provide, rather than making our own
 //! managed list types.
 //!
-//! ### Errors
+//! ## Errors
 //!
 //! The last thing we do with regards to keeping types Rusty concerns how we handle error types.
 //! More on this is written below.
 //!
-//! ## Make lifetimes obvious for all data through the system
+//! ### Make lifetimes obvious for all data through the system
 //!
 //! The librealsense2 C-API does not always do the best job at explaining object lifetimes. It is
 //! important to understand that librealsense2 is first and foremost implemented in C++, and the
@@ -135,7 +135,7 @@
 //! report](https://gitlab.com/tangram-vision-oss/realsense-rust/-/issues) if you've found some
 //! scenario in which an object you retained is holding onto invalid or otherwise deleted pointers.
 //!
-//! ## Make invalid states unrepresentable
+//! ### Make invalid states unrepresentable
 //!
 //! The main way we aim to do this is by understanding the lifetimes of the low-level pointers that
 //! the realsense-sys library returns (described above). However, many of the types in the system
@@ -154,7 +154,7 @@
 //! rs2_error`. Most of these checks are null-checks on the input pointer type, but not all.
 //!
 //! On the Rust side, we catch / check these `*mut rs2_error` types internally, and then signal
-//! this back to the user by returning a `Result` value of some kind. Anyways, we cache some of the
+//! this back to the user by returning a `Result` value of some kind. We cache some of the
 //! metadata or small fields in our Rust structs so that we can reduce the amount of `Result`
 //! checks that need to be done by the user, and likewise to keep relevant data cached as long as
 //! possible.
@@ -180,7 +180,7 @@
 //! to build applications on top of realsense-rust while not sacrificing the speed or efficiency of
 //! the C or C++ librealsense2 APIs.
 //!
-//! ## Make error cases explicit and differentiable
+//! ### Make error cases explicit and differentiable
 //!
 //! In cases where you might get an error from the low-level API you'll find that the high-level
 //! Rust wrapper provided by realsense-rust will return a `Result` of some kind. We do not shy away
