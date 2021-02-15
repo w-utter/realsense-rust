@@ -1,11 +1,11 @@
-//! Type for representing a RealSense Motion frame
+//! Type for representing a RealSense Motion frame.
 //!
 //! Motion data for any Motion frame is held as a 3-vector. This data (retrieved
 //! through `motion()`) represents different things depending on the device recorded.
 //!
 //! See the docs for [MotionFrame::motion] for more.
 
-use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx, MotionFrameEx};
+use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx};
 use crate::{
     check_rs2_error,
     common::*,
@@ -17,7 +17,7 @@ use anyhow::Result;
 use num_traits::ToPrimitive;
 use std::convert::TryFrom;
 
-/// Holds raw data pointer and derived data from an rs2 Motion Frame
+/// Holds the raw data pointer and derived data from an RS2 Motion Frame.
 ///
 /// All fields in this struct are initialized during struct creation (via `try_from`).
 /// Everything called from here during runtime should be valid as long as the
@@ -33,6 +33,7 @@ pub struct MotionFrame<'a> {
     frame_stream_profile: StreamProfile<'a>,
     /// The motion data held in this Motion Frame. Motion data is represented as a
     /// 3-vector, with different conventions depending on the device recorded.
+    /// See the [motion](MotionFrame::motion) function for more documentation.
     motion: [f32; 3],
     /// A boolean used during `Drop` calls. This allows for proper handling of the pointer
     /// during ownership transfer.
@@ -40,7 +41,6 @@ pub struct MotionFrame<'a> {
 }
 
 impl<'a> Extension for MotionFrame<'a> {
-    /// Identifies the proper RS2 extension for Motion.
     fn extension() -> Rs2Extension {
         Rs2Extension::MotionFrame
     }
@@ -121,12 +121,10 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
 }
 
 impl<'a> FrameEx<'a> for MotionFrame<'a> {
-    /// Get the stream profile of the object.
     fn profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 
-    /// Get the frame sensor.
     fn sensor(&self) -> Result<Sensor> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -136,17 +134,14 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
             Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
         }
     }
-    /// Get the timestamp.
     fn timestamp(&self) -> f64 {
         self.timestamp
     }
 
-    /// Get the RealSenseo timestamp domain for the current timestamp.
     fn timestamp_domain(&self) -> Rs2TimestampDomain {
         self.timestamp_domain
     }
 
-    /// Get the frame metadata.
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong> {
         if !self.supports_metadata(metadata_kind) {
             return None;
@@ -166,7 +161,6 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
         }
     }
 
-    /// Test whether the metadata arguemnt is supported by the frame.
     fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -181,13 +175,6 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
         }
     }
 
-    /// Transfers ownership of the underlying frame data pointer
-    ///
-    /// # Safety
-    ///
-    /// This does not destroy the underlying frame pointer once self
-    /// goes out of scope. Instead, the program expects that whatever
-    /// object was assigned to by this function now manages the lifetime.
     unsafe fn get_owned_frame_ptr(mut self) -> NonNull<sys::rs2_frame> {
         self.should_drop = false;
 
@@ -195,32 +182,32 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
     }
 }
 
-/// Returns a 3-item array representing the sensor motion recorded in the Motion frame.
-///
-/// This function will return different data conventions entirely depending on the device
-/// used to create the measurement.
-///
-/// Gyroscope measurements are reported in radians.
-///
-/// Accelerometer readings are reported in m/s^2.
-///
-/// # Intel RealSense D435i
-///
-/// - `motion[0]`: Positive x-axis points to the right.
-/// - `motion[1]`: Positive y-axis points down.
-/// - `motion[2]`: Positive z-axis points forward.
-///
-/// # Intel RealSense T265
-///
-/// - `motion[0]`: Positive X direction is towards right imager.
-/// - `motion[1]`: Positive Y direction is upwards toward the top of the device.
-/// - `motion[2]`: Positive Z direction is inwards toward the back of the device.
-///
-/// Read more about the coordinate frames of RealSense motion in
-/// [the RealSense docs](https://www.intelrealsense.com/how-to-getting-imu-data-from-d435i-and-t265/)
-///
-impl<'a> MotionFrameEx<'a> for MotionFrame<'a> {
-    fn motion(&self) -> &[f32; 3] {
+impl<'a> MotionFrame<'a> {
+    /// Returns a 3-item array representing the sensor motion recorded in the Motion frame.
+    ///
+    /// This function will return different data conventions entirely depending on the device
+    /// used to create the measurement.
+    ///
+    /// Gyroscope measurements are reported in radians.
+    ///
+    /// Accelerometer readings are reported in m/s^2.
+    ///
+    /// # Intel RealSense D435i
+    ///
+    /// - `motion[0]`: Positive x-axis points to the right.
+    /// - `motion[1]`: Positive y-axis points down.
+    /// - `motion[2]`: Positive z-axis points forward.
+    ///
+    /// # Intel RealSense T265
+    ///
+    /// - `motion[0]`: Positive X direction is towards right imager.
+    /// - `motion[1]`: Positive Y direction is upwards toward the top of the device.
+    /// - `motion[2]`: Positive Z direction is inwards toward the back of the device.
+    ///
+    /// Read more about the coordinate frames of RealSense motion in
+    /// [the RealSense docs](https://www.intelrealsense.com/how-to-getting-imu-data-from-d435i-and-t265/)
+    ///
+    pub fn motion(&self) -> &[f32; 3] {
         &self.motion
     }
 }
