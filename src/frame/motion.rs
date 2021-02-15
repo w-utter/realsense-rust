@@ -212,9 +212,9 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
 ///
 /// # Intel RealSense T265
 ///
-/// - Positive X direction is towards right imager.
-/// - Positive Y direction is upwards toward the top of the device.
-/// - Positive Z direction is inwards toward the back of the device.
+/// - `motion[0]`: Positive X direction is towards right imager.
+/// - `motion[1]`: Positive Y direction is upwards toward the top of the device.
+/// - `motion[2]`: Positive Z direction is inwards toward the back of the device.
 ///
 /// Read more about the coordinate frames of RealSense motion in
 /// [the RealSense docs](https://www.intelrealsense.com/how-to-getting-imu-data-from-d435i-and-t265/)
