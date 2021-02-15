@@ -1,4 +1,6 @@
 //! Type for representing the various pixel formats.
+//!
+//! Correct formats are determined by the device type and the streaming profile.
 
 use crate::kind::Rs2Format;
 use std::{os::raw::c_void, slice};
@@ -6,63 +8,51 @@ use std::{os::raw::c_void, slice};
 // For detailed pixel format information, see
 // https://github.com/IntelRealSense/librealsense/blob/4f37f2ef0874c1716bce223b20e46d00532ffb04/wrappers/nodejs/index.js#L3865
 pub enum PixelKind<'a> {
-    Yuyv {
-        y: &'a u8,
-        u: &'a u8,
-        v: &'a u8,
-    },
-    Uyvy {
-        y: &'a u8,
-        u: &'a u8,
-        v: &'a u8,
-    },
-    Bgr8 {
-        b: &'a u8,
-        g: &'a u8,
-        r: &'a u8,
-    },
+    /// 32-bit y0, u, y1, v data for every two pixels.
+    /// Similar to YUV422 but packed in a different order - https://en.wikipedia.org/wiki/YUV
+    Yuyv { y: &'a u8, u: &'a u8, v: &'a u8 },
+    /// Similar to the standard YUYV pixel format, but packed in a different order.
+    Uyvy { y: &'a u8, u: &'a u8, v: &'a u8 },
+    /// 8-bit blue, green, and red channels -- suitable for OpenCV.
+    Bgr8 { b: &'a u8, g: &'a u8, r: &'a u8 },
+    /// 8-bit blue, green, and red channels + constant alpha channel equal to FF.
     Bgra8 {
         b: &'a u8,
         g: &'a u8,
         r: &'a u8,
         a: &'a u8,
     },
-    Rgb8 {
-        r: &'a u8,
-        g: &'a u8,
-        b: &'a u8,
-    },
+    /// 8-bit red, green and blue channels.
+    Rgb8 { r: &'a u8, g: &'a u8, b: &'a u8 },
+    /// 8-bit red, green and blue channels + constant alpha channel equal to FF.
     Rgba8 {
         r: &'a u8,
         g: &'a u8,
         b: &'a u8,
         a: &'a u8,
     },
-    Raw8 {
-        val: &'a u8,
-    },
-    Y8 {
-        y: &'a u8,
-    },
-    Y16 {
-        y: &'a u16,
-    },
-    Z16 {
-        depth: &'a u16,
-    },
-    Distance {
-        distance: &'a f32,
-    },
-    Disparity32 {
-        disparity: &'a f32,
-    },
-    Xyz32f {
-        x: &'a f32,
-        y: &'a f32,
-        z: &'a f32,
-    },
+    /// 8-bit raw image.
+    Raw8 { val: &'a u8 },
+    /// 8-bit per-pixel grayscale image.
+    Y8 { y: &'a u8 },
+    /// 16-bit per-pixel grayscale image.
+    Y16 { y: &'a u16 },
+    /// 16-bit linear depth values. The depth is meters is equal to depth scale * pixel value.
+    Z16 { depth: &'a u16 },
+    /// TODO: Unknown...
+    Distance { distance: &'a f32 },
+    /// 32-bit float-point disparity values. Depth->Disparity conversion : Disparity = Baseline*FocalLength/Depth.
+    Disparity32 { disparity: &'a f32 },
+    /// 32-bit floating point 3D coordinates.
+    Xyz32f { x: &'a f32, y: &'a f32, z: &'a f32 },
 }
 
+/// Method to retrieve a pixel from a given rs2_frame in the requested Pixel format.
+///
+/// # Safety
+///
+/// This method should only be called from the ImageFrame types themselves, as this
+/// is the only place where proper pointer management happens.
 pub(crate) unsafe fn get_pixel(
     format: Rs2Format,
     data_size_in_bytes: usize,
