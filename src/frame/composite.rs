@@ -9,7 +9,7 @@
 use crate::{common::*, kind::Extension};
 use num_traits::ToPrimitive;
 
-/// A struct holding the raw pointer from an RS2 Composite frame type.
+/// Holds the raw data pointer from an RS2 Composite frame type.
 pub struct CompositeFrame {
     /// The raw data pointer from the original rs2 frame
     pub(crate) ptr: NonNull<sys::rs2_frame>,

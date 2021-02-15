@@ -35,7 +35,7 @@ pub struct Disparity;
 /// A unit struct defining a Video frame.
 pub struct Video;
 
-/// A struct holding the raw pointer and derived data for an RS2 Image frame.
+/// Holds the raw data pointer and derived data for an RS2 Image frame.
 ///
 /// All fields in this struct are initialized during struct creation (via `try_from`).
 /// Everything called from here during runtime should be valid as long as the
