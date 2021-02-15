@@ -1,15 +1,16 @@
 //! Type for representing the various pixel formats.
 //!
 //! Correct formats are determined by the device type and the streaming profile.
+//! For detailed pixel format information, check the
+//! [Intel RealSense SDK code](https://github.com/IntelRealSense/librealsense/blob/4f37f2ef0874c1716bce223b20e46d00532ffb04/wrappers/nodejs/index.js#L3865).
 
 use crate::kind::Rs2Format;
 use std::{os::raw::c_void, slice};
 
-// For detailed pixel format information, see
-// https://github.com/IntelRealSense/librealsense/blob/4f37f2ef0874c1716bce223b20e46d00532ffb04/wrappers/nodejs/index.js#L3865
+/// Type for representing the various pixel formats.
 pub enum PixelKind<'a> {
-    /// 32-bit y0, u, y1, v data for every two pixels.
-    /// Similar to YUV422 but packed in a different order - https://en.wikipedia.org/wiki/YUV
+    /// 32-bit `y0, u, y1, v` data for every two pixels.
+    /// Similar to YUV422 but packed in a different order - see [this link](https://en.wikipedia.org/wiki/YUV).
     Yuyv { y: &'a u8, u: &'a u8, v: &'a u8 },
     /// Similar to the standard YUYV pixel format, but packed in a different order.
     Uyvy { y: &'a u8, u: &'a u8, v: &'a u8 },
