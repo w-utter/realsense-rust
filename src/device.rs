@@ -86,7 +86,7 @@ impl Device {
             // since we're storing a `NonNull` type.
             //
             // It's a bit weird, but we don't need to actually check the error. Because if the
-            // devcie is null and this fails: you have an invalid device (so panic?) but if it
+            // device is null and this fails: you have an invalid device (so panic?) but if it
             // succeeds, the device is no longer valid and we need to drop it. This is why this
             // interface takes ownership of `self`.
             sys::rs2_hardware_reset(self.device_ptr.as_ptr(), &mut err);
