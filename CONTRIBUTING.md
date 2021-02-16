@@ -9,7 +9,7 @@ Tangram Vision hosts all of its Open-source Software (OSS) on both GitLab and Gi
 ## tl;dr
 
 - Use the GitLab repositories to submit issues and merge requests.
-- Check the documentation.V
+- Check the documentation.
 - Bugs and enhancements should be categorized and explained to the best of the submitter's ability; guidelines below.
 - Merge Requests must pass unit and integration tests before accepted.
 - Follow our commit message guidelines.
@@ -30,7 +30,7 @@ All bug reports are tracked in the repository's GitLab Issues. Good bug reports 
 
 ## Enhancements
 
-Enhancements desecribe new features or quality-of-life improvements that would make the software experience better.
+Enhancements desecribe new features or minor quality-of-life improvements that would make the software experience better.
 
 Before submitting an enhancement, we encourage you to read the documentation. The feature you'd like to see might already be implemented! If this is the case, it's not the code that should be improved; it's the documentation (something that can also be reported as an enhancement).
 
@@ -46,7 +46,7 @@ We're excited that you're excited to contribute! Excitement all around, really.
 
 If you are a first-time contributor, we encourage you to look at the open Issues and start there. Accessible Issues should be labeled as such for those looking to jump into the mix.
 
-We at Tangram are meticulous about our Continuous Integration (CI) practices. Anything we can automate, we can! This includes code lint runs, documentation checks, and unit testing across all files. Similarly, contributions will have to follow good CI:
+We at Tangram are meticulous about our Continuous Integration (CI) practices. Anything we can automate, we can! In the case of our Rust repositories, this includes code lint runs, documentation checks, and unit testing across all files. Similarly, contributions will have to follow good CI:
 
 - Bug fixes and new functionality should include new unit and integration tests demonstrating its validity and use.
 - All MRs must pass the Tangram testing suite before they are eligible for merge.
