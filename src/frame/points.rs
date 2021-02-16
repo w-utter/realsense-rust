@@ -169,7 +169,7 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PointsFrame<'a> {
 
 impl<'a> PointsFrame<'a> {
     /// Gets vertices of the point cloud.
-    fn vertices(&'a self) -> &'a [sys::rs2_vertex] {
+    pub fn vertices(&'a self) -> &'a [sys::rs2_vertex] {
         unsafe {
             slice::from_raw_parts::<sys::rs2_vertex>(
                 self.vertices_data_ptr.as_ptr(),
@@ -187,7 +187,7 @@ impl<'a> PointsFrame<'a> {
     /// re-interpreting [[c_int; 2]; N] as [[c_float; 2]; N] values.
     /// Note that C does not generally guarantee that sizeof(int) == sizeof(float).
     ///
-    fn texture_coordinates(&'a self) -> &'a [[f32; 2]] {
+    pub fn texture_coordinates(&'a self) -> &'a [[f32; 2]] {
         unsafe {
             slice::from_raw_parts::<[f32; 2]>(
                 self.texture_data_ptr.as_ptr().cast::<[f32; 2]>(),
@@ -197,7 +197,7 @@ impl<'a> PointsFrame<'a> {
     }
 
     /// Gets number of points in the point cloud.
-    fn points_count(&self) -> usize {
+    pub fn points_count(&self) -> usize {
         self.num_points
     }
 }
