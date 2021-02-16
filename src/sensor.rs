@@ -4,15 +4,15 @@ use crate::{
     check_rs2_error,
     device::{Device, DeviceConstructionError},
     kind::{
-        extension::SENSOR_EXTENSIONS, OptionNotSupportedError, Rs2CameraInfo, Rs2Extension,
-        Rs2Option,
+        extension::SENSOR_EXTENSIONS, OptionSetError, Rs2CameraInfo, Rs2Extension, Rs2Option,
+        Rs2OptionRange,
     },
     stream::StreamProfile,
 };
 use anyhow::Result;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
-use std::{convert::TryFrom, ffi::CStr, ptr::NonNull};
+use std::{convert::TryFrom, ffi::CStr, mem::MaybeUninit, ptr::NonNull};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -128,7 +128,11 @@ impl Sensor {
             .collect()
     }
 
-    pub fn get_option(&self, option: Rs2Option) -> Result<f32, OptionNotSupportedError> {
+    pub fn get_option(&self, option: Rs2Option) -> Option<f32> {
+        if !self.supports_option(option) {
+            return None;
+        }
+
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let val = sys::rs2_get_option(
@@ -137,8 +141,104 @@ impl Sensor {
                 &mut err,
             );
 
-            check_rs2_error!(err, OptionNotSupportedError)?;
-            Ok(val)
+            if err.as_ref().is_none() {
+                Some(val)
+            } else {
+                None
+            }
+        }
+    }
+
+    pub fn set_option(&mut self, option: Rs2Option, value: f32) -> Result<(), OptionSetError> {
+        if !self.supports_option(option) {
+            return Err(OptionSetError::OptionNotSupported);
+        }
+
+        if self.is_option_read_only(option) {
+            return Err(OptionSetError::OptionIsReadOnly);
+        }
+
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            sys::rs2_set_option(
+                self.sensor_ptr.as_ptr().cast::<sys::rs2_options>(),
+                option.to_u32().unwrap(),
+                value,
+                &mut err,
+            );
+            check_rs2_error!(err, OptionSetError::CouldNotSetOption)?;
+
+            Ok(())
+        }
+    }
+
+    pub fn get_option_range(&self, option: Rs2Option) -> Option<Rs2OptionRange> {
+        if !self.supports_option(option) {
+            return None;
+        }
+
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+
+            let mut min = MaybeUninit::uninit();
+            let mut max = MaybeUninit::uninit();
+            let mut step = MaybeUninit::uninit();
+            let mut default = MaybeUninit::uninit();
+
+            sys::rs2_get_option_range(
+                self.sensor_ptr.as_ptr().cast::<sys::rs2_options>(),
+                option.to_u32().unwrap(),
+                min.as_mut_ptr(),
+                max.as_mut_ptr(),
+                step.as_mut_ptr(),
+                default.as_mut_ptr(),
+                &mut err,
+            );
+
+            if err.as_ref().is_none() {
+                Some(Rs2OptionRange {
+                    min: min.assume_init(),
+                    max: max.assume_init(),
+                    step: step.assume_init(),
+                    default: default.assume_init(),
+                })
+            } else {
+                None
+            }
+        }
+    }
+
+    pub fn supports_option(&self, option: Rs2Option) -> bool {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let val = sys::rs2_supports_option(
+                self.sensor_ptr.as_ptr().cast::<sys::rs2_options>(),
+                option.to_u32().unwrap(),
+                &mut err,
+            );
+
+            if err.as_ref().is_none() {
+                val != 0
+            } else {
+                false
+            }
+        }
+    }
+
+    pub fn is_option_read_only(&self, option: Rs2Option) -> bool {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let val = sys::rs2_is_option_read_only(
+                self.sensor_ptr.as_ptr().cast::<sys::rs2_options>(),
+                option.to_u32().unwrap(),
+                &mut err,
+            );
+
+            if err.as_ref().is_none() {
+                val != 0
+            } else {
+                false
+            }
         }
     }
 

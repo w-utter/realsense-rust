@@ -6,8 +6,14 @@ use std::ffi::CStr;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-#[error("Option not supported on this sensor. {0}")]
-pub struct OptionNotSupportedError(pub String);
+pub enum OptionSetError {
+    #[error("Option not supported on this sensor.")]
+    OptionNotSupported,
+    #[error("Option is read only.")]
+    OptionIsReadOnly,
+    #[error("Could not set option. Reason: {0}")]
+    CouldNotSetOption(String),
+}
 
 /// The enumeration of options.
 #[repr(u32)]
@@ -98,4 +104,17 @@ impl ToString for Rs2Option {
     fn to_string(&self) -> String {
         self.to_str().to_owned()
     }
+}
+
+/// The range of available values of a supported option.
+pub struct Rs2OptionRange {
+    /// The minimum value which will be accepted for this option
+    pub min: f32,
+    /// The maximum value which will be accepted for this option
+    pub max: f32,
+    /// The granularity of options which accept discrete values, or zero if the option accepts
+    /// continuous values
+    pub step: f32,
+    /// The default value of the option
+    pub default: f32,
 }

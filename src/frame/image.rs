@@ -284,7 +284,11 @@ impl<'a> DepthFrameEx for DepthFrame<'a> {
 
     fn depth_units(&self) -> Result<f32> {
         let sensor = self.sensor()?;
-        let depth_units = sensor.get_option(Rs2Option::DepthUnits)?;
+        let depth_units = sensor
+            .get_option(Rs2Option::DepthUnits)
+            .ok_or(anyhow::anyhow!(
+                "Option is not supported on the sensor for this frame type."
+            ))?;
         Ok(depth_units)
     }
 }
@@ -306,7 +310,11 @@ impl<'a> DepthFrameEx for DisparityFrame<'a> {
 
     fn depth_units(&self) -> Result<f32> {
         let sensor = self.sensor()?;
-        let depth_units = sensor.get_option(Rs2Option::DepthUnits)?;
+        let depth_units = sensor
+            .get_option(Rs2Option::DepthUnits)
+            .ok_or(anyhow::anyhow!(
+                "Option is not supported on the sensor for this frame type."
+            ))?;
         Ok(depth_units)
     }
 }

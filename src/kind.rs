@@ -18,7 +18,7 @@ pub use extension::Rs2Extension;
 pub use format::Rs2Format;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use hole_filling::HoleFillingMode;
-pub use option::{OptionNotSupportedError, Rs2Option};
+pub use option::{OptionSetError, Rs2Option, Rs2OptionRange};
 pub use persistence_control::PersistenceControl;
 pub use prelude::*;
 pub use stream_kind::Rs2StreamKind;
