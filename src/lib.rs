@@ -71,7 +71,7 @@
 //! librealsense2 are bound as `u32` values with `bindgen`, we do a fairly small transformation
 //! back and forth between the two representations. C-style "strings" (read: `const char*`) are
 //! likewise converted into the Rust native
-//! [`std::ffi::CStr`](https://doc.rust-lang.org/std/ffi/struct.CString.html).
+//! [`std::ffi::CStr`](std::ffi::CStr).
 //!
 //! ### Provide concrete types rather than "extensible" pointers
 //!

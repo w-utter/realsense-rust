@@ -34,9 +34,9 @@
 //! the stream profile obtained via the frame types. The streams will have the same unique
 //! identifier if they correspond to the same stream.
 //!
-//! See [the `StreamProfile` type](struct.StreamProfile.html) for more information.
+//! See [the `StreamProfile` type](crate::stream::StreamProfile) for more information.
 //!
 
 mod profile;
 
-pub use profile::StreamProfile;
+pub use profile::{DataError, StreamConstructionError, StreamProfile};
