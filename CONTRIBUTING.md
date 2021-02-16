@@ -4,12 +4,14 @@ Thanks for contributing!
 
 Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md), adapted from the Contributor Covenant v2.0. By participating in this project you agree to abide by its terms.
 
-Tangram Vision hosts all of its Open-source Software (OSS) on both GitLab and GitHub. We do this for accessibility's sake; however, we run everything out of GitLab. All contributions should be made through GitLab; issues and merge requests made through GitHub will be ported to GitLab as well.
+Tangram Vision hosts all of its Open-source Software (OSS) on both GitLab and GitHub. We do this for accessibility's sake. However, these repositories are maintained in GitLab; all bugs and contributions should therefore be made through GitLab.
+
+Visit the [repository homepage on GitLab here](https://gitlab.com/tangram-vision-oss/realsense-rust).
 
 ## tl;dr
 
-- Use the GitLab repositories to submit issues and merge requests.
-- Check the documentation.V
+- Use the GitLab repository (above) to submit issues and merge requests.
+- Check the documentation.
 - Bugs and enhancements should be categorized and explained to the best of the submitter's ability; guidelines below.
 - Merge Requests must pass unit and integration tests before accepted.
 - Follow our commit message guidelines.
