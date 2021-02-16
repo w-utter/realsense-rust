@@ -10,7 +10,7 @@ use realsense_sys as sys;
 use std::{marker::PhantomData, mem::MaybeUninit, ptr::NonNull};
 use thiserror::Error;
 
-/// Type describing errors that can occur as when trying to construct a stream profile.
+/// Type describing errors that can occur when trying to construct a stream profile.
 ///
 /// Follows the standard pattern of errors where the enum variant describes what the low-level code
 /// was attempting to do while the string carried alongside describes the underlying error message
