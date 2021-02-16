@@ -56,13 +56,11 @@ You should be able to run all these tests from the comfort of your own machine.
 
 ## Commit messages
 
-A repo with a strong culture of great commit messages is a wonderful thing. Commit messages are the number one way of communicating intent and context across a project. If you have a well-organized history, it is fairly straightforward to ascertain the context behind why code is written the way it is. From this, it is usually much easier to fix a bug, or get in the mindset of whoever wrote the code you're looking at (even if that person is you). [This article](https://chris.beams.io/posts/git-commit/) by Chris Beams does a good job explaining this philosophy.
-
-Great commit messages are the difference between being able to understand the context surrounding code in the past, or being out in the weeds on your own. Your commit log is meant to help describe to folks why changes were made, but before that, describing what the changes are.
+Commit messages are the number one way of communicating intent and context across a project. If you have a well-organized history, it is fairly straightforward to ascertain the context behind why code is written the way it is. From this, it is usually much easier to fix a bug, or get in the mindset of whoever wrote the code you're looking at (even if that person is you). [This article](https://chris.beams.io/posts/git-commit/) by Chris Beams does a good job explaining this philosophy.
 
 The subject line of a commit message is the *what*, and the body is the *why*.
 
-### Seven steps towards a good commit message:
+### Seven guidelines for a good commit message:
 
 1. [Separate subject from body with a blank line](https://chris.beams.io/posts/git-commit/#separate)
 2. [Limit the subject line to 50 characters](https://chris.beams.io/posts/git-commit/#limit-50)
