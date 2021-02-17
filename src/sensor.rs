@@ -16,8 +16,7 @@ use crate::{
     check_rs2_error,
     device::{Device, DeviceConstructionError},
     kind::{
-        extension::SENSOR_EXTENSIONS, OptionSetError, Rs2CameraInfo, Rs2Extension, Rs2Option,
-        Rs2OptionRange,
+        OptionSetError, Rs2CameraInfo, Rs2Extension, Rs2Option, Rs2OptionRange, SENSOR_EXTENSIONS,
     },
     stream::StreamProfile,
 };

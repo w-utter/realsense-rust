@@ -2,7 +2,7 @@
 
 mod camera_info;
 mod color_scheme;
-pub mod extension;
+mod extension;
 mod format;
 mod frame_metadata;
 mod hole_filling;
@@ -14,7 +14,10 @@ mod timestamp_domain;
 
 pub use camera_info::Rs2CameraInfo;
 pub use color_scheme::ColorScheme;
-pub use extension::Rs2Extension;
+pub use extension::{
+    Rs2Extension, DEVICE_EXTENSIONS, FILTER_EXTENSIONS, FRAME_EXTENSIONS, MISC_EXTENSIONS,
+    PROFILE_EXTENSIONS, SENSOR_EXTENSIONS,
+};
 pub use format::Rs2Format;
 pub use frame_metadata::Rs2FrameMetadata;
 pub use hole_filling::HoleFillingMode;
