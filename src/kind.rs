@@ -36,7 +36,7 @@
 //! approach that this is unlikely to be something that is undertaken, so we don't provide any
 //! direct means to iterate through every value of each enum variant.
 //!
-//! If you truly need to do this, do let us know! There are crates that make this possible and
+//! If you truly need to do this, let us know! There are crates that make this possible and
 //! integrate well with native Rust iterators, but we have chosen to avoid the extra depedencies
 //! for this crate.
 //!
