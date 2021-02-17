@@ -1,8 +1,88 @@
-//! The enumeration of extensions.
-
+//! Possible interface extensions as an enumeration.
 use num_derive::{FromPrimitive, ToPrimitive};
 use realsense_sys as sys;
 
+/// Enumeration of interface extensions
+///
+/// `Rs2Extension` is an enumeration type that lists all the possible underlying interfaces that
+/// librealsense2 types can be extended to. Most of the types in librealsense2 are pointers to
+/// opaque structs, and there is little in the way of type variety or distinction.
+///
+/// Instead, generic types are effectively type-tagged through the use of an extension enums which
+/// represent the true ontological distinction between e.g. two frames or two sensors.
+///
+/// Here, rather than try to separate these into different types at the Rust level, we do a simple
+/// mapping to the underlying C-enum values. The API does not try to expose these where possible
+/// and attempts to hide this behind traits. See the [`Extension`](crate::kind::Extension) trait for one way in which we do
+/// this.
+///
+/// Extensions as listed are effectively the "types" of underlying data in the librealsense2
+/// system. However, there is only one extension enum, whereas there are plenty of categories of
+/// types available. We try to split these into sets of categories:
+///
+/// # Sensor extensions:
+///
+/// * [`Rs2Extension::ColorSensor`]
+/// * [`Rs2Extension::MotionSensor`]
+/// * [`Rs2Extension::FishEyeSensor`]
+/// * [`Rs2Extension::DepthSensor`]
+/// * [`Rs2Extension::DepthStereoSensor`]
+/// * [`Rs2Extension::SoftwareSensor`]
+/// * [`Rs2Extension::PoseSensor`]
+/// * [`Rs2Extension::L500DepthSensor`]
+/// * [`Rs2Extension::Tm2Sensor`]
+///
+/// # Frame extensions:
+///
+/// * [`Rs2Extension::VideoFrame`]
+/// * [`Rs2Extension::MotionFrame`]
+/// * [`Rs2Extension::CompositeFrame`]
+/// * [`Rs2Extension::DepthFrame`]
+/// * [`Rs2Extension::DisparityFrame`]
+/// * [`Rs2Extension::PoseFrame`]
+/// * [`Rs2Extension::Points`]
+///
+/// # Filter (processing block) extensions:
+///
+/// * [`Rs2Extension::DecimationFilter`]
+/// * [`Rs2Extension::ThresholdFilter`]
+/// * [`Rs2Extension::DisparityFilter`]
+/// * [`Rs2Extension::SpatialFilter`]
+/// * [`Rs2Extension::TemporalFilter`]
+/// * [`Rs2Extension::HoleFillingFilter`]
+/// * [`Rs2Extension::ZeroOrderFilter`]
+/// * [`Rs2Extension::RecommendedFilters`]
+///
+/// # Profile extensions:
+///
+/// * [`Rs2Extension::VideoProfile`]
+/// * [`Rs2Extension::MotionProfile`]
+/// * [`Rs2Extension::PoseProfile`]
+///
+/// # Device extensions:
+///
+/// * [`Rs2Extension::SoftwareDevice`]
+/// * [`Rs2Extension::UpdateDevice`]
+/// * [`Rs2Extension::AutoCalibratedDevice`]
+///
+/// # Miscellaneous extensions:
+///
+/// * [`Rs2Extension::AdvancedMode`]
+/// * [`Rs2Extension::Record`]
+/// * [`Rs2Extension::Playback`]
+/// * [`Rs2Extension::Pose`]
+/// * [`Rs2Extension::WheelOdometer`]
+/// * [`Rs2Extension::GlobalTimer`]
+/// * [`Rs2Extension::Updatable`]
+/// * [`Rs2Extension::Tm2`]
+/// * [`Rs2Extension::Unknown`]
+/// * [`Rs2Extension::Debug`]
+/// * [`Rs2Extension::Info`]
+/// * [`Rs2Extension::Motion`]
+/// * [`Rs2Extension::Options`]
+/// * [`Rs2Extension::Video`]
+/// * [`Rs2Extension::Roi`]
+///
 #[repr(u32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2Extension {
