@@ -178,7 +178,7 @@ impl Sensor {
 
     /// List of all valid sensor extensions that apply to this sensor.
     ///
-    /// See the [list of possible sensor extensions](crate::kind::extension::SENSOR_EXTENSIONS) for
+    /// See the [list of possible sensor extensions](crate::kind::SENSOR_EXTENSIONS) for
     /// more info.
     pub fn extensions(&self) -> Vec<Rs2Extension> {
         SENSOR_EXTENSIONS
