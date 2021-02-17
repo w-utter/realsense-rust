@@ -27,6 +27,37 @@
 //! In practice, most of the time you shouldn't need to wrap or unwrap `u32` values, and the API
 //! should never spit one out at you.
 //!
+//! ## What happened to `COUNT`?
+//!
+//! If you read through the librealsense2 C-API, you'll find that every enumeration has a "count"
+//! entry. Placing a "count" entry at the end of a C-style enum is a common pattern used to be able
+//! to iterate over every possible enum variant. This works because C treats every enum variant as
+//! a distinct `u32` value, instead of a distinct variant of a type. In this crate, we take the
+//! approach that this is unlikely to be something that is undertaken, so we don't provide any
+//! direct means to iterate through every value of each enum variant.
+//!
+//! If you truly need to do this, do let us know! There are crates that make this possible and
+//! integrate well with native Rust iterators, but we have chosen to avoid the extra depedencies
+//! for this crate.
+//!
+//! If you need a workaround, you can always use the lower-level `realsense-sys` API:
+//!
+//! ```rust
+//! use num_traits::FromPrimitive;
+//! use realsense_sys as sys;
+//! use crate::kind::Rs2CameraInfo;
+//!
+//! fn main() {
+//!     for i in 0..sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT {
+//!         println!(
+//!             "The enum variant {:?} corresponds to the u32 value {}",
+//!             Rs2CameraInfo::from_u32(i).unwrap(),
+//!             i,
+//!         );
+//!     }
+//! }
+//! ```
+//!
 
 mod camera_info;
 mod color_scheme;
