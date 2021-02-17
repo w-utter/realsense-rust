@@ -1,9 +1,9 @@
-//! Common traits used throughout the crate.
+//! Common traits provided by the `kind` module.
 
 use super::extension::Rs2Extension;
 
-/// A type describing the data held within an rs2_frame.
+/// A trait for describing types that characterized by a single [`Rs2Extension`].
 pub trait Extension {
-    /// Identifies the proper RS2 extension for the type implementing this trait.
+    /// Identifies the corresponding [`Rs2Extension`] for the type implementing this trait.
     fn extension() -> Rs2Extension;
 }
