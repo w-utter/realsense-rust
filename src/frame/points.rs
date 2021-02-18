@@ -126,6 +126,23 @@ unsafe impl<'a> Send for PointsFrame<'a> {}
 impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PointsFrame<'a> {
     type Error = anyhow::Error;
 
+    /// Attempt to construct a points frame from a raw pointer to `rs2_frame`
+    ///
+    /// All members of the `PointsFrame` struct are validated and populated during this call.
+    ///
+    /// # Errors
+    ///
+    /// There are a number of errors that may occur if the data in the `rs2_frame` is not valid, all
+    /// of type [`FrameConstructionError`].
+    ///
+    /// - [`CouldNotGetTimestamp`](FrameConstructionError::CouldNotGetTimestamp)
+    /// - [`CouldNotGetTimestampDomain`](FrameConstructionError::CouldNotGetTimestampDomain)
+    /// - [`CouldNotGetFrameStreamProfile`](FrameConstructionError::CouldNotGetFrameStreamProfile)
+    /// - [`CouldNotGetPointCount`](FrameConstructionError::CouldNotGetPointCount)
+    /// - [`CouldNotGetData`](FrameConstructionError::CouldNotGetData)
+    ///
+    /// See [`FrameConstructionError`] documentation for more details.
+    ///
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();

@@ -111,25 +111,27 @@ impl<'a, K> Drop for ImageFrame<'a, K> {
 
 impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
     type Error = anyhow::Error;
-    /// Attempt to create an Image frame of extension K from the raw `rs2_frame`. All
-    /// members of the ImageFrame struct are validated and populated during this call.
+
+    /// Attempt to construct an Image frame of extension K from the raw `rs2_frame`.
+    ///
+    /// All members of the `ImageFrame` struct are validated and populated during this call.
     ///
     /// # Errors
     ///
-    /// There are a number of errors that may occur if the data in the `rs2_frame` is not
-    /// valid, all of type [FrameConstructionError].
+    /// There are a number of errors that may occur if the data in the `rs2_frame` is not valid,
+    /// all of type [`FrameConstructionError`].
     ///
-    /// - [CouldNotGetWidth](FrameConstructionError::CouldNotGetWidth)
-    /// - [CouldNotGetHeight](FrameConstructionError::CouldNotGetHeight)
-    /// - [CouldNotGetBitsPerPixel](FrameConstructionError::CouldNotGetBitsPerPixel)
-    /// - [CouldNotGetStride](FrameConstructionError::CouldNotGetStride)
-    /// - [CouldNotGetTimestamp](FrameConstructionError::CouldNotGetTimestamp)
-    /// - [CouldNotGetTimestampDomain](FrameConstructionError::CouldNotGetTimestampDomain)
-    /// - [CouldNotGetFrameStreamProfile](FrameConstructionError::CouldNotGetFrameStreamProfile)
-    /// - [CouldNotGetDataSize](FrameConstructionError::CouldNotGetDataSize)
-    /// - [CouldNotGetData](FrameConstructionError::CouldNotGetData)
+    /// - [`CouldNotGetWidth`](FrameConstructionError::CouldNotGetWidth)
+    /// - [`CouldNotGetHeight`](FrameConstructionError::CouldNotGetHeight)
+    /// - [`CouldNotGetBitsPerPixel`](FrameConstructionError::CouldNotGetBitsPerPixel)
+    /// - [`CouldNotGetStride`](FrameConstructionError::CouldNotGetStride)
+    /// - [`CouldNotGetTimestamp`](FrameConstructionError::CouldNotGetTimestamp)
+    /// - [`CouldNotGetTimestampDomain`](FrameConstructionError::CouldNotGetTimestampDomain)
+    /// - [`CouldNotGetFrameStreamProfile`](FrameConstructionError::CouldNotGetFrameStreamProfile)
+    /// - [`CouldNotGetDataSize`](FrameConstructionError::CouldNotGetDataSize)
+    /// - [`CouldNotGetData`](FrameConstructionError::CouldNotGetData)
     ///
-    /// See [FrameConstructionError] documentation for more details.
+    /// See [`FrameConstructionError`] documentation for more details.
     ///
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {

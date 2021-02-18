@@ -82,7 +82,7 @@ impl<'a> PoseFrame<'a> {
         [x, y, z]
     }
 
-    /// Pose confidence from [Confidence::Failed] to [Confidence::High]
+    /// Pose confidence from [`Confidence::Failed`] to [`Confidence::High`]
     pub fn tracker_confidence(&self) -> Confidence {
         match self.data.tracker_confidence {
             0x0 => Confidence::Failed,
@@ -93,7 +93,7 @@ impl<'a> PoseFrame<'a> {
         }
     }
 
-    /// Pose map confidence from [Confidence::Failed] to [Confidence::High]
+    /// Pose map confidence from [`Confidence::Failed`] to [`Confidence::High`]
     pub fn mapper_confidence(&self) -> Confidence {
         match self.data.tracker_confidence {
             0x0 => Confidence::Failed,
@@ -127,6 +127,22 @@ impl<'a> Extension for PoseFrame<'a> {
 impl<'a> TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
     type Error = anyhow::Error;
 
+    /// Attempt to construct a PoseFrame from the raw pointer to `rs2_frame`
+    ///
+    /// All members of the `PoseFrame` struct are validated and populated during this call.
+    ///
+    /// # Errors
+    ///
+    /// There are a number of errors that may occur if the data in the `rs2_frame` is not valid, all
+    /// of type [`FrameConstructionError`].
+    ///
+    /// - [`CouldNotGetTimestamp`](FrameConstructionError::CouldNotGetTimestamp)
+    /// - [`CouldNotGetTimestampDomain`](FrameConstructionError::CouldNotGetTimestampDomain)
+    /// - [`CouldNotGetFrameStreamProfile`](FrameConstructionError::CouldNotGetFrameStreamProfile)
+    /// - [`CouldNotGetData`](FrameConstructionError::CouldNotGetData)
+    ///
+    /// See [`FrameConstructionError`] documentation for more details.
+    ///
     fn try_from(frame_ptr: NonNull<sys::rs2_frame>) -> Result<Self, Self::Error> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
