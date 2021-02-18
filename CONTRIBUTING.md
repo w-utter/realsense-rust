@@ -54,7 +54,7 @@ We at Tangram are meticulous about our Continuous Integration (CI) practices. An
 - All MRs must pass the Tangram testing suite before they are eligible for merge.
 - Note clearly in the MR if hardware is required for testing. We will not merge a request until this testing is verified as passing.
 
-You should be able to run all these tests from the comfort of your own machine.
+You should be able to run all these tests from the comfort of your own machine. These steps will usually be described in a TESTING.md in the top directory.
 
 ## Commit messages
 
