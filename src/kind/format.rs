@@ -36,7 +36,7 @@ pub enum Rs2Format {
     Invi = sys::rs2_format_RS2_FORMAT_INVI,
     /// Pose data packed as array of 32-bit floats.
     ///
-    /// Contains translation vecotr, rotation quaternion, prediction velocities, and accelerations
+    /// Contains translation vector, rotation quaternion, prediction velocities, and accelerations
     /// vectors.
     ///
     _6Dof = sys::rs2_format_RS2_FORMAT_6DOF,
