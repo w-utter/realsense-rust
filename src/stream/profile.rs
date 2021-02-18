@@ -58,7 +58,7 @@ pub enum DataError {
 /// construction, we cache a copy of the stream data and also cache whether or not this stream
 /// profile is the default stream.
 ///
-/// ## Lifetime
+/// # Lifetimes
 ///
 /// Stream profiles are acquired one of two ways:
 ///
@@ -117,11 +117,12 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfi
     ///
     /// # Errors
     ///
-    /// There are a number of errors that may occur when attempting to construct the stream profile
-    /// type, all of type [`StreamConstructionError`](StreamConstructionError).
+    /// Returns [`StreamConstructionError::CouldNotRetrieveStreamData`] if the stream data
+    /// associated with this stream profile cannot be retrieved.
     ///
-    /// - [`CouldNotRetrieveStreamData`](StreamConstructionError::CouldNotRetrieveStreamData)
-    /// - [`CouldNotDetermineIsDefault`](StreamConstructionError::CouldNotDetermineIsDefault)
+    /// Returns [`StreamConstructionError::CouldNotDetermineIsDefault`] if it cannot be determined
+    /// whether or not this stream is a default stream. This usually will only happen if the stream
+    /// is invalidated (e.g. due to a device disconnect) when you try to construct it.
     ///
     fn try_from(stream_profile_ptr: NonNull<sys::rs2_stream_profile>) -> Result<Self, Self::Error> {
         unsafe {
@@ -201,18 +202,11 @@ impl<'a> StreamProfile<'a> {
         self.framerate
     }
 
-    /// Get extrinsics between two streams.
+    /// Get extrinsics between the origin stream (`self`) and target stream (`to_profile`).
     ///
-    /// # Arguments
-    ///
-    /// - `self` - This object, the origin stream.
-    /// - `to_profile` - The target stream.
-    ///
-    /// # Returns
-    ///
-    /// The extrinsics between the origin and target streams from the underlying realsense driver
-    /// iff both underlying stream pointers are valid and extrinsics exist. Otherwise returns an
-    /// error.
+    /// Returns the extrinsics between the origin and target streams from the underlying realsense
+    /// driver iff both underlying stream pointers are valid and extrinsics exist. Otherwise
+    /// returns an error.
     ///
     /// # Errors
     ///
@@ -238,17 +232,9 @@ impl<'a> StreamProfile<'a> {
         }
     }
 
-    /// Set extrinsics between two streams.
+    /// Set `extrinsics` between the origin stream (`self`) and target stream (`to_profile`).
     ///
-    /// # Arguments
-    ///
-    /// - `self` - This object, the origin stream.
-    /// - `to_profile` - The target stream.
-    /// - `extrinsics` - The extrinsics to set.
-    ///
-    /// # Returns
-    ///
-    /// Null tuple `()` iff the streams are valid and the extrinsics are successfully set.
+    /// Returns null tuple `()` iff the streams are valid and the extrinsics are successfully set.
     /// Otherwise returns an error.
     ///
     /// # Errors
@@ -276,9 +262,7 @@ impl<'a> StreamProfile<'a> {
 
     /// Get video intrinsics from the stream.
     ///
-    /// # Returns
-    ///
-    /// A set of video intrinsics for the stream iff the stream has video intrinsics and the stream
+    /// Returns a set of video intrinsics for the stream iff the stream has video intrinsics and the stream
     /// pointer is valid. Otherwise returns an error.
     ///
     /// # Errors
@@ -315,9 +299,7 @@ impl<'a> StreamProfile<'a> {
 
     /// Get motion intrinsics from the stream.
     ///
-    /// # Returns
-    ///
-    /// A set of motion device intrinsics for the stream iff the stream has motion device
+    /// Returns a set of motion device intrinsics for the stream iff the stream has motion device
     /// intrinsics and the stream pointer is valid. Otherwise returns an error.
     ///
     /// # Errors
