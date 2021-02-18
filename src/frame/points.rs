@@ -199,10 +199,10 @@ impl<'a> PointsFrame<'a> {
     ///
     /// # Safety
     ///
-    /// The librealsense2 C++ API directly casts the rs2_pixel* returned from
-    /// rs2_get_frame_texture_coordinates() into a texture_coordinate*, thereby
-    /// re-interpreting [[c_int; 2]; N] as [[c_float; 2]; N] values.
-    /// Note that C does not generally guarantee that sizeof(int) == sizeof(float).
+    /// The librealsense2 C++ API directly casts the `rs2_pixel*` returned from
+    /// `rs2_get_frame_texture_coordinates()` into a `texture_coordinate*`, thereby re-interpreting
+    /// `[[c_int; 2]; N]` as `[[c_float; 2]; N]` values.  Note that C does not generally guarantee
+    /// that `sizeof(int) == sizeof(float)`.
     ///
     pub fn texture_coordinates(&'a self) -> &'a [[f32; 2]] {
         unsafe {
