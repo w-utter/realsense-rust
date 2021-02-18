@@ -83,7 +83,7 @@ unsafe impl Send for Sensor {}
 impl std::convert::TryFrom<NonNull<sys::rs2_sensor>> for Sensor {
     type Error = SensorConstructionError;
 
-    /// Attempt to create a Sensor from a non-null pointer to `rs2_sensor`.
+    /// Attempt to construct a Sensor from a non-null pointer to `rs2_sensor`.
     ///
     /// # Errors
     ///
@@ -155,10 +155,8 @@ impl Sensor {
 
     /// Get the parent device that this sensor corresponds to.
     ///
-    /// # Returns
-    ///
-    /// The device that this sensor corresponds to iff that device is still connected and the
-    /// sensor is still valid. Otherwise returns an error.
+    /// Returns the device that this sensor corresponds to iff that device is still connected and
+    /// the sensor is still valid. Otherwise returns an error.
     ///
     /// # Errors
     ///
@@ -181,7 +179,7 @@ impl Sensor {
 
     /// List of all valid sensor extensions that apply to this sensor.
     ///
-    /// See the [list of possible sensor extensions](crate::kind::SENSOR_EXTENSIONS) for
+    /// See the [list of possible sensor extensions](crate::kind::Rs2Extension) for
     /// more info.
     pub fn extensions(&self) -> Vec<Rs2Extension> {
         SENSOR_EXTENSIONS
@@ -207,14 +205,8 @@ impl Sensor {
 
     /// Get the value associated with the provided Rs2Option for the sensor.
     ///
-    /// # Arguments
-    ///
-    /// - `option` - The option key that we want the associated value of.
-    ///
-    /// # Returns
-    ///
-    /// An f32 value corresponding to that option within the librealsense2 library, or None if the
-    /// option is not supported.
+    /// Returns An `f32` value corresponding to that option within the librealsense2 library, or None
+    /// if the option is not supported.
     ///
     pub fn get_option(&self, option: Rs2Option) -> Option<f32> {
         if !self.supports_option(option) {
@@ -237,16 +229,9 @@ impl Sensor {
         }
     }
 
-    /// Sets the value associated with the provided Rs2Option for the sensor.
+    /// Sets the `value` associated with the provided `option` for the sensor.
     ///
-    /// # Arguments
-    ///
-    /// - `option` - The option key that we want to set the assocated value to.
-    /// - `value` - The value that we wish to set this option to.
-    ///
-    /// # Returns
-    ///
-    /// Null tuple if the option can be successfully set on the sensor.
+    /// Returns null tuple if the option can be successfully set on the sensor, otherwise an error.
     ///
     /// # Errors
     ///
@@ -284,13 +269,7 @@ impl Sensor {
 
     /// Gets the range for a given option.
     ///
-    /// # Arguments
-    ///
-    /// - `option` - The option key for the associated value that we want the range of.
-    ///
-    /// # Returns
-    ///
-    /// Some option range if the sensor supports the option, else `None`.
+    /// Returns some option range if the sensor supports the option, else `None`.
     ///
     pub fn get_option_range(&self, option: Rs2Option) -> Option<Rs2OptionRange> {
         if !self.supports_option(option) {
@@ -330,13 +309,7 @@ impl Sensor {
 
     /// Predicate for determining if this sensor supports a given option
     ///
-    /// # Arguments
-    ///
-    /// - `option` - The option to check is supported by this sensor
-    ///
-    /// # Returns
-    ///
-    /// True iff the option is supported by this sensor.
+    /// Returns true iff the option is supported by this sensor.
     ///
     pub fn supports_option(&self, option: Rs2Option) -> bool {
         unsafe {
@@ -357,13 +330,7 @@ impl Sensor {
 
     /// Predicate for determining if the provided option is immutable or not.
     ///
-    /// # Arguments
-    ///
-    /// - `option` - The option to check whether it is read only or can be mutated.
-    ///
-    /// # Returns
-    ///
-    /// True if the option is supported and can be mutated, otherwise false.
+    /// Returns true if the option is supported and can be mutated, otherwise false.
     ///
     pub fn is_option_read_only(&self, option: Rs2Option) -> bool {
         if !self.supports_option(option) {
@@ -388,10 +355,8 @@ impl Sensor {
 
     /// Get a list of stream profiles associated with this sensor
     ///
-    /// # Returns
-    ///
-    /// A vector containing all the stream profiles associated with the sensor. The vector will
-    /// have a length of zero if an error occurs while getting the stream profiles.
+    /// Returns a vector containing all the stream profiles associated with the sensor. The vector
+    /// will have a length of zero if an error occurs while getting the stream profiles.
     ///
     pub fn stream_profiles(&self) -> Vec<StreamProfile> {
         let mut profiles = Vec::new();
@@ -432,16 +397,10 @@ impl Sensor {
 
     // fn recommended_processing_blocks(&self) -> Vec<ProcessingBlock>{}
 
-    /// Get the requested camera info for this sensor.
+    /// Gets the value associated with the provided camera info key from the sensor.
     ///
-    /// # Arguments
-    ///
-    /// - `camera_info` - The kind of camera info that we want to get from the sensor.
-    ///
-    /// # Returns
-    ///
-    /// Some C-string slice value corresponding to the camera info requested if this sensor
-    /// supports that camera info, else `None`.
+    /// Returns some value corresponding to the camera info requested if this sensor supports that
+    /// camera info, else `None`.
     ///
     pub fn info(&self, camera_info: Rs2CameraInfo) -> Option<&CStr> {
         if !self.supports_info(camera_info) {
@@ -467,13 +426,7 @@ impl Sensor {
 
     /// Predicate method for determining if the sensor supports a certain kind of camera info.
     ///
-    /// # Arguments
-    ///
-    /// - `camera_info` - The kind of camera info that we want to know if the sensor supports.
-    ///
-    /// # Returns
-    ///
-    /// True if the sensor supports (i.e. can get) the camera info, else false.
+    /// Returns true iff the sensor has a value associated with the `camera_info` key.
     ///
     pub fn supports_info(&self, camera_info: Rs2CameraInfo) -> bool {
         unsafe {

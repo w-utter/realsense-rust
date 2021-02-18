@@ -129,8 +129,8 @@ impl Device {
 
     /// Gets the value associated with the provided camera info key from the device.
     ///
-    /// This returns some information value associated with the camera info key if the
-    /// `camera_info` is supported by the device, else it returns `None`.
+    /// Returns some information value associated with the camera info key if the `camera_info` is
+    /// supported by the device, else it returns `None`.
     ///
     pub fn info(&self, camera_info: Rs2CameraInfo) -> Option<&CStr> {
         if !self.supports_info(camera_info) {
