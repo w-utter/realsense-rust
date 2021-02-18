@@ -43,8 +43,8 @@ pub enum SensorConstructionError {
 
 /// Type for holding sensor-related data.
 ///
-/// A sensor in RealSense corresponds to a physical component on the unit in some way, shape, or
-/// form. These may or may not correspond to multiple streams. e.g. an IMU on the device may
+/// A sensor in librealsense2 corresponds to a physical component on the unit in some way, shape,
+/// or form. These may or may not correspond to multiple streams. e.g. an IMU on the device may
 /// correspond to accelerometer and gyroscope streams, or an IR camera sensor on the device may
 /// correspond to depth & video streams.
 ///
