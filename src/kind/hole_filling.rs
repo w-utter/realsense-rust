@@ -1,4 +1,4 @@
-//! The enumeration of methods that can be used to fill invalid pixels.
+//! Enumeration of methods that can be used to fill invalid pixels.
 //!
 //! The filter implements several methods to rectify missing data in the resulting image.
 //! The filter obtains the four immediate pixel "neighbors" (up, down ,left, right), and
@@ -9,7 +9,7 @@
 
 use num_derive::{FromPrimitive, ToPrimitive};
 
-/// Enum to control the method that will be used to fill invalid pixels.
+/// A type describing the method that will be used to fill invalid pixels.
 #[repr(usize)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum HoleFillingMode {
