@@ -162,9 +162,12 @@ impl Sensor {
     ///
     /// # Errors
     ///
-    /// [`DeviceConstructionError::CouldNotCreateDeviceFromSensor`] if the device cannot be
+    /// Returns [`DeviceConstructionError::CouldNotCreateDeviceFromSensor`] if the device cannot be
     /// obtained due to the physical device being disconnected or the internal sensor pointer
     /// becoming invalid.
+    ///
+    /// Returns [`DeviceConstructionError::CouldNotGetSensorFromList`] if the sensor list cannot be
+    /// captured during construction.
     ///
     pub fn device(&self) -> Result<Device> {
         unsafe {
