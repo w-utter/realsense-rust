@@ -197,7 +197,7 @@ impl<'a> PointsFrame<'a> {
 
     /// Retrieve the texture coordinates (uv map) for the point cloud.
     ///
-    /// # SAFETY
+    /// # Safety
     ///
     /// The librealsense2 C++ API directly casts the rs2_pixel* returned from
     /// rs2_get_frame_texture_coordinates() into a texture_coordinate*, thereby
