@@ -36,14 +36,29 @@ pub enum OptionSetError {
 ///
 /// # Deprecated Options
 ///
-/// - `AmbientLight`: Equivalent to `RS2_OPTION_AMBIENT_LIGHT`. Replacement: [Rs2Option::DigitalGain].
-///                   Old Description: "Change the depth ambient light see rs2_ambient_light for values".
-/// - `ZeroOrderEnabled`: Equivalent to `RS2_OPTION_ZERO_ORDER_ENABLED`. Replacement: N/A.
-///                       Old Description: "Toggle Zero-Order mode."
-/// - `ZeroOrderPointX`: Equivalent to `RS2_OPTION_ZERO_ORDER_POINT_X`. Replacement: N/A.
-///                       Old Description: "Get the Zero order point x."
-/// - `ZeroOrderPointY`: Equivalent to `RS2_OPTION_ZERO_ORDER_POINT_Y`. Replacement: N/A.
-///                       Old Description: "Get the Zero order point y."
+/// `AmbientLight`
+///
+/// - Equivalent to `RS2_OPTION_AMBIENT_LIGHT`
+/// - Replacement: [Rs2Option::DigitalGain].
+/// - Old Description: "Change the depth ambient light see rs2_ambient_light for values".
+///
+/// `ZeroOrderEnabled`
+///
+/// - Equivalent to `RS2_OPTION_ZERO_ORDER_ENABLED`
+/// - Replacement: N/A.
+/// - Old Description: "Toggle Zero-Order mode."
+///
+/// `ZeroOrderPointX`
+///
+/// - Equivalent to `RS2_OPTION_ZERO_ORDER_POINT_X`
+/// - Replacement: N/A.
+/// - Old Description: "Get the Zero order point x."
+///
+/// `ZeroOrderPointY`
+///
+/// - Equivalent to `RS2_OPTION_ZERO_ORDER_POINT_Y`
+/// - Replacement: N/A.
+/// - Old Description: "Get the Zero order point y."
 ///
 #[repr(u32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
