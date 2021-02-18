@@ -88,7 +88,7 @@ pub enum Rs2Format {
     Y8I = sys::rs2_format_RS2_FORMAT_Y8I,
     /// 16-bit per pixel grayscale image unpacked from 10-bit per pixel packed data.
     ///
-    /// 10-bit data is packed as ([8:8:8:8:2222]).
+    /// 10-bit data is packed as (\[8:8:8:8:2222\]).
     ///
     /// The data is unpacked to LSB and padded with 6 zero bits.
     Y10Bpack = sys::rs2_format_RS2_FORMAT_Y10BPACK,
