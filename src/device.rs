@@ -5,7 +5,11 @@
 //! comprise that device (IR cameras, depth camera, color camera, IMU) are referred to as sensors.
 //! See [`sensors`](crate::sensor) for more info.
 
-use crate::{check_rs2_error, kind::Rs2CameraInfo, sensor::Sensor};
+use crate::{
+    check_rs2_error,
+    kind::{Rs2CameraInfo, Rs2Exception},
+    sensor::Sensor,
+};
 use anyhow::Result;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
@@ -16,11 +20,11 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum DeviceConstructionError {
     /// System was unable to get the device pointer that corresponds to a given [`Sensor`]
-    #[error("Could not create device from sensor. Reason: {0}")]
-    CouldNotCreateDeviceFromSensor(String),
+    #[error("Could not create device from sensor. Type: {0}; Reason: {1}")]
+    CouldNotCreateDeviceFromSensor(Rs2Exception, String),
     /// Could not generate the sensor list corresponding to the device during construction.
-    #[error("Could not generate sensor list for device. Reason: {0}")]
-    CouldNotGenerateSensorList(String),
+    #[error("Could not generate sensor list for device. Type: {0}; Reason: {1}")]
+    CouldNotGenerateSensorList(Rs2Exception, String),
 }
 
 /// A type representing a RealSense device.

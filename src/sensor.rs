@@ -16,7 +16,8 @@ use crate::{
     check_rs2_error,
     device::{Device, DeviceConstructionError},
     kind::{
-        OptionSetError, Rs2CameraInfo, Rs2Extension, Rs2Option, Rs2OptionRange, SENSOR_EXTENSIONS,
+        OptionSetError, Rs2CameraInfo, Rs2Exception, Rs2Extension, Rs2Option, Rs2OptionRange,
+        SENSOR_EXTENSIONS,
     },
     stream::StreamProfile,
 };
@@ -34,11 +35,11 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum SensorConstructionError {
     /// Could not generate the stream profile list for the sensor at construction time.
-    #[error("Could not generate stream profile list for sensor. Reason: {0}")]
-    CouldNotGenerateStreamProfileList(String),
+    #[error("Could not generate stream profile list for sensor. Type: {0}; Reason: {1}")]
+    CouldNotGenerateStreamProfileList(Rs2Exception, String),
     /// Could not get the correct sensor from the sensor list.
-    #[error("Could not get correct sensor from sensor list. Reason: {0}")]
-    CouldNotGetSensorFromList(String),
+    #[error("Could not get correct sensor from sensor list. Type: {0}; Reason: {1}")]
+    CouldNotGetSensorFromList(Rs2Exception, String),
 }
 
 /// Type for holding sensor-related data.

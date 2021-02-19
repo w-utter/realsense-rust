@@ -2,7 +2,7 @@
 
 use crate::{
     check_rs2_error,
-    kind::{Rs2Format, Rs2StreamKind},
+    kind::{Rs2Exception, Rs2Format, Rs2StreamKind},
 };
 use anyhow::Result;
 use num_traits::ToPrimitive;
@@ -12,18 +12,18 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ConfigurationError {
-    #[error("Could not enable stream. Reason: {0}")]
-    CouldNotEnableStream(String),
-    #[error("Could not enable all streams. Reason: {0}")]
-    CouldNotEnableAllStreams(String),
-    #[error("Could not disable stream. Reason: {0}")]
-    CouldNotDisableStream(String),
-    #[error("Could not disable all streams. Reason: {0}")]
-    CouldNotDisableAllStreams(String),
-    #[error("Could not enable requested device. Reason: {0}")]
-    CouldNotEnableDevice(String),
-    #[error("Could not enable recording to file from device. Reason: {0}")]
-    CouldNotEnableRecordingToFile(String),
+    #[error("Could not enable stream. Type: {0}; Reason: {1}")]
+    CouldNotEnableStream(Rs2Exception, String),
+    #[error("Could not enable all streams. Type: {0}; Reason: {1}")]
+    CouldNotEnableAllStreams(Rs2Exception, String),
+    #[error("Could not disable stream. Type: {0}; Reason: {1}")]
+    CouldNotDisableStream(Rs2Exception, String),
+    #[error("Could not disable all streams. Type: {0}; Reason: {1}")]
+    CouldNotDisableAllStreams(Rs2Exception, String),
+    #[error("Could not enable requested device. Type: {0}; Reason: {1}")]
+    CouldNotEnableDevice(Rs2Exception, String),
+    #[error("Could not enable recording to file from device. Type: {0}; Reason: {1}")]
+    CouldNotEnableRecordingToFile(Rs2Exception, String),
 }
 
 /// The pipeline configuration that will be consumed by [Pipeline::start()](crate::pipeline::Pipeline::start).

@@ -1,6 +1,8 @@
 //! Possible exception / error types that librealsense2 can produce
+
 use num_derive::{FromPrimitive, ToPrimitive};
 use realsense_sys as sys;
+use std::fmt::{Display, Formatter, Result};
 
 /// Enumeration of possible exception types that can be returned via `rs2_error`
 ///
@@ -42,4 +44,21 @@ pub enum Rs2Exception {
     // Not included since this just tells us the total number of exceptions
     //
     // Count = sys::rs2_exception_type_RS2_EXCEPTION_TYPE_COUNT,
+}
+
+impl Display for Rs2Exception {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        let s = match self {
+            Rs2Exception::Unknown => "Unknown",
+            Rs2Exception::CameraDisconnected => "CameraDisconnected",
+            Rs2Exception::Backend => "Backend",
+            Rs2Exception::InvalidValue => "InvalidValue",
+            Rs2Exception::WrongAPICallSequence => "WrongAPICallSequence",
+            Rs2Exception::NotImplemented => "NotImplemented",
+            Rs2Exception::DeviceInRecoveryMode => "DeviceInRecoveryMode",
+            Rs2Exception::IoDeviceFailure => "IODeviceFailure",
+        };
+
+        write!(f, "{}", s)
+    }
 }

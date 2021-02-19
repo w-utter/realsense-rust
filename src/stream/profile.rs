@@ -2,7 +2,7 @@
 
 use crate::{
     check_rs2_error,
-    kind::{Rs2Format, Rs2StreamKind},
+    kind::{Rs2Exception, Rs2Format, Rs2StreamKind},
 };
 use anyhow::Result;
 use num_traits::FromPrimitive;
@@ -18,11 +18,11 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum StreamConstructionError {
     /// Could not get stream data during construction.
-    #[error("Could not retrieve stream data. Reason: {0}")]
-    CouldNotRetrieveStreamData(String),
+    #[error("Could not retrieve stream data. Type: {0}; Reason: {1}")]
+    CouldNotRetrieveStreamData(Rs2Exception, String),
     /// Could not determine if this stream is the default stream during construction.
-    #[error("Could not determine if this is the default stream. Reason: {0}")]
-    CouldNotDetermineIsDefault(String),
+    #[error("Could not determine if this is the default stream. Type: {0}; Reason: {1}")]
+    CouldNotDetermineIsDefault(Rs2Exception, String),
 }
 
 /// Type describing errors in getting or setting stream-related data.
@@ -33,11 +33,11 @@ pub enum StreamConstructionError {
 #[derive(Error, Debug)]
 pub enum DataError {
     /// Could not get extrinsics between the requested streams.
-    #[error("Could not get extrinsics. Reason: {0}")]
-    CouldNotGetExtrinsics(String),
+    #[error("Could not get extrinsics. Type: {0}; Reason: {1}")]
+    CouldNotGetExtrinsics(Rs2Exception, String),
     /// Could not set extrinsics between the requested streams.
-    #[error("Could not set extrinsics. Reason: {0}")]
-    CouldNotSetExtrinsics(String),
+    #[error("Could not set extrinsics. Type: {0}; Reason: {1}")]
+    CouldNotSetExtrinsics(Rs2Exception, String),
     /// This stream does not have video intrinsics.
     #[error("Stream does not have video intrinsics")]
     StreamDoesNotHaveVideoIntrinsics,
@@ -45,11 +45,11 @@ pub enum DataError {
     #[error("Stream does not have motion intrinsics")]
     StreamDoesNotHaveMotionIntrinsics,
     /// Could not get video intrinsics from the requested stream.
-    #[error("Could not get video intrinsics. Reason: {0}")]
-    CouldNotGetIntrinsics(String),
+    #[error("Could not get video intrinsics. Type: {0}; Reason: {1}")]
+    CouldNotGetIntrinsics(Rs2Exception, String),
     /// Could not get motion intrinsics from the requested stream.
-    #[error("Could not get motion intrinsics. Reason: {0}")]
-    CouldNotGetMotionIntrinsics(String),
+    #[error("Could not get motion intrinsics. Type: {0}; Reason: {1}")]
+    CouldNotGetMotionIntrinsics(Rs2Exception, String),
 }
 
 /// Type for holding the stream profile information.
