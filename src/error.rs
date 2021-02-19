@@ -1,6 +1,4 @@
-//! Defines the error type used by the crate.
-
-use crate::common::*;
+//! Defines utilities for dealing with errors across the crate
 
 #[doc(hidden)]
 #[macro_export]
