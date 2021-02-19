@@ -202,7 +202,7 @@
 
 pub mod base;
 mod common;
-// pub mod config;
+pub mod config;
 // pub mod context;
 pub mod device;
 // pub mod device_hub;
@@ -210,7 +210,7 @@ pub mod device;
 pub mod error;
 pub mod frame;
 pub mod kind;
-pub mod options;
+// pub mod options;
 // pub mod pipeline;
 // pub mod pipeline_kind;
 // pub mod pipeline_profile;
@@ -235,7 +235,6 @@ pub use base::{Extrinsics, Intrinsics, MotionIntrinsics};
 pub use device::Device;
 // pub use device_hub::DeviceHub;
 // pub use device_list::{DeviceList, DeviceListIntoIter};
-pub use error::{Error, Result};
 pub use frame::{
     DepthFrame, DepthFrameEx, DisparityFrame, DisparityFrameEx, VideoFrame, VideoFrameEx,
 };
@@ -244,7 +243,7 @@ pub use kind::{
     ColorScheme, HoleFillingMode, PersistenceControl, Rs2CameraInfo, Rs2Extension, Rs2Format,
     Rs2FrameMetadata, Rs2Option, Rs2StreamKind, Rs2TimestampDomain,
 };
-pub use options::{OptionHandle, ToOptions};
+// pub use options::{OptionHandle, ToOptions};
 // pub use pipeline::{ActivePipeline, InactivePipeline, Pipeline};
 // pub use pipeline_profile::PipelineProfile;
 // pub use processing_block::{
