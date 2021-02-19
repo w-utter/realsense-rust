@@ -61,6 +61,7 @@
 
 mod camera_info;
 mod color_scheme;
+mod exception;
 mod extension;
 mod format;
 mod frame_metadata;
@@ -73,6 +74,7 @@ mod timestamp_domain;
 
 pub use camera_info::Rs2CameraInfo;
 pub use color_scheme::ColorScheme;
+pub use exception::Rs2Exception;
 pub use extension::{
     Rs2Extension, DEVICE_EXTENSIONS, FILTER_EXTENSIONS, FRAME_EXTENSIONS, MISC_EXTENSIONS,
     PROFILE_EXTENSIONS, SENSOR_EXTENSIONS,
