@@ -7,7 +7,7 @@ use std::fmt::{Display, Formatter, Result};
 /// Enumeration of possible exception types that can be returned via `rs2_error`
 ///
 /// `Rs2Exception` is an enumeration where each variant describes the class of error returned by an
-/// [`rs2_error`] pointer.
+/// [`rs2_error`](realsense_sys::rs2_error) pointer.
 #[repr(u32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2Exception {
