@@ -174,4 +174,8 @@ impl Device {
             err.as_ref().is_none() && supports_info != 0
         }
     }
+
+    pub unsafe fn get_raw(&self) -> NonNull<sys::rs2_device> {
+        self.device_ptr
+    }
 }
