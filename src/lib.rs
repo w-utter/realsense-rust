@@ -205,7 +205,7 @@ mod common;
 pub mod config;
 // pub mod context;
 pub mod device;
-// pub mod device_hub;
+pub mod device_hub;
 // pub mod device_list;
 pub mod error;
 pub mod frame;
@@ -233,7 +233,7 @@ pub use base::{Extrinsics, Intrinsics, MotionIntrinsics};
 // pub use config::Config;
 // pub use context::Context;
 pub use device::Device;
-// pub use device_hub::DeviceHub;
+pub use device_hub::DeviceHub;
 // pub use device_list::{DeviceList, DeviceListIntoIter};
 pub use frame::{
     DepthFrame, DepthFrameEx, DisparityFrame, DisparityFrameEx, VideoFrame, VideoFrameEx,
