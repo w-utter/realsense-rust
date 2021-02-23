@@ -1,13 +1,10 @@
 //! Defines the pipeline type.
 
 use super::{inactive::InactivePipeline, profile::PipelineProfile};
-use crate::{
-    base::DEFAULT_TIMEOUT, check_rs2_error, config::Config, context::Context,
-    frame::CompositeFrame, kind::Rs2Exception,
-};
+use crate::{check_rs2_error, context::Context, frame::CompositeFrame, kind::Rs2Exception};
 use anyhow::Result;
 use realsense_sys as sys;
-use std::{convert::TryFrom, mem::MaybeUninit, ptr::NonNull, time::Duration};
+use std::{ptr::NonNull, time::Duration};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -109,7 +106,9 @@ impl<'a> ActivePipeline<'a> {
             check_rs2_error!(err, FrameWaitError::DidErrorDuringFrameWait)?;
 
             if did_get_frame == 0 {
-                return Err(FrameWaitError::DidTimeoutBeforeFrameArrival);
+                return Err(anyhow::anyhow!(
+                    FrameWaitError::DidTimeoutBeforeFrameArrival
+                ));
             }
 
             Ok(CompositeFrame::from(NonNull::new(frame).unwrap()))
