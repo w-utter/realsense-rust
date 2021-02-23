@@ -217,6 +217,6 @@ impl Config {
     // }
 
     pub unsafe fn get_raw(&self) -> NonNull<sys::rs2_config> {
-        unimplemented!();
+        self.config_ptr
     }
 }
