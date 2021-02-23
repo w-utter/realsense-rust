@@ -104,7 +104,7 @@ impl<'a> ActivePipeline<'a> {
     /// Poll if next frame is immediately available.
     ///
     /// Unlike [Pipeline::start], the method does not block and returns None
-    /// if next from is not available.
+    /// if the next frame is not available.
     pub fn poll(&mut self) -> Option<CompositeFrame> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
