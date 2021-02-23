@@ -12,14 +12,11 @@ version = "0.5.0"
 [features]
 default = []
 buildtime-bindgen = ["realsense-sys/buildtime-bindgen"]
-device-test = ["with-image"]
-with-image = ["image"]
 with-nalgebra = ["nalgebra"]
 
 [dependencies]
 anyhow = "1.0"
 futures = "0.3"
-image = {version = "0.23", optional = true}
 nalgebra = {version = "0.24", optional = true}
 num-derive = "0.3"
 num-traits = "0.2"
