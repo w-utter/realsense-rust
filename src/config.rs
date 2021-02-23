@@ -1,13 +1,14 @@
 //! Configuration type for [Pipeline](crate::pipeline::Pipeline).
 
 use crate::{
+    base::from_path,
     check_rs2_error,
     kind::{Rs2Exception, Rs2Format, Rs2StreamKind},
 };
 use anyhow::Result;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
-use std::{ffi::CStr, ptr::NonNull};
+use std::{ffi::CStr, path::Path, ptr::NonNull};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -115,16 +116,16 @@ impl Config {
     }
 
     /// Enable device from a file path.
-    pub fn enable_device_from_file(
-        &mut self,
-        file: &CStr,
-        loop_playback: bool,
-    ) -> Result<&mut Self, ConfigurationError> {
+    pub fn enable_device_from_file<P>(&mut self, file: P, loop_playback: bool) -> Result<&mut Self>
+    where
+        P: AsRef<Path>,
+    {
+        let path = from_path(file)?;
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_config_enable_device_from_file_repeat_option(
                 self.config_ptr.as_ptr(),
-                file.as_ptr(),
+                path.as_ptr(),
                 loop_playback as i32,
                 &mut err,
             );
@@ -133,12 +134,17 @@ impl Config {
         Ok(self)
     }
 
-    pub fn enable_record_to_file(&mut self, file: &CStr) -> Result<&mut Self, ConfigurationError> {
+    /// Enable recording data streams to file.
+    pub fn enable_record_to_file<P>(&mut self, file: P) -> Result<&mut Self>
+    where
+        P: AsRef<Path>,
+    {
+        let path = from_path(file)?;
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_config_enable_record_to_file(
                 self.config_ptr.as_ptr(),
-                file.as_ptr(),
+                path.as_ptr(),
                 &mut err,
             );
             check_rs2_error!(err, ConfigurationError::CouldNotEnableRecordingToFile)?;
@@ -209,4 +215,8 @@ impl Config {
     //     };
     //     Ok(profile)
     // }
+
+    pub unsafe fn get_raw(&self) -> NonNull<sys::rs2_config> {
+        unimplemented!();
+    }
 }
