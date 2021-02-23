@@ -212,7 +212,7 @@ pub mod kind;
 // pub mod options;
 pub mod pipeline;
 // pub mod pipeline_kind;
-// pub mod pipeline_profile;
+pub mod pipeline_profile;
 pub mod sensor;
 pub mod stream;
 
@@ -243,7 +243,7 @@ pub use kind::{
 };
 // pub use options::{OptionHandle, ToOptions};
 // pub use pipeline::{ActivePipeline, InactivePipeline, Pipeline};
-// pub use pipeline_profile::PipelineProfile;
+pub use pipeline_profile::PipelineProfile;
 // pub use processing_block::{
 //     Align, AnyProcessingBlock, Colorizer, DecimationFilter, DisparityFilter, HoleFillingFilter,
 //     HuffmanDepthDecompress, PointCloud, ProcessingBlock, RatesPrinter, SpatialFilter, Syncer,

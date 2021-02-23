@@ -71,6 +71,7 @@ pub enum DataError {
 /// for librealsense2, however this is a useful feature so as to encourage always grabbing the
 /// latest stream profile from the correct source.
 ///
+#[derive(Debug)]
 pub struct StreamProfile<'a> {
     // Underlying non-null pointer from realsense-sys.
     //
@@ -164,6 +165,13 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfi
 }
 
 impl<'a> StreamProfile<'a> {
+    pub(crate) fn try_create(
+        profiles: &NonNull<sys::rs2_stream_profile_list>,
+        index: i32,
+    ) -> Result<Self, StreamConstructionError> {
+        unimplemented!();
+    }
+
     /// Predicate for whether or not the stream is a default stream.
     pub fn is_default(&self) -> bool {
         self.is_default
