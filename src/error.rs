@@ -18,9 +18,7 @@ macro_rules! check_rs2_error {
                         .unwrap()
                         .to_string(),
                 );
-                unsafe {
-                    sys::rs2_free_error(err);
-                }
+                sys::rs2_free_error(err);
                 Err(res)
             } else {
                 Ok(())
