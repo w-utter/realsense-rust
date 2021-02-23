@@ -1,114 +1,20 @@
 //! Defines the sensor context.
 
-use crate::{
-    common::*,
-    device_hub::DeviceHub,
-    device_list::DeviceList,
-    error::{ErrorChecker, Result},
-};
+use crate::{check_rs2_error, base::from_path, kind::{Rs2ProductLine, Rs2Exception}};
+use realsense_sys as sys;
+use anyhow::Result;
+use thiserror::Error;
+use std::{ptr::NonNull, convert::TryFrom};
 
 #[derive(Debug)]
 pub struct Context {
-    pub(crate) ptr: NonNull<sys::rs2_context>,
+    context_ptr: NonNull<sys::rs2_context>,
 }
 
-impl Context {
-    /// Create an instance.
-    pub fn new() -> Result<Self> {
-        let ptr = {
-            let mut checker = ErrorChecker::new();
-            let context = unsafe {
-                sys::rs2_create_context(sys::RS2_API_VERSION as i32, checker.inner_mut_ptr())
-            };
-            checker.check()?;
-            context
-        };
-
-        let context = Self {
-            ptr: NonNull::new(ptr).unwrap(),
-        };
-
-        Ok(context)
-    }
-
-    /// Create an [DeviceHub](DeviceHub) instance.
-    pub fn create_device_hub(&self) -> Result<DeviceHub> {
-        let ptr = unsafe {
-            let mut checker = ErrorChecker::new();
-            let ptr = sys::rs2_create_device_hub(self.ptr.as_ptr(), checker.inner_mut_ptr());
-            checker.check()?;
-            ptr
-        };
-
-        let hub = DeviceHub {
-            ptr: NonNull::new(ptr).unwrap(),
-        };
-        Ok(hub)
-    }
-
-    /// Discover available devices.
-    pub fn query_devices(&self, product_mask: Option<c_int>) -> Result<DeviceList> {
-        let list = match product_mask {
-            Some(mask) => unsafe {
-                let mut checker = ErrorChecker::new();
-                let list =
-                    sys::rs2_query_devices_ex(self.ptr.as_ptr(), mask, checker.inner_mut_ptr());
-                checker.check()?;
-                DeviceList::from_raw(list)
-            },
-            None => unsafe {
-                let mut checker = ErrorChecker::new();
-                let list = sys::rs2_query_devices(self.ptr.as_ptr(), checker.inner_mut_ptr());
-                checker.check()?;
-                DeviceList::from_raw(list)
-            },
-        };
-
-        Ok(list)
-    }
-
-    /// Add device file to context.
-    pub fn add_device<P>(&mut self, file: P) -> Result<()>
-    where
-        P: AsRef<Path>,
-    {
-        let cstring = CString::new(file.as_ref().as_os_str().as_bytes()).unwrap();
-        unsafe {
-            let mut checker = ErrorChecker::new();
-            sys::rs2_context_add_device(
-                self.ptr.as_ptr(),
-                cstring.as_ptr(),
-                checker.inner_mut_ptr(),
-            );
-            checker.check()?;
-        }
-        Ok(())
-    }
-
-    // /// Remove device file from context. (unimplemented)
-    // pub fn remove_device<P>(&mut self, file: P) -> Result<()>
-    // where
-    //     P: AsRef<Path>,
-    // {
-    //     todo!();
-    // }
-
-    pub fn into_raw(self) -> *mut sys::rs2_context {
-        let ptr = self.ptr;
-        mem::forget(self);
-        ptr.as_ptr()
-    }
-
-    pub unsafe fn from_raw(ptr: *mut sys::rs2_context) -> Self {
-        Self {
-            ptr: NonNull::new(ptr).unwrap(),
-        }
-    }
-
-    pub(crate) unsafe fn unsafe_clone(&self) -> Self {
-        Self { ptr: self.ptr }
-    }
-}
+pub struct ContextConstructionError(pub Rs2Exception, pub String);
+pub struct CouldNotGetDeviceHubError(pub Rs2Exception, pub String);
+pub struct CouldNotAddDeviceError(pub Rs2Exception, pub String);
+pub struct CouldNotRemoveDeviceError(pub Rs2Exception, pub String);
 
 impl Drop for Context {
     fn drop(&mut self) {
@@ -117,3 +23,116 @@ impl Drop for Context {
 }
 
 unsafe impl Send for Context {}
+
+impl Context {
+    /// Create an instance.
+    pub fn new() -> Result<Self> {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let ptr = sys::rs2_create_context(sys::RS2_API_VERSION as i32, &mut err);
+            check_rs2_error!(err, ContextConstructionError)?;
+
+            Ok(Self { context_ptr: NonNull::new(ptr).unwrap() })
+        }
+    }
+
+    /// Create an [DeviceHub](DeviceHub) instance.
+    pub fn create_device_hub(&self) -> Result<DeviceHub> {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let ptr = sys::rs2_create_device_hub(self.ptr.as_ptr(), &mut err);
+            check_rs2_error!(err, CouldNotGetDeviceHubError)?;
+
+            Ok(DeviceHub::from(NonNull::new(devicehub_ptr).unwrap()))
+        }
+    }
+
+    /// Discover available devices.
+    pub fn query_devices(&self, product_mask: Vec<Rs2ProductLine>) -> Vec<Device>> {
+
+        // TODO/TEST: Make sure that an empty mask (therefore giving no filter) gives
+        // us _all_ devices, not _no_ devices.
+
+        let mask = if product_mask.len() > 0 {
+            product_mask.iter().fold(0, |k, v| { k & v }) as i32
+        } else {
+            Rs2ProductLine::Any.to_i32().unwrap()
+        };
+
+        let devices = Vec::new();
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let device_list_ptr = rs2_query_devices_ex(
+                self.context_ptr.as_ptr(),
+                mask,
+                &mut err,
+            );
+
+            if err.as_ref().is_some() {
+                return devices;
+            }
+
+            let device_list = NonNull::new(device_list_ptr).unwrap();
+
+            let len = sys::rs2_get_device_count(
+                device_list,
+                &mut err,
+            );
+
+            if err.as_ref().is_some() {
+                sys::rs2_delete_device_list(device_list.as_mut_ptr());
+                return devices;
+            }
+
+            for i in 0..len {
+                match Device::try_create(device_list, i) {
+                    Ok(d) => {
+                        devices.push(d);
+                    }
+                    Err(_) => {
+                        continue;
+                    }
+                }
+            }
+
+            sys::rs2_delete_device_list(device_list.as_mut_ptr());
+        }
+
+        Ok(devices)
+    }
+
+    /// Add device file to context.
+    pub fn add_device<P>(&mut self, file: P) -> Result<()>
+    where
+        P: AsRef<Path>,
+    {
+        let path = from_path(file)?;
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            sys::rs2_context_add_device(
+                self.ptr.as_ptr(),
+                path.as_ptr(),
+                &mut err
+            );
+            check_rs2_error!(err, CouldNotAddDeviceError)?;
+
+            Ok(())
+        }
+    }
+
+    pub fn remove_device<P>(&mut self, file: P) -> Result<()>
+    where
+        P: AsRef<Path>,
+    {
+        let path = from_path(file)?;
+            sys::rs2_context_remove_device(
+                self.ptr.as_ptr(),
+                path.as_ptr(),
+                &mut err
+            );
+            check_rs2_error!(err, CouldNotRemoveDeviceError)?;
+
+            Ok(())
+        }
+    }
+}
