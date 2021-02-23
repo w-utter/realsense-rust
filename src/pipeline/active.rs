@@ -130,14 +130,10 @@ impl<'a> ActivePipeline<'a> {
                 &mut err,
             );
 
-            if was_stored == 0 {
-                return None;
-            }
-
-            if let Some(nonnull_frame) = NonNull::new(frame_ptr) {
-                Some(CompositeFrame::from(nonnull_frame))
-            } else {
+            if err.as_ref().is_some() || was_stored == 0 {
                 None
+            } else {
+                Some(CompositeFrame::from(NonNull::new(frame_ptr).unwrap()))
             }
         }
     }
