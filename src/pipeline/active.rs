@@ -81,6 +81,12 @@ impl<'a> ActivePipeline<'a> {
     /// available. This method can return an error if an internal exception occurs or if the thread
     /// waits more than the duration provided by `timeout_ms` (in milliseconds).
     ///
+    /// # Arguments
+    ///
+    /// * `timeout_ms` - The timeout in milliseconds. If the thread blocks for longer than this
+    /// duration, it will exit early with a [`FrameWaitError::DidTimeoutBeforeFrameArrival`]. If
+    /// `None` is passed in, the [default timeout](realsense_sys::RS2_DEFAULT_TIMEOUT) is applied.
+    ///
     /// # Errors
     ///
     /// Returns [`FrameWaitError::DidErrorDuringFrameWait`] if an internal error occurs while
