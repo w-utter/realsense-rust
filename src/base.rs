@@ -7,6 +7,40 @@ pub use rs2_image::*;
 
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_millis(sys::RS2_DEFAULT_TIMEOUT as u64);
 
+// Thanks, Tenders McChiken.
+// https://stackoverflow.com/questions/38948669/whats-the-most-direct-way-to-convert-a-path-to-a-c-char
+pub(crate) fn from_path<P>(path: P) -> anyhow::Result<CString>
+where
+    P: AsRef<std::path::Path>,
+{
+    let mut buf = Vec::new();
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::ffi::OsStrExt;
+        buf.extend(path.as_ref().as_os_str().as_bytes());
+        buf.push(0);
+    };
+
+    #[cfg(windows)]
+    {
+        use std::os::windows::ffi::OsStrExt;
+        buf.extend(
+            path.as_ref()
+                .as_os_str()
+                .encode_wide()
+                .chain(Some(0))
+                .map(|b| {
+                    let b = b.to_ne_bytes();
+                    b.get(0).map(|s| *s).into_iter().chain(b.get(1).map(|s| *s))
+                })
+                .flatten(),
+        );
+    };
+
+    Ok(CString::new(buf)?)
+}
+
 /// The intrinsic parameters for motion devices.
 pub struct MotionIntrinsics(pub sys::rs2_motion_device_intrinsic);
 
