@@ -7,8 +7,18 @@ use crate::{
 };
 use anyhow::Result;
 use realsense_sys as sys;
-use std::{convert::TryFrom, ptr::NonNull};
+use std::{convert::TryFrom, mem::MaybeUninit, ptr::NonNull, time::Duration};
 use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum FrameWaitError {
+    /// librealsense2 had an internal error occur while waiting for frames.
+    #[error("An internal error occurred while waiting for frames. Type: {0}; Reason: {1}")]
+    DidErrorDuringFrameWait(Rs2Exception, String),
+    /// The associated function timed out while waiting for frames.
+    #[error("Timed out while waiting for frame.")]
+    DidTimeoutBeforeFrameArrival,
+}
 
 pub struct ActivePipeline<'a> {
     pipeline_ptr: NonNull<sys::rs2_pipeline>,
@@ -66,40 +76,45 @@ impl<'a> ActivePipeline<'a> {
         }
     }
 
-    // /// Block until the next frame is available.
-    // ///
-    // /// When the timeout is set, it returns `Ok(Some(frame))` if the frame is available,
-    // /// or returns `Ok(None)` when timeout occurs.
-    // ///
-    // /// If the timeout is `None`, it waits indefinitely before the next frame.
-    // pub fn wait(&mut self, timeout: impl Into<Option<Duration>>) -> Result<CompositeFrame> {
-    //     let timeout = timeout.into();
-    //     let timeout_ms = timeout.unwrap_or(DEFAULT_TIMEOUT).as_millis() as c_uint;
+    /// Waits to get a new composite frame, blocking the calling thread.
+    ///
+    /// Returns a composite frame from the pipeline, blocking the calling thread until a frame is
+    /// available. This method can return an error if an internal exception occurs or if the thread
+    /// waits more than the duration provided by `timeout_ms` (in milliseconds).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`FrameWaitError::DidErrorDuringFrameWait`] if an internal error occurs while
+    /// waiting for next frame(s).
+    ///
+    /// Returns [`FrameWaitError::DidTimeoutBeforeFrameArrival`] if the thread waits more than
+    /// `timeout_ms` (in milliseconds) without returning a frame.
+    ///
+    pub fn wait(&mut self, timeout_ms: Option<Duration>) -> Result<CompositeFrame> {
+        let timeout_ms = match timeout_ms {
+            Some(d) => d.as_millis() as u32,
+            None => sys::RS2_DEFAULT_TIMEOUT,
+        };
 
-    //     let frame = loop {
-    //         let mut checker = ErrorChecker::new();
-    //         let ptr = unsafe {
-    //             sys::rs2_pipeline_wait_for_frames(
-    //                 self.ptr.as_ptr(),
-    //                 timeout_ms,
-    //                 checker.inner_mut_ptr(),
-    //             )
-    //         };
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let mut frame = std::ptr::null_mut::<sys::rs2_frame>();
 
-    //         match (timeout, checker.check()) {
-    //             (None, Err(RsError::Timeout(_))) => continue,
-    //             (Some(_), Err(RsError::Timeout(_))) => {
-    //                 return Ok(None);
-    //             }
-    //             (_, result) => result?,
-    //         }
+            let did_get_frame = sys::rs2_pipeline_try_wait_for_frames(
+                self.pipeline_ptr.as_ptr(),
+                &mut frame,
+                timeout_ms,
+                &mut err,
+            );
+            check_rs2_error!(err, FrameWaitError::DidErrorDuringFrameWait)?;
 
-    //         let frame = unsafe { Frame::from_raw(ptr) };
-    //         break frame;
-    //     };
+            if !did_get_frame {
+                return Err(FrameWaitError::DidTimeoutBeforeFrameArrival);
+            }
 
-    //     Ok(Some(frame))
-    // }
+            Ok(CompositeFrame::from(NonNull::new(frame).unwrap()))
+        }
+    }
 
     /// Poll if next frame is immediately available.
     ///
