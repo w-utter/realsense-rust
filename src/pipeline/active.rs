@@ -115,7 +115,7 @@ impl<'a> ActivePipeline<'a> {
                 &mut err,
             );
 
-            if was_stored != 0 {
+            if was_stored == 0 {
                 return None;
             }
 
