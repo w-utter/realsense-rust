@@ -209,7 +209,6 @@ pub mod device_hub;
 pub mod error;
 pub mod frame;
 pub mod kind;
-// pub mod options;
 pub mod pipeline;
 pub mod sensor;
 pub mod stream_profile;
@@ -237,7 +236,6 @@ pub use kind::{
     ColorScheme, HoleFillingMode, PersistenceControl, Rs2CameraInfo, Rs2Extension, Rs2Format,
     Rs2FrameMetadata, Rs2Option, Rs2StreamKind, Rs2TimestampDomain,
 };
-// pub use options::{OptionHandle, ToOptions};
 pub use pipeline::{ActivePipeline, InactivePipeline, PipelineProfile};
 // pub use processing_block::{
 //     Align, AnyProcessingBlock, Colorizer, DecimationFilter, DisparityFilter, HoleFillingFilter,
