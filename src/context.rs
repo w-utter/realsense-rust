@@ -10,7 +10,7 @@ use crate::{
 use anyhow::Result;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
-use std::{convert::TryFrom, path::Path, ptr::NonNull};
+use std::{path::Path, ptr::NonNull};
 use thiserror::Error;
 
 #[derive(Debug)]
