@@ -91,7 +91,7 @@ impl<'a> InactivePipeline<'a> {
         }
     }
 
-    pub fn resolve(self, config: &'a Config) -> Option<PipelineProfile> {
+    pub fn resolve(&self, config: &'a Config) -> Option<PipelineProfile> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let profile_ptr = sys::rs2_config_resolve(
@@ -111,7 +111,7 @@ impl<'a> InactivePipeline<'a> {
         }
     }
 
-    pub fn can_resolve(self, config: &'a Config) -> bool {
+    pub fn can_resolve(&self, config: &'a Config) -> bool {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let can_resolve = sys::rs2_config_can_resolve(
