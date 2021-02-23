@@ -1,6 +1,6 @@
 //! Defines the profile type of pipeline.
 
-use crate::{check_rs2_error, device::Device, kind::Rs2Exception, stream::StreamProfile};
+use crate::{check_rs2_error, device::Device, kind::Rs2Exception, stream_profile::StreamProfile};
 use anyhow::Result;
 use realsense_sys as sys;
 use std::{convert::TryFrom, ptr::NonNull};

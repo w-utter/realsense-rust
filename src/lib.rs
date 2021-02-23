@@ -214,7 +214,7 @@ pub mod pipeline;
 // pub mod pipeline_kind;
 pub mod pipeline_profile;
 pub mod sensor;
-pub mod stream;
+pub mod stream_profile;
 
 // pub mod frame_queue;
 // pub mod processing_block;

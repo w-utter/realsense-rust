@@ -8,7 +8,7 @@ use crate::{
     common::*,
     kind::{Extension, Rs2Extension, Rs2FrameMetadata, Rs2TimestampDomain},
     sensor::Sensor,
-    stream::StreamProfile,
+    stream_profile::StreamProfile,
 };
 use anyhow::Result;
 use num_traits::ToPrimitive;

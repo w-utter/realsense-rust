@@ -19,7 +19,7 @@ use crate::{
         OptionSetError, Rs2CameraInfo, Rs2Exception, Rs2Extension, Rs2Option, Rs2OptionRange,
         SENSOR_EXTENSIONS,
     },
-    stream::StreamProfile,
+    stream_profile::StreamProfile,
 };
 use anyhow::Result;
 use num_traits::ToPrimitive;

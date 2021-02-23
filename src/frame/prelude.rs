@@ -9,7 +9,7 @@ use crate::{
     common::*,
     kind::{Rs2Exception, Rs2FrameMetadata, Rs2TimestampDomain},
     sensor::Sensor,
-    stream::StreamProfile,
+    stream_profile::StreamProfile,
 };
 use anyhow::Result;
 use realsense_sys as sys;
