@@ -8,11 +8,12 @@
 
 use crate::{common::*, kind::Extension};
 use num_traits::ToPrimitive;
+use std::convert::From;
 
 /// Holds the raw data pointer from an RS2 Composite frame type.
 pub struct CompositeFrame {
     /// The raw data pointer from the original rs2 frame
-    pub(crate) ptr: NonNull<sys::rs2_frame>,
+    pub ptr: NonNull<sys::rs2_frame>,
 }
 
 impl Drop for CompositeFrame {
@@ -21,6 +22,12 @@ impl Drop for CompositeFrame {
         unsafe {
             sys::rs2_release_frame(self.ptr.as_ptr());
         }
+    }
+}
+
+impl From<NonNull<sys::rs2_frame>> for CompositeFrame {
+    fn from(frame_ptr: NonNull<sys::rs2_frame>) -> Self {
+        Self { ptr: frame_ptr }
     }
 }
 
