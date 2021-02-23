@@ -25,6 +25,9 @@ pub enum DeviceConstructionError {
     /// Could not generate the sensor list corresponding to the device during construction.
     #[error("Could not generate sensor list for device. Type: {0}; Reason: {1}")]
     CouldNotGenerateSensorList(Rs2Exception, String),
+    /// Could not get device from device list
+    #[error("Could not get device from device list. Type: {0}; Reason: {1}")]
+    CouldNotGetDeviceFromDeviceList(Rs2Exception, String),
 }
 
 /// A type representing a RealSense device.
@@ -81,11 +84,34 @@ impl TryFrom<NonNull<sys::rs2_device>> for Device {
 }
 
 impl Device {
+    /// Attempt to construct a Device given a device list and index into the device list.
+    ///
+    /// Constructs a device from the provided device list and index, or returns an error.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DeviceConstructionError::CouldNotGetDeviceFromDeviceList`] if the device cannot
+    /// be retrieved from the device list (e.g. if the index is invalid).
+    ///
+    /// Returns [`DeviceConstructionError::CouldNotGenerateSensorList`] if the sensor list cannot
+    /// be captured during construction.
+    ///
     pub(crate) fn try_create(
         device_list: &NonNull<sys::rs2_device_list>,
         index: i32,
     ) -> Result<Self, DeviceConstructionError> {
-        unimplemented!();
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+
+            let device_ptr = sys::rs2_create_device(device_list.as_ptr(), index, &mut err);
+            check_rs2_error!(
+                err,
+                DeviceConstructionError::CouldNotGetDeviceFromDeviceList
+            )?;
+
+            let nonnull_device_ptr = NonNull::new(device_ptr).unwrap();
+            Device::try_from(nonnull_device_ptr)
+        }
     }
 
     /// Gets a list of sensors associated with the device.
