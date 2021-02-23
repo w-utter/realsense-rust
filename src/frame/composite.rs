@@ -57,11 +57,11 @@ impl CompositeFrame {
     /// `E` must implement [`Extension`](crate::kind::Extension). Some examples of good types to
     /// use for this are:
     ///
-    /// * [`VideoFrame`]
-    /// * [`DepthFrame`]
-    /// * [`DisparityFrame`]
-    /// * [`PoseFrame`]
-    /// * [`PointsFrame`]
+    /// * [`VideoFrame`](crate::frame::VideoFrame)
+    /// * [`DepthFrame`](crate::frame::DepthFrame)
+    /// * [`DisparityFrame`](crate::frame::DisparityFrame)
+    /// * [`PoseFrame`](crate::frame::PoseFrame)
+    /// * [`PointsFrame`](crate::frame::PointsFrame)
     ///
     pub fn frames_of_extension<E>(&self) -> Vec<E>
     where
