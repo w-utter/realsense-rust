@@ -211,7 +211,6 @@ pub mod frame;
 pub mod kind;
 // pub mod options;
 pub mod pipeline;
-pub mod pipeline_profile;
 pub mod sensor;
 pub mod stream_profile;
 
@@ -241,8 +240,7 @@ pub use kind::{
     Rs2FrameMetadata, Rs2Option, Rs2StreamKind, Rs2TimestampDomain,
 };
 // pub use options::{OptionHandle, ToOptions};
-// pub use pipeline::{ActivePipeline, InactivePipeline, Pipeline};
-pub use pipeline_profile::PipelineProfile;
+pub use pipeline::{ActivePipeline, InactivePipeline, PipelineProfile};
 // pub use processing_block::{
 //     Align, AnyProcessingBlock, Colorizer, DecimationFilter, DisparityFilter, HoleFillingFilter,
 //     HuffmanDepthDecompress, PointCloud, ProcessingBlock, RatesPrinter, SpatialFilter, Syncer,
