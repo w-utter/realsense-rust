@@ -218,29 +218,16 @@ pub mod stream_profile;
 // pub mod processing_block_kind;
 // pub mod processing_block_list;
 
-/// The mod collects common used traits from this crate.
+/// The module collects common used traits from this crate.
 pub mod prelude {
-    pub use crate::frame::{DepthFrameEx, DisparityFrameEx, VideoFrameEx};
+    pub use crate::frame::{DepthFrameEx, DisparityFrameEx, FrameEx, VideoFrameEx};
+    pub use crate::kind::Extension;
 }
 
-pub use base::{Extrinsics, Intrinsics, MotionIntrinsics};
-pub use config::Config;
-pub use context::Context;
-pub use device::Device;
-pub use device_hub::DeviceHub;
-pub use frame::{
-    DepthFrame, DepthFrameEx, DisparityFrame, DisparityFrameEx, VideoFrame, VideoFrameEx,
-};
 // pub use frame_queue::FrameQueue;
-pub use kind::{
-    ColorScheme, HoleFillingMode, PersistenceControl, Rs2CameraInfo, Rs2Extension, Rs2Format,
-    Rs2FrameMetadata, Rs2Option, Rs2StreamKind, Rs2TimestampDomain,
-};
-pub use pipeline::{ActivePipeline, InactivePipeline, PipelineProfile};
 // pub use processing_block::{
 //     Align, AnyProcessingBlock, Colorizer, DecimationFilter, DisparityFilter, HoleFillingFilter,
 //     HuffmanDepthDecompress, PointCloud, ProcessingBlock, RatesPrinter, SpatialFilter, Syncer,
 //     TemporalFilter, ThresholdFilter, UnitsTransform, YuyDecoder, ZeroOrderFilter,
 // };
 // pub use processing_block_list::{ProcessingBlockList, ProcessingBlockListIntoIter};
-pub use sensor::Sensor;
