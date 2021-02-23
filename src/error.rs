@@ -11,13 +11,17 @@ macro_rules! check_rs2_error {
 
             let err: *mut sys::rs2_error = $rs2_error;
             if NonNull::new(err).is_some() {
-                Err($result(
+                let res = $result(
                     Rs2Exception::from_u32(sys::rs2_get_librealsense_exception_type(err)).unwrap(),
                     std::ffi::CStr::from_ptr(sys::rs2_get_error_message(err))
                         .to_str()
                         .unwrap()
                         .to_string(),
-                ))
+                );
+                unsafe {
+                    sys::rs2_free_error(err);
+                }
+                Err(res)
             } else {
                 Ok(())
             }
