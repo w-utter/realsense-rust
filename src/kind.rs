@@ -69,6 +69,7 @@ mod hole_filling;
 mod option;
 mod persistence_control;
 mod prelude;
+mod product_line;
 mod stream_kind;
 mod timestamp_domain;
 
