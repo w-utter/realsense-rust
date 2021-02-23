@@ -62,7 +62,7 @@ impl<'a> TryFrom<NonNull<sys::rs2_pipeline_profile>> for PipelineProfile<'a> {
                 PipelineProfileConstructionError::CouldNotRetrieveStreamCount
             )?;
 
-            let streams = Vec::new();
+            let mut streams = Vec::new();
             for i in 0..len {
                 streams.push(StreamProfile::try_create(&nonnull_stream_list, i)?);
             }
