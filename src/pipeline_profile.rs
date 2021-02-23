@@ -76,12 +76,12 @@ impl<'a> TryFrom<NonNull<sys::rs2_pipeline_profile>> for PipelineProfile<'a> {
 
 impl<'a> PipelineProfile<'a> {
     /// Gets corresponding device of pipeline.
-    pub fn device(&self) -> Device {
-        self.device
+    pub fn device(&'a self) -> &'a Device {
+        &self.device
     }
 
     /// Gets iterable list of streams of pipeline.
-    pub fn streams(&'a self) -> Vec<StreamProfile<'a>> {
-        self.streams
+    pub fn streams(&'a self) -> &'a Vec<StreamProfile<'a>> {
+        &self.streams
     }
 }
