@@ -18,10 +18,6 @@ pub enum PipelineConstructionError {
 #[error("Could not successfully start the pipeline. Type: {0}; Reason: {1}")]
 pub struct CouldNotStartPipelineError(pub Rs2Exception, pub String);
 
-#[derive(Error, Debug)]
-#[error("Could not successfully resolve the pipeline with this config. Type: {0}; Reason: {1}")]
-pub struct CouldNotResolvePipelineError(pub Rs2Exception, pub String);
-
 pub struct InactivePipeline<'a> {
     pipeline_ptr: NonNull<sys::rs2_pipeline>,
     context: &'a Context,
