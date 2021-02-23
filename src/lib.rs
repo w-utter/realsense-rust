@@ -211,7 +211,6 @@ pub mod frame;
 pub mod kind;
 // pub mod options;
 pub mod pipeline;
-// pub mod pipeline_kind;
 pub mod pipeline_profile;
 pub mod sensor;
 pub mod stream_profile;
