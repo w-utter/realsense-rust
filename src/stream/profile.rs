@@ -7,7 +7,7 @@ use crate::{
 use anyhow::Result;
 use num_traits::FromPrimitive;
 use realsense_sys as sys;
-use std::{marker::PhantomData, mem::MaybeUninit, ptr::NonNull};
+use std::{convert::TryFrom, marker::PhantomData, mem::MaybeUninit, ptr::NonNull};
 use thiserror::Error;
 
 /// Type describing errors that can occur when trying to construct a stream profile.
@@ -23,6 +23,11 @@ pub enum StreamConstructionError {
     /// Could not determine if this stream is the default stream during construction.
     #[error("Could not determine if this is the default stream. Type: {0}; Reason: {1}")]
     CouldNotDetermineIsDefault(Rs2Exception, String),
+    /// Could not get the stream profile from the stream profile list.
+    ///
+    /// Usually due to an internal exception of some kind.
+    #[error("Could not get the stream profile from a stream profile list. Type: {0}; Reason: {1}")]
+    CouldNotGetProfileFromList(Rs2Exception, String),
 }
 
 /// Type describing errors in getting or setting stream-related data.
@@ -97,6 +102,10 @@ pub struct StreamProfile<'a> {
     framerate: i32,
     // Whether or not the stream is a default stream.
     is_default: bool,
+    // Whether or not we should drop the pointer ourselves
+    //
+    // This is dicated by ownership semantics specified by the underlying librealsense2 C-API.
+    should_drop: bool,
     // This phantom reference to a null tuple is required to enforce the lifetime of the entire
     // struct. The purpose of this is to ensure that stream profiles do not outlive their parent
     // components.
@@ -111,7 +120,17 @@ pub struct StreamProfile<'a> {
     _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfile<'a> {
+impl<'a> Drop for StreamProfile<'a> {
+    fn drop(&mut self) {
+        if self.should_drop {
+            unsafe {
+                sys::rs2_delete_stream_profile(self.ptr.as_ptr());
+            }
+        }
+    }
+}
+
+impl<'a> TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfile<'a> {
     type Error = StreamConstructionError;
 
     /// Attempt to create a stream profile from a pointer to an `rs2_stream_profile` type.
@@ -158,6 +177,11 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfi
                 unique_id: unique_id.assume_init(),
                 framerate: framerate.assume_init(),
                 is_default: is_default != 0,
+                // We are not responsible for dropping this pointer by default.
+                // We are only responsible for dropping it if we obtained this pointer from a list.
+                // For safety's sake, use try_create(list, index) if you're trying to construct a
+                // stream profile from a stream profile list.
+                should_drop: false,
                 _phantom: PhantomData {},
             })
         }
@@ -165,11 +189,38 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfi
 }
 
 impl<'a> StreamProfile<'a> {
+    /// Attempt to construct a stream profile from a profile list and index.
+    ///
+    /// Constructs a new stream profile from the list and index, or returns an error.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`StreamConstructionError::CouldNotGetProfileFromList`] if the stream profile
+    /// cannot be acquired from the profile list. (e.g. index is invalid).
+    ///
+    /// Returns [`StreamConstructionError::CouldNotRetrieveStreamData`] if the stream data
+    /// associated with this stream profile cannot be retrieved.
+    ///
+    /// Returns [`StreamConstructionError::CouldNotDetermineIsDefault`] if it cannot be determined
+    /// whether or not this stream is a default stream. This usually will only happen if the stream
+    /// is invalidated (e.g. due to a device disconnect) when you try to construct it.
+    ///
     pub(crate) fn try_create(
         profiles: &NonNull<sys::rs2_stream_profile_list>,
         index: i32,
     ) -> Result<Self, StreamConstructionError> {
-        unimplemented!();
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let profile_ptr = sys::rs2_get_stream_profile(profiles.as_ptr(), index, &mut err);
+            check_rs2_error!(err, StreamConstructionError::CouldNotGetProfileFromList)?;
+
+            let nonnull_profile_ptr =
+                NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
+            let mut profile = Self::try_from(nonnull_profile_ptr)?;
+            // We are responsible for dropping the profile pointer if constructed from a list.
+            profile.should_drop = true;
+            Ok(profile)
+        }
     }
 
     /// Predicate for whether or not the stream is a default stream.
