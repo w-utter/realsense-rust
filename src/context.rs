@@ -78,7 +78,7 @@ impl Context {
             Rs2ProductLine::Any.to_i32().unwrap()
         };
 
-        let devices = Vec::new();
+        let mut devices = Vec::new();
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let device_list_ptr =
