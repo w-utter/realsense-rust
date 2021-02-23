@@ -31,6 +31,8 @@ impl<'a> Drop for ActivePipeline<'a> {
     }
 }
 
+unsafe impl<'a> Send for ActivePipeline<'a> {}
+
 impl<'a> ActivePipeline<'a> {
     /// Constructs a new active pipeline from the constituent components
     ///
