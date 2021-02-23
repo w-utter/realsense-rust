@@ -1,8 +1,5 @@
 use super::{active::ActivePipeline, profile::PipelineProfile};
-use crate::{
-    base::DEFAULT_TIMEOUT, check_rs2_error, config::Config, context::Context,
-    frame::CompositeFrame, kind::Rs2Exception,
-};
+use crate::{check_rs2_error, config::Config, context::Context, kind::Rs2Exception};
 use anyhow::Result;
 use realsense_sys as sys;
 use std::{convert::TryFrom, ptr::NonNull};
