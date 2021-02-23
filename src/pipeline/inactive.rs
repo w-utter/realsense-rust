@@ -12,8 +12,12 @@ pub enum PipelineConstructionError {
 }
 
 #[derive(Error, Debug)]
-#[error("Could not successfully start the pipeline. Type: {0}; Reason: {1}")]
-pub struct CouldNotStartPipelineError(pub Rs2Exception, pub String);
+pub enum PipelineActivationError {
+    #[error("Could not successfully start the pipeline. Type: {0}; Reason: {1}")]
+    CouldNotStartPipelineError(Rs2Exception, String),
+    #[error("Config cannot be resolved by any active devices / stream combinations.")]
+    ConfigCannotBeResolved,
+}
 
 pub struct InactivePipeline<'a> {
     pipeline_ptr: NonNull<sys::rs2_pipeline>,
@@ -67,6 +71,14 @@ impl<'a> InactivePipeline<'a> {
     ///
     /// The method consumes inactive pipeline itself, and returns the started pipeine.
     pub fn start(self, config: Option<&'a Config>) -> Result<ActivePipeline<'a>> {
+        if let Some(c) = config {
+            if !self.can_resolve(c) {
+                return Err(anyhow::anyhow!(
+                    PipelineActivationError::ConfigCannotBeResolved
+                ));
+            }
+        }
+
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let profile_ptr = if let Some(conf) = config {
@@ -78,7 +90,7 @@ impl<'a> InactivePipeline<'a> {
             } else {
                 sys::rs2_pipeline_start(self.pipeline_ptr.as_ptr(), &mut err)
             };
-            check_rs2_error!(err, CouldNotStartPipelineError)?;
+            check_rs2_error!(err, PipelineActivationError::CouldNotStartPipelineError)?;
 
             let profile = PipelineProfile::try_from(NonNull::new(profile_ptr).unwrap())?;
             let active = ActivePipeline::new(self.pipeline_ptr, profile, self.context);
@@ -89,6 +101,10 @@ impl<'a> InactivePipeline<'a> {
     }
 
     pub fn resolve(&self, config: &'a Config) -> Option<PipelineProfile> {
+        if !self.can_resolve(config) {
+            return None;
+        }
+
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let profile_ptr = sys::rs2_config_resolve(
@@ -97,14 +113,11 @@ impl<'a> InactivePipeline<'a> {
                 &mut err,
             );
 
-            if let Some(nonnull_profile) = NonNull::new(profile_ptr) {
-                if let Ok(profile) = PipelineProfile::try_from(nonnull_profile) {
-                    return Some(profile);
-                }
+            if err.as_ref().is_some() {
+                None
+            } else {
+                PipelineProfile::try_from(NonNull::new(profile_ptr).unwrap()).ok()
             }
-
-            // If we get here, then we've failed some important checks.
-            None
         }
     }
 
@@ -116,7 +129,7 @@ impl<'a> InactivePipeline<'a> {
                 self.pipeline_ptr.as_ptr(),
                 &mut err,
             );
-            can_resolve != 0
+            err.as_ref().is_none() && can_resolve != 0
         }
     }
 }
