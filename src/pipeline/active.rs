@@ -105,27 +105,25 @@ impl<'a> ActivePipeline<'a> {
     ///
     /// Unlike [Pipeline::start], the method does not block and returns None
     /// if next from is not available.
-    pub fn poll(&mut self) -> Result<Option<CompositeFrame>> {
-        unimplemented!();
-        // unsafe {
-        //     let mut checker = ErrorChecker::new();
-        //     let mut ptr: *mut sys::rs2_frame = ptr::null_mut();
-        //     let ret = sys::rs2_pipeline_poll_for_frames(
-        //         self.ptr.as_ptr(),
-        //         &mut ptr as *mut _,
-        //         checker.inner_mut_ptr(),
-        //     );
+    pub fn poll(&mut self) -> Option<CompositeFrame> {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let mut frame_ptr = std::ptr::null_mut::<sys::rs2_frame>();
+            let was_stored = sys::rs2_pipeline_poll_for_frames(
+                self.pipeline_ptr.as_ptr(),
+                &mut frame_ptr,
+                &mut err,
+            );
 
-        //     if let Err(err) = checker.check() {
-        //         return Err(err);
-        //     }
+            if was_stored != 0 {
+                return None;
+            }
 
-        //     if ret != 0 {
-        //         let frame = Frame::from_raw(ptr);
-        //         Ok(Some(frame))
-        //     } else {
-        //         Ok(None)
-        //     }
-        // }
+            if let Some(nonnull_frame) = NonNull::new(frame_ptr) {
+                Some(CompositeFrame::from(nonnull_frame))
+            } else {
+                None
+            }
+        }
     }
 }
