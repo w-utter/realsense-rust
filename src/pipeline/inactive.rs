@@ -71,15 +71,10 @@ impl<'a> InactivePipeline<'a> {
             } else {
                 sys::rs2_pipeline_start(self.pipeline_ptr.as_ptr(), &mut err)
             };
-
             check_rs2_error!(err, CouldNotStartPipelineError)?;
-            let profile = PipelineProfile::try_from(NonNull::new(profile_ptr).unwrap())?;
 
-            let active = ActivePipeline {
-                pipeline_ptr: self.pipeline_ptr,
-                profile,
-                context: self.context,
-            };
+            let profile = PipelineProfile::try_from(NonNull::new(profile_ptr).unwrap())?;
+            let active = ActivePipeline::new(self.pipeline_ptr, profile, self.context);
 
             std::mem::forget(self);
             Ok(active)

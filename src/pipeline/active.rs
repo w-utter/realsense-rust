@@ -17,6 +17,21 @@ pub struct ActivePipeline<'a> {
 }
 
 impl<'a> ActivePipeline<'a> {
+    /// Constructs a new active pipeline from the constituent components
+    ///
+    /// This is only to be used / called from the [`InactivePipeline`] type.
+    pub(crate) fn new(
+        pipeline_ptr: NonNull<sys::rs2_pipeline>,
+        profile: PipelineProfile<'a>,
+        context: &'a Context,
+    ) -> Self {
+        Self {
+            pipeline_ptr,
+            profile,
+            context,
+        }
+    }
+
     /// Gets the active profile of pipeline.
     pub fn profile(&'a self) -> &'a PipelineProfile<'a> {
         &self.profile
