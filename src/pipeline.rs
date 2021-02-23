@@ -2,14 +2,12 @@
 
 use crate::{
     base::DEFAULT_TIMEOUT, check_rs2_error, config::Config, context::Context,
-    frame::CompositeFrame, kind::Rs2Exception,
+    frame::CompositeFrame, kind::Rs2Exception, pipeline_profile::PipelineProfile,
 };
 use anyhow::Result;
 use realsense_sys as sys;
 use std::{convert::TryFrom, ptr::NonNull};
 use thiserror::Error;
-
-struct PipelineProfile;
 
 #[derive(Error, Debug)]
 pub enum PipelineConstructionError {
@@ -28,7 +26,7 @@ pub struct InactivePipeline<'a> {
 
 pub struct ActivePipeline<'a> {
     pipeline_ptr: NonNull<sys::rs2_pipeline>,
-    profile: PipelineProfile,
+    profile: PipelineProfile<'a>,
     context: &'a Context,
 }
 
@@ -68,7 +66,7 @@ impl<'a> InactivePipeline<'a> {
     /// Start the pipeline with an optional config.
     ///
     /// The method consumes inactive pipeline itself, and returns the started pipeine.
-    pub fn start(self, config: Option<&Config>) -> Result<ActivePipeline> {
+    pub fn start(self, config: Option<&'a Config>) -> Result<ActivePipeline<'a>> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let profile_ptr = if let Some(conf) = config {
