@@ -108,7 +108,7 @@ impl<'a> ActivePipeline<'a> {
             );
             check_rs2_error!(err, FrameWaitError::DidErrorDuringFrameWait)?;
 
-            if !did_get_frame {
+            if did_get_frame == 0 {
                 return Err(FrameWaitError::DidTimeoutBeforeFrameArrival);
             }
 
