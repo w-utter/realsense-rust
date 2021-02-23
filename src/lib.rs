@@ -208,7 +208,9 @@
 //! information provided by the librealsense2 API is somewhat limited, you'll find most of our
 //! error types are of the form:
 //!
-//! ```no_run pub enum SomeError { CouldNotXXX(Rs2Exception, String), } ```
+//! ```no_run
+//! pub enum SomeError { CouldNotXXX(Rs2Exception, String), }
+//! ```
 //!
 //! The enum field names should inform you what specific part of the function failed (if there are
 //! multiple parts). The internal [`Rs2Exception`](crate::kind::Rs2Exception) should inform you
@@ -216,7 +218,6 @@
 //! exception message from librealsense2. If you find yourself hitting the same message often, this
 //! is a bug, and we would love if you
 //! [submitted a bug report](https://gitlab.com/tangram-vision-oss/realsense-rust/-/issues).
-//!
 
 pub mod base;
 mod common;
