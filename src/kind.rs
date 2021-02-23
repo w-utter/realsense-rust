@@ -86,5 +86,6 @@ pub use hole_filling::HoleFillingMode;
 pub use option::{OptionSetError, Rs2Option, Rs2OptionRange};
 pub use persistence_control::PersistenceControl;
 pub use prelude::*;
+pub use product_line::Rs2ProductLine;
 pub use stream_kind::Rs2StreamKind;
 pub use timestamp_domain::Rs2TimestampDomain;

@@ -1,15 +1,14 @@
 //! Defines the pipeline type.
 
 use crate::{
-    base::DEFAULT_TIMEOUT, check_rs2_error, config::Config, frame::CompositeFrame,
-    kind::Rs2Exception,
+    base::DEFAULT_TIMEOUT, check_rs2_error, config::Config, context::Context,
+    frame::CompositeFrame, kind::Rs2Exception,
 };
 use anyhow::Result;
 use realsense_sys as sys;
 use std::{convert::TryFrom, ptr::NonNull};
 use thiserror::Error;
 
-struct Context;
 struct PipelineProfile;
 
 #[derive(Error, Debug)]
