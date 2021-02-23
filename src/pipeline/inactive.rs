@@ -60,6 +60,16 @@ impl<'a> TryFrom<&'a Context> for InactivePipeline<'a> {
 }
 
 impl<'a> InactivePipeline<'a> {
+    /// Constructs a new inactive pipeline from the constituent components
+    ///
+    /// This is only to be used / called from the [`ActivePipeline`] type.
+    pub(crate) fn new(pipeline_ptr: NonNull<sys::rs2_pipeline>, context: &'a Context) -> Self {
+        Self {
+            pipeline_ptr,
+            context,
+        }
+    }
+
     /// Start the pipeline with an optional config.
     ///
     /// The method consumes inactive pipeline itself, and returns the started pipeine.
