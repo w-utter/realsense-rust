@@ -81,6 +81,13 @@ impl TryFrom<NonNull<sys::rs2_device>> for Device {
 }
 
 impl Device {
+    pub(crate) fn try_create(
+        device_list: &NonNull<sys::rs2_device_list>,
+        index: i32,
+    ) -> Result<Self, DeviceConstructionError> {
+        unimplemented!();
+    }
+
     /// Gets a list of sensors associated with the device.
     ///
     /// Returns a vector of zero size if any error occurs while trying to read the sensor list.
