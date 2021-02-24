@@ -1,3 +1,5 @@
+//! Type for representing an "inactive" pipeline which is unconfigured and cannot acquire frames.
+
 use super::{active::ActivePipeline, profile::PipelineProfile};
 use crate::{check_rs2_error, config::Config, context::Context, kind::Rs2Exception};
 use anyhow::Result;
