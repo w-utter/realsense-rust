@@ -1,4 +1,4 @@
-//! Defines the profile type of pipeline.
+//! Defines a type which holds the device & streams associated with an `ActivePipeline`.
 
 use crate::{check_rs2_error, device::Device, kind::Rs2Exception, stream_profile::StreamProfile};
 use anyhow::Result;
@@ -6,6 +6,7 @@ use realsense_sys as sys;
 use std::{convert::TryFrom, ptr::NonNull};
 use thiserror::Error;
 
+/// Type representing the device and streams associated with a pipeline.
 #[derive(Debug)]
 pub struct PipelineProfile<'a> {
     device: Device,
@@ -33,6 +34,19 @@ pub enum PipelineProfileConstructionError {
 impl<'a> TryFrom<NonNull<sys::rs2_pipeline_profile>> for PipelineProfile<'a> {
     type Error = anyhow::Error;
 
+    /// Attempts to construct a `PipelineProfile` from an `rs2_pipeline_profile` pointer.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PipelineProfileConstructionError::CouldNotRetrieveDevice`] if the device
+    /// associated with the pipeline profile cannot be obtained.
+    ///
+    /// Returns [`PipelineProfileConstructionError::CouldNotRetrieveStreamList`] if the list of
+    /// streams associated with the pipeline profile cannot be obtained.
+    ///
+    /// Returns [`PipelineProfileConstructionError::CouldNotRetrieveStreamCount`] if the length of
+    /// the list of streams associated with the pipeline profile cannot be obtained.
+    ///
     fn try_from(
         pipeline_profile_ptr: NonNull<sys::rs2_pipeline_profile>,
     ) -> Result<Self, Self::Error> {
@@ -75,12 +89,12 @@ impl<'a> TryFrom<NonNull<sys::rs2_pipeline_profile>> for PipelineProfile<'a> {
 }
 
 impl<'a> PipelineProfile<'a> {
-    /// Gets corresponding device of pipeline.
+    /// Gets the device associated with a pipeline.
     pub fn device(&'a self) -> &'a Device {
         &self.device
     }
 
-    /// Gets iterable list of streams of pipeline.
+    /// Gets list of streams associated with a pipeline.
     pub fn streams(&'a self) -> &'a Vec<StreamProfile<'a>> {
         &self.streams
     }
