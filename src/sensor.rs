@@ -74,13 +74,6 @@ unsafe impl Send for Sensor {}
 
 impl std::convert::From<NonNull<sys::rs2_sensor>> for Sensor {
     /// Attempt to construct a Sensor from a non-null pointer to `rs2_sensor`.
-    ///
-    /// # Errors
-    ///
-    /// This method will only fail if the stream profile list cannot be obtained from the
-    /// underlying `rs2_sensor`. The only error then is if this returns
-    /// [`SensorConstructionError::CouldNotGenerateStreamProfileList`].
-    ///
     fn from(sensor_ptr: NonNull<sys::rs2_sensor>) -> Self {
         Sensor {
             sensor_ptr,
@@ -111,9 +104,6 @@ impl Sensor {
     ///
     /// Returns [`SensorConstructionError::CouldNotGetSensorFromList`] if the index is invalid or
     /// if the sensor list is invalid in some way.
-    ///
-    /// Returns [`SensorConstructionError::CouldNotGenerateStreamProfileList`] if the stream
-    /// profile list cannot be obtained during construction.
     ///
     pub(crate) fn try_create(
         sensor_list: &NonNull<sys::rs2_sensor_list>,
