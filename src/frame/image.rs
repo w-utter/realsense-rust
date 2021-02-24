@@ -37,9 +37,8 @@ pub struct Video;
 
 /// Holds the raw data pointer and derived data for an RS2 Image frame.
 ///
-/// All fields in this struct are initialized during struct creation (via `try_from`).
-/// Everything called from here during runtime should be valid as long as the
-/// Frame is in scope... like normal Rust.
+/// This generic type isn't particularly useful on it's own. In all cases, you want a specialized
+/// version of this class ([`DepthFrame`], [`VideoFrame`], [`DisparityFrame`]).
 pub struct ImageFrame<'a, Kind> {
     /// The raw data pointer from the original rs2 frame.
     frame_ptr: NonNull<sys::rs2_frame>,
@@ -99,7 +98,6 @@ impl<'a, K> ImageFrame<'a, K> {
 }
 
 impl<'a, K> Drop for ImageFrame<'a, K> {
-    /// Drop the raw pointer stored with this struct whenever it goes out of scope.
     fn drop(&mut self) {
         unsafe {
             if self.should_drop {
