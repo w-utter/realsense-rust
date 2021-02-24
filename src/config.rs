@@ -50,6 +50,12 @@ impl Drop for Config {
 
 unsafe impl Send for Config {}
 
+impl Default for Config {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Config {
     /// Construct a new configuration.
     pub fn new() -> Self {
