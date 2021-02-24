@@ -43,22 +43,6 @@ doc-check:
     - cargo clippy --all-targets --all-features -- -A clippy::all -D clippy::missing_docs_in_private_items
   allow_failure: true
 
-pages:
-  stage: doc
-  # Run this at the same time as test and lint jobs
-  # https://docs.gitlab.com/ee/ci/yaml/#needs
-  needs: []
-  script:
-    - cargo doc --no-deps --document-private-items
-    - mkdir public
-    - cp -r target/doc/* public
-    - LOWERCASE_PROJECT_NAME=$(echo $CI_PROJECT_NAME | awk '{print tolower($0)}') && echo "<meta http-equiv=refresh content=0;url=$LOWERCASE_PROJECT_NAME>" > public/index.html
-  artifacts:
-    paths:
-      - public
-  only:
-    - main
-
 build_badges:
   stage: build_artifacts
   script:
