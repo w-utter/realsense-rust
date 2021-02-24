@@ -158,6 +158,7 @@ impl Sensor {
                 err.as_ref().is_none() && is_extendable != 0
             })
             .unwrap()
+            .clone()
     }
 
     /// Get the value associated with the provided Rs2Option for the sensor.
