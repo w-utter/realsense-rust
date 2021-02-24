@@ -291,6 +291,13 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
 
 impl<'a> DepthFrame<'a> {
     /// Given the 2D depth coordinate (x,y) provide the corresponding depth in metric units.
+    ///
+    /// # Warning
+    ///
+    /// It is fairly expensive to use this in practice as it will copy the underlying pixel into a
+    /// f32 value that gives you the direct distance. In practice getting
+    /// `DepthFrame::depth_units` and then applying that to the raw data with [`ImageFrame::get`]
+    /// is a much more efficient way to handle this.
     pub fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
@@ -317,6 +324,16 @@ impl<'a> DepthFrame<'a> {
 
 impl<'a> DisparityFrame<'a> {
     /// Given the 2D depth coordinate (x,y) provide the corresponding depth in metric units.
+    ///
+    /// # Warning
+    ///
+    /// Like with depth frames, this method is fairly expensive to use in practice. The disparity
+    /// can be converted to depth fairly easily, but this will effectively copy every pixel if you
+    /// loop through the data with this method for every index.
+    ///
+    /// It is often much more efficient to directly stream the
+    /// [`Rs2Format::Distance`](crate::kind::Rs2Format::Distance) format if you want the distance
+    /// directly, and access the frame data with [`ImageFrame::get`].
     pub fn distance(&self, col: usize, row: usize) -> Result<f32, DepthError> {
         unsafe {
             let mut err = ptr::null_mut::<sys::rs2_error>();
