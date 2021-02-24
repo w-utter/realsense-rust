@@ -225,7 +225,7 @@ pub mod config;
 pub mod context;
 pub mod device;
 pub mod device_hub;
-pub mod error;
+mod error;
 pub mod frame;
 pub mod kind;
 pub mod pipeline;
