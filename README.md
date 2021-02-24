@@ -105,17 +105,6 @@ realsense-sys = "0.3"
 ```
 and you can call low level C functions.
 
-```rust
-let pipeline = Pipeline::new()?;
-let (pipeline_ptr, context_ptr) = pipeline.into_raw_parts();
-
-unsafe {
-    let mut error = std::ptr::null_mut::<sys::rs2_error>();
-    realsense_sys::rs2_pipeline_start(pipeline_ptr, &mut error as *mut _);
-    if !error.is_null() { panic!("fail"); }
-}
-```
-
 ### Generate documents from source code
 
 The API changes may not be found on docs.rs. To generate document from the most
