@@ -88,7 +88,7 @@ pub type DisparityFrame<'a> = ImageFrame<'a, Disparity>;
 pub type VideoFrame<'a> = ImageFrame<'a, Video>;
 
 impl<'a, K> ImageFrame<'a, K> {
-    /// Iter derivation for all Image frames
+    /// Iterator through every "pixel" of an image frame.
     pub fn iter(&'a self) -> ImageIter<'a, ImageFrame<'a, K>> {
         ImageIter {
             frame: self,
