@@ -193,7 +193,14 @@ impl Device {
         }
     }
 
-    pub unsafe fn get_raw(&self) -> NonNull<sys::rs2_device> {
+    /// Get the underlying low-level pointer to the context object
+    ///
+    /// # Safety
+    ///
+    /// This method is not intended to be called or used outside of the crate itself. Be warned, it
+    /// is _undefined behaviour_ to delete or try to drop this pointer in any context. If you do,
+    /// you risk a double-free or use-after-free error.
+    pub(crate) unsafe fn get_raw(&self) -> NonNull<sys::rs2_device> {
         self.device_ptr
     }
 }
