@@ -58,7 +58,7 @@
 ///
 /// Based on the above API, you might think that errors should incorporate `(Rs2Exception, String,
 /// String, String)`. This would give us the full information unwound from the original C++
-/// exception that underlies librealsense2. In practice, however, this information isn't terribly
+/// exception that underpins librealsense2. In practice, however, this information isn't terribly
 /// useful.
 ///
 /// Most of the Rust API sticks to only calling a single librealsense2 function from the FFI at a
