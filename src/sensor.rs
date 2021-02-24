@@ -143,14 +143,11 @@ impl Sensor {
         }
     }
 
-    /// List of all valid sensor extensions that apply to this sensor.
-    ///
-    /// See the [list of possible sensor extensions](crate::kind::Rs2Extension) for
-    /// more info.
-    pub fn extensions(&self) -> Vec<Rs2Extension> {
+    /// Get sensor extension.
+    pub fn extension(&self) -> Rs2Extension {
         SENSOR_EXTENSIONS
             .iter()
-            .filter_map(|ext| unsafe {
+            .find(|ext| unsafe {
                 let mut err = std::ptr::null_mut::<sys::rs2_error>();
                 let is_extendable = sys::rs2_is_sensor_extendable_to(
                     self.sensor_ptr.as_ptr(),
@@ -158,15 +155,9 @@ impl Sensor {
                     &mut err,
                 );
 
-                if err.as_ref().is_some() {
-                    None
-                } else if is_extendable != 0 {
-                    Some(*ext)
-                } else {
-                    None
-                }
+                err.as_ref().is_none() && is_extendable != 0
             })
-            .collect()
+            .unwrap()
     }
 
     /// Get the value associated with the provided Rs2Option for the sensor.
