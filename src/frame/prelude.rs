@@ -95,14 +95,17 @@ pub trait FrameEx<'a> {
     /// Test whether the metadata arguemnt is supported by the frame.
     fn supports_metadata(&self, metadata_kind: Rs2FrameMetadata) -> bool;
 
-    /// Transfers ownership of the underlying frame data pointer
+    /// Get (and own) the underlying frame pointer for this frame.
+    ///
+    /// This is primarily useful for passing this frame forward to a processing block or blocks
+    /// (either via frame queue, directly, callback, etc).
     ///
     /// # Safety
     ///
     /// This does not destroy the underlying frame pointer once self
     /// goes out of scope. Instead, the program expects that whatever
     /// object was assigned to by this function now manages the lifetime.
-    unsafe fn get_owned_frame_ptr(self) -> NonNull<sys::rs2_frame>;
+    unsafe fn get_owned_raw(self) -> NonNull<sys::rs2_frame>;
 }
 
 /// Describes functionality specific to Depth frames.
