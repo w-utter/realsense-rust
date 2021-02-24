@@ -24,7 +24,7 @@ use crate::{
 use anyhow::Result;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
-use std::{convert::TryFrom, ffi::CStr, mem::MaybeUninit, ptr::NonNull};
+use std::{convert::From, ffi::CStr, mem::MaybeUninit, ptr::NonNull};
 use thiserror::Error;
 
 /// Type describing errors that can occur when trying to construct a sensor.
@@ -129,22 +129,17 @@ impl Sensor {
     ///
     /// # Errors
     ///
-    /// Returns
-    /// [`DeviceConstructionError::CouldNotCreateDeviceFromSensor`](crate::device::DeviceConstructionError::CouldNotCreateDeviceFromSensor)
-    /// if the device cannot be obtained due to the physical device being disconnected or the
-    /// internal sensor pointer becoming invalid.
+    /// Returns [`DeviceConstructionError::CouldNotCreateDeviceFromSensor`] if the device cannot be
+    /// obtained due to the physical device being disconnected or the internal sensor pointer
+    /// becoming invalid.
     ///
-    /// Returns
-    /// [`DeviceConstructionError::CouldNotGenerateSensorList`](crate::device::DeviceConstructionError::CouldNotGenerateSensorList)
-    /// if the sensor list cannot be captured during construction.
-    ///
-    pub fn device(&self) -> Result<Device> {
+    pub fn device(&self) -> Result<Device, DeviceConstructionError> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let device_ptr = sys::rs2_create_device_from_sensor(self.sensor_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, DeviceConstructionError::CouldNotCreateDeviceFromSensor)?;
 
-            Ok(Device::try_from(NonNull::new(device_ptr).unwrap())?)
+            Ok(Device::from(NonNull::new(device_ptr).unwrap()))
         }
     }
 
