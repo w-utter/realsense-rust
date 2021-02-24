@@ -34,7 +34,7 @@
 //! the stream profile obtained via the frame types. The streams will have the same unique
 //! identifier if they correspond to the same stream.
 //!
-//! See [the `StreamProfile` type](crate::stream::StreamProfile) for more information.
+//! See [the `StreamProfile` type](crate::stream_profile::StreamProfile) for more information.
 //!
 
 use crate::{
