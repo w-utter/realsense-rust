@@ -4,6 +4,10 @@ stages:
   - doc
   - build_artifacts
 
+before_script:
+  # Update rust in case the latest version isn't built into our docker image.
+  - rustup update
+
 ##### ########## ########## ########## ########## #####
 # TEST STAGE
 # - [PASS REQ] runs all unit tests in the build
