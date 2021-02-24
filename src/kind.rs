@@ -18,10 +18,8 @@
 //! use num_traits::ToPrimitive;
 //! use crate::kind::Rs2Extension;
 //!
-//! fn main() {
-//!     let ext = Rs2Extension::ColorSensor;
-//!     println!("The extension is: {}", ext.to_u32().unwrap());
-//! }
+//! let ext = Rs2Extension::ColorSensor;
+//! println!("The extension is: {}", ext.to_u32().unwrap());
 //! ```
 //!
 //! In practice, most of the time you shouldn't need to wrap or unwrap `u32` values, and the API
@@ -47,14 +45,12 @@
 //! use realsense_sys as sys;
 //! use crate::kind::Rs2CameraInfo;
 //!
-//! fn main() {
-//!     for i in 0..sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT {
-//!         println!(
-//!             "The enum variant {:?} corresponds to the u32 value {}",
-//!             Rs2CameraInfo::from_u32(i).unwrap(),
-//!             i,
-//!         );
-//!     }
+//! for i in 0..sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT {
+//!     println!(
+//!         "The enum variant {:?} corresponds to the u32 value {}",
+//!         Rs2CameraInfo::from_u32(i).unwrap(),
+//!         i,
+//!     );
 //! }
 //! ```
 //!
