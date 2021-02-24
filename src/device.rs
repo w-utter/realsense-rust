@@ -63,8 +63,6 @@ impl From<NonNull<sys::rs2_device>> for Device {
 impl Device {
     /// Attempt to construct a Device given a device list and index into the device list.
     ///
-    /// Constructs a device from the provided device list and index, or returns an error.
-    ///
     /// # Errors
     ///
     /// Returns [`DeviceConstructionError::CouldNotGetDeviceFromDeviceList`] if the device cannot
