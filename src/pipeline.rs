@@ -21,5 +21,5 @@ mod inactive;
 mod profile;
 
 pub use active::{ActivePipeline, FrameWaitError};
-pub use inactive::InactivePipeline;
+pub use inactive::{InactivePipeline, PipelineActivationError, PipelineConstructionError};
 pub use profile::{PipelineProfile, PipelineProfileConstructionError};
