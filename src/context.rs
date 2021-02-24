@@ -10,7 +10,7 @@ use crate::{
 use anyhow::Result;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
-use std::{convert::From, path::Path, ptr::NonNull};
+use std::{collections::HashSet, convert::From, path::Path, ptr::NonNull};
 use thiserror::Error;
 
 /// Type describing a RealSense context, used by the rest of the API.
@@ -83,14 +83,14 @@ impl Context {
     }
 
     /// Get a list of devices that are already connected to the host.
-    pub fn query_devices(&self, product_mask: Vec<Rs2ProductLine>) -> Vec<Device> {
+    pub fn query_devices(&self, product_mask: HashSet<Rs2ProductLine>) -> Vec<Device> {
         // TODO/TEST: Make sure that an empty mask (therefore giving no filter) gives
         // us _all_ devices, not _no_ devices.
 
-        let mask = if product_mask.len() > 0 {
-            product_mask.iter().fold(0, |k, v| k | v.to_u32().unwrap()) as i32
-        } else {
+        let mask = if product_mask.is_empty() {
             Rs2ProductLine::Any.to_i32().unwrap()
+        } else {
+            product_mask.iter().fold(0, |k, v| k | v.to_u32().unwrap()) as i32
         };
 
         let mut devices = Vec::new();
