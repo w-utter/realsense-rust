@@ -73,7 +73,7 @@ fn main() -> Result<()> {
     }
 
     Ok(())
-}                                                                             ```
+}
 ```
 
 ## Examples
