@@ -4,15 +4,6 @@ stages:
   - doc
   - build_artifacts
 
-before_script:
-  # Update rust in case the latest version isn't built into our "tang" docker
-  # image.
-  - CARGO_HOME=/usr/local/cargo rustup update
-
-variables:
-  CARGO_HOME: $CI_PROJECT_DIR/cargo
-
-
 ##### ########## ########## ########## ########## #####
 # TEST STAGE
 # - [PASS REQ] runs all unit tests in the build
