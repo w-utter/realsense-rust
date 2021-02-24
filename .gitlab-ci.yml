@@ -12,21 +12,6 @@ before_script:
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
 
-# For advice on caching packages, see:
-# https://doc.rust-lang.org/cargo/guide/cargo-home.html#caching-the-cargo-home-in-ci
-.paths: &cache_paths
-  - cargo/bin/
-  - cargo/registry/index/
-  - cargo/registry/cache/
-  - cargo/git/db/
-  - target/
-
-cache:
-  # Only pull the cache, don't push because it takes a while.
-  # The build_cache job populates the cache.
-  policy: pull
-  paths: *cache_paths
-
 
 ##### ########## ########## ########## ########## #####
 # TEST STAGE
@@ -71,35 +56,6 @@ pages:
   artifacts:
     paths:
       - public
-  only:
-    - main
-
-##### ########## ########## ########## ########## #####
-# CACHE STAGE
-# - [PASS REQ] creates a build cache for future builds. This frees up time
-#   during build cycles, and is essential when running on DigitalOcean
-#   or another like service.
-# - [PASS REQ] update our badges on the project page by
-#   creating new SVG artifacts in the ci/ folder.
-build_cache:
-  stage: build_artifacts
-  script:
-    - rustc --version
-    - cargo --version
-    # Build dev-dependencies too
-    - cargo test --no-run
-    # du commands are for keeping an eye on cache size
-    # We can remove them if we're confident the cache size is sane.
-    - du -h -d3 cargo || true
-    - du -h -d2 target || true
-
-    # cargo check/clippy does weird caching things, so don't try to cache it
-    # https://github.com/rust-lang/rust-clippy/issues/4612
-    # - cargo clippy --all-targets --all-features -- -D warnings
-  cache:
-    # Push all cargo dependencies and compilation artifacts.
-    policy: push
-    paths: *cache_paths
   only:
     - main
 
