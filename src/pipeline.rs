@@ -1,8 +1,8 @@
 //! Module containing pipeline types used in getting frames from the device.
 //!
 //! Pipelines are the core data type used to poll or wait for frames from librealsense2. The
-//! pipeline is constructed from a [`Context`], and streaming is started by feeding the pipeline a
-//! configuration (see: [`Config`]).
+//! pipeline is constructed from a [`Context`](crate::context::Context), and streaming is started
+//! by feeding the pipeline a configuration (see: [`Config`](crate::config::Config)).
 //!
 //! In the librealsense2 C-API, there is no distinction between active (streaming / started)
 //! pipelines and inactive (not streaming / stopped) pipelines. The type is instead merely
@@ -22,4 +22,4 @@ mod profile;
 
 pub use active::ActivePipeline;
 pub use inactive::InactivePipeline;
-pub use profile::PipelineProfile;
+pub use profile::{PipelineProfile, PipelineProfileConstructionError};
