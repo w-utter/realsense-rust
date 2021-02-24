@@ -5,17 +5,17 @@
 //! others are general groupings. The full list of flags is provided below for
 //! convenience.
 //!
-//! | Product Line Name | Flag (in hex) |
-//! | ----------------- | ------------- |
-//! | `RS2_PRODUCT_LINE_ANY` | `0xff` |
-//! | `RS2_PRODUCT_LINE_ANY_INTEL` | `0xfe` |
-//! | `RS2_PRODUCT_LINE_NON_INTEL` | `0x01` |
-//! | `RS2_PRODUCT_LINE_D400` | `0x02` |
-//! | `RS2_PRODUCT_LINE_SR300` | `0x04` |
-//! | `RS2_PRODUCT_LINE_L500` | `0x08` |
-//! | `RS2_PRODUCT_LINE_T200` | `0x10` |
-//! | `RS2_PRODUCT_LINE_DEPTH` | `(RS2_PRODUCT_LINE_L500 | RS2_PRODUCT_LINE_SR300 | RS2_PRODUCT_LINE_D400)` |
-//! | `RS2_PRODUCT_LINE_TRACKING` | `RS2_PRODUCT_LINE_T200` |
+//! | Product Line Name            | Flag (in hex)                                                                |
+//! | ---------------------------- | ---------------------------------------------------------------------------- |
+//! | `RS2_PRODUCT_LINE_ANY`       | `0xff`                                                                       |
+//! | `RS2_PRODUCT_LINE_ANY_INTEL` | `0xfe`                                                                       |
+//! | `RS2_PRODUCT_LINE_NON_INTEL` | `0x01`                                                                       |
+//! | `RS2_PRODUCT_LINE_D400`      | `0x02`                                                                       |
+//! | `RS2_PRODUCT_LINE_SR300`     | `0x04`                                                                       |
+//! | `RS2_PRODUCT_LINE_L500`      | `0x08`                                                                       |
+//! | `RS2_PRODUCT_LINE_T200`      | `0x10`                                                                       |
+//! | `RS2_PRODUCT_LINE_DEPTH`     | `(RS2_PRODUCT_LINE_L500 or RS2_PRODUCT_LINE_SR300 or RS2_PRODUCT_LINE_D400)` |
+//! | `RS2_PRODUCT_LINE_TRACKING`  | `RS2_PRODUCT_LINE_T200`                                                      |
 //!
 
 use num_derive::{FromPrimitive, ToPrimitive};
