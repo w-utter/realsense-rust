@@ -20,7 +20,7 @@
 /// This macro then is a way to take in two items:
 ///
 /// 1. The `*mut rs2_error`
-/// 2. An expression that will evaluate to an tuple-like error that holds (`Rs2Exception`, String).
+/// 2. An expression that will evaluate to an tuple-like error that holds `(Rs2Exception, String)`.
 ///
 /// The latter part may seem confusing, but more or less we aim for:
 ///
