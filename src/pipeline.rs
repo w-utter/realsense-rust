@@ -20,6 +20,6 @@ mod active;
 mod inactive;
 mod profile;
 
-pub use active::ActivePipeline;
+pub use active::{ActivePipeline, FrameWaitError};
 pub use inactive::InactivePipeline;
 pub use profile::{PipelineProfile, PipelineProfileConstructionError};

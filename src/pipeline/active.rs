@@ -7,6 +7,7 @@ use realsense_sys as sys;
 use std::{ptr::NonNull, time::Duration};
 use thiserror::Error;
 
+/// Enumeration over possible errors that can occur when waiting for a frame.
 #[derive(Error, Debug)]
 pub enum FrameWaitError {
     /// librealsense2 had an internal error occur while waiting for frames.
@@ -17,6 +18,7 @@ pub enum FrameWaitError {
     DidTimeoutBeforeFrameArrival,
 }
 
+/// Type representing an "active" pipeline which is configured and can acquire frames.
 pub struct ActivePipeline<'a> {
     pipeline_ptr: NonNull<sys::rs2_pipeline>,
     profile: PipelineProfile<'a>,
@@ -105,6 +107,14 @@ impl<'a> ActivePipeline<'a> {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let mut frame = std::ptr::null_mut::<sys::rs2_frame>();
 
+            // NOTE: You may notice that there is a `sys::rs2_pipeline_wait_for_frames` and you
+            // might wonder why we only use this variant. Primarily, they do the same thing, but
+            // this API is a bit cleaner since it makes it easy to detect if a timeout occurred.
+            // If you use `rs2_pipeline_wait_for_frames` instead of
+            // `rs2_pipeline_try_wait_for_frames` then you need to parse the returned `rs2_error`
+            // message to determine if a timeout occurred. Here, we can just check if
+            // `did_get_frame` is false (0), and provided no other errors occurred, then that is
+            // indicative of a timeout.
             let did_get_frame = sys::rs2_pipeline_try_wait_for_frames(
                 self.pipeline_ptr.as_ptr(),
                 &mut frame,
@@ -125,8 +135,8 @@ impl<'a> ActivePipeline<'a> {
 
     /// Poll if next frame is immediately available.
     ///
-    /// Unlike [Pipeline::start], the method does not block and returns None
-    /// if the next frame is not available.
+    /// Unlike [`ActivePipeline::wait`], the method does not block and returns None immediately if
+    /// the next frame is not available.
     pub fn poll(&mut self) -> Option<CompositeFrame> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
