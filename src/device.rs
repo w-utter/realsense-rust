@@ -70,9 +70,6 @@ impl Device {
     /// Returns [`DeviceConstructionError::CouldNotGetDeviceFromDeviceList`] if the device cannot
     /// be retrieved from the device list (e.g. if the index is invalid).
     ///
-    /// Returns [`DeviceConstructionError::CouldNotGenerateSensorList`] if the sensor list cannot
-    /// be captured during construction.
-    ///
     pub(crate) fn try_create(
         device_list: &NonNull<sys::rs2_device_list>,
         index: i32,
