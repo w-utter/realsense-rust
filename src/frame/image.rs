@@ -356,9 +356,7 @@ impl<'a> DisparityFrame<'a> {
         })?;
         Ok(depth_units)
     }
-}
 
-impl<'a> DisparityFrame<'a> {
     /// Get the baseline used during construction of the Disparity frame
     pub fn baseline(&self) -> Result<f32, DisparityError> {
         unsafe {
