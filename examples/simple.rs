@@ -43,7 +43,7 @@ pub fn main() -> Result<()> {
 
         // Debug width and height calls
         let depth_frame = depth_frames.pop().unwrap();
-        println!("{:#?}", depth_frame);
+        // println!("{:#?}", depth_frame);
         let distance = depth_frame.distance(depth_frame.width(), depth_frame.height())?;
         print!("\rCurrent distance of center pixel: {:15} m", distance);
     }
