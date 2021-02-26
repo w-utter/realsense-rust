@@ -16,7 +16,7 @@
 //!
 //! ```rust
 //! use num_traits::ToPrimitive;
-//! use crate::kind::Rs2Extension;
+//! use realsense_rust::kind::Rs2Extension;
 //!
 //! let ext = Rs2Extension::ColorSensor;
 //! println!("The extension is: {}", ext.to_u32().unwrap());
@@ -43,7 +43,7 @@
 //! ```rust
 //! use num_traits::FromPrimitive;
 //! use realsense_sys as sys;
-//! use crate::kind::Rs2CameraInfo;
+//! use realsense_rust::kind::Rs2CameraInfo;
 //!
 //! for i in 0..sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT {
 //!     println!(

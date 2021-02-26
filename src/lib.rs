@@ -19,25 +19,24 @@
 //! ```rust
 //! use anyhow::Result;
 //! use realsense_rust::{
+//!     context::Context,
 //!     config::Config,
+//!     frame::{DepthFrame, VideoFrame},
 //!     kind::{Rs2Format, Rs2StreamKind},
-//!     pipeline::{
-//!         InactivePipeline,
-//!         ActivePipeline
-//!     },
+//!     pipeline::InactivePipeline,
 //! };
 //! use std::convert::TryFrom;
 //!
 //! fn main() -> Result<()> {
 //!     let context = Context::new()?;
-//!     let pipeline = InactivePipeline::try_from(context)?;
+//!     let pipeline = InactivePipeline::try_from(&context)?;
 //!
-//!     let config = Config::new()?;
+//!     let mut config = Config::new();
 //!     config
 //!         .enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Rs2Format::Z16, 30)?
 //!         .enable_stream(Rs2StreamKind::Color, 0, 640, 0, Rs2Format::Rgb8, 30)?;
 //!
-//!     let mut pipeline = pipeline.start(&config)?;
+//!     let mut pipeline = pipeline.start(Some(&config))?;
 //!
 //!     let frames = pipeline.wait(None)?;
 //!     let video_frames = frames.frames_of_extension::<VideoFrame>();
@@ -209,6 +208,8 @@
 //! error types are of the form:
 //!
 //! ```no_run
+//! use realsense_rust::kind::Rs2Exception;
+//!
 //! pub enum SomeError { CouldNotXXX(Rs2Exception, String), }
 //! ```
 //!
