@@ -15,6 +15,9 @@ version = "0.5.0"
 [features]
 default = []
 buildtime-bindgen = ["realsense-sys/buildtime-bindgen"]
+# This feature does nothing in terms of library functionality / behaviour, but
+# is instead for running tests that utilize a single device on the backend.
+test-single-device = []
 with-nalgebra = ["nalgebra"]
 
 [dependencies]
