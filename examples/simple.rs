@@ -2,9 +2,9 @@ use anyhow::{ensure, Result};
 use realsense_rust::{
     config::Config,
     context::Context,
-    frame::{DepthFrame, FrameEx, VideoFrame},
-    kind::{Rs2Extension, Rs2Format, Rs2ProductLine, Rs2StreamKind},
-    pipeline::{ActivePipeline, InactivePipeline},
+    frame::DepthFrame,
+    kind::{Rs2Format, Rs2ProductLine, Rs2StreamKind},
+    pipeline::InactivePipeline,
 };
 use std::collections::HashSet;
 use std::convert::TryFrom;
@@ -37,7 +37,7 @@ pub fn main() -> Result<()> {
         // Debug width and height calls
         let depth_frame = depth_frames.pop().unwrap();
         // println!("{:#?}", depth_frame);
-        let distance = depth_frame.distance(depth_frame.width(), depth_frame.height())?;
+        let distance = depth_frame.distance(depth_frame.width() / 2, depth_frame.height() / 2)?;
         print!("\rCurrent distance of center pixel: {:15} m", distance);
     }
 
