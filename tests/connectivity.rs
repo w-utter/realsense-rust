@@ -41,8 +41,8 @@ fn can_resolve_color_and_depth_on_d400_series() {
     let devices = context.query_devices(HashSet::new());
 
     let device = devices.iter().find(|d| {
-        let serial = d.info(Rs2CameraInfo::ProductLine).unwrap();
-        serial.to_str().unwrap() == "D400"
+        let product = d.info(Rs2CameraInfo::ProductLine).unwrap();
+        product.to_str().unwrap() == "D400"
     });
 
     if let Some(device) = device {
