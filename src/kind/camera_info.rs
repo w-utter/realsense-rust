@@ -51,3 +51,20 @@ pub enum Rs2CameraInfo {
     //
     // Count = sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use num_traits::FromPrimitive;
+
+    #[test]
+    fn all_variants_exist() {
+        for i in 0..sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT {
+            assert!(
+                Rs2CameraInfo::from_u32(i).is_some(),
+                "Rs2CameraInfo variant for ordinal {} does not exist.",
+                i,
+            );
+        }
+    }
+}
