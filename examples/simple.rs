@@ -18,13 +18,6 @@ pub fn main() -> Result<()> {
     let devices = context.query_devices(queried_devices);
     ensure!(!devices.is_empty(), "No devices found");
 
-    // print!("\rProcessing {}%...", i);
-    // // or
-    // // stdout.write(format!("\rProcessindevice::Device,g {}%...", i).as_bytes()).unwrap();
-
-    // stdout.flush().unwrap();
-    // sleep(Duration::from_millis(20));
-
     // create pipeline
     let pipeline = InactivePipeline::try_from(&context)?;
     let mut config = Config::new();
