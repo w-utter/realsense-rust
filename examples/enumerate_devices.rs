@@ -18,7 +18,6 @@ fn main() -> Result<()> {
     let mut queried_devices = HashSet::new();
     queried_devices.insert(Rs2ProductLine::Any);
     let devices = Context::new()?.query_devices(queried_devices);
-
     ensure!(!devices.is_empty(), "No devices found");
 
     for device in devices {
