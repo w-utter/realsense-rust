@@ -6,10 +6,12 @@ use realsense_rust::{
     kind::{Rs2Format, Rs2ProductLine, Rs2StreamKind},
     pipeline::InactivePipeline,
 };
-use std::collections::HashSet;
-use std::convert::TryFrom;
-use std::time::Duration;
-
+use std::{
+    collections::HashSet,
+    convert::TryFrom,
+    io::{self, Write},
+    time::Duration,
+};
 pub fn main() -> Result<()> {
     // Check for depth or color-compatible devices.
     let mut queried_devices = HashSet::new();
@@ -22,6 +24,12 @@ pub fn main() -> Result<()> {
     let pipeline = InactivePipeline::try_from(&context)?;
     let mut config = Config::new();
     config.enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Rs2Format::Z16, 30)?;
+    config.enable_stream(Rs2StreamKind::Color, 0, 640, 0, Rs2Format::Rgb8, 30)?;
+    // config.enable_stream(Rs2StreamKind::Gyro, 0, 0, 0, Rs2Format::MotionRaw, 50)?;
+    if !pipeline.can_resolve(&config) {
+        println!("Cannot resolve assigned config. Check the config for incompatible types.");
+        return Ok(());
+    }
     let mut pipeline = pipeline.start(Some(&config))?;
 
     // process frames
@@ -35,9 +43,12 @@ pub fn main() -> Result<()> {
 
         // Debug width and height calls
         let depth_frame = depth_frames.pop().unwrap();
-        // println!("{:#?}", depth_frame);
         let distance = depth_frame.distance(depth_frame.width() / 2, depth_frame.height() / 2)?;
-        print!("\rCurrent distance of center pixel: {:15} m", distance);
+        if distance == 0.0 {
+            continue;
+        }
+        print!("\rCurrent distance of center pixel: {:<15} m", distance);
+        io::stdout().flush().unwrap();
     }
 
     Ok(())
