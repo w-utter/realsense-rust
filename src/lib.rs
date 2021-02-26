@@ -33,8 +33,8 @@
 //!
 //!     let mut config = Config::new();
 //!     config
-//!         .enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Rs2Format::Z16, 30)?
-//!         .enable_stream(Rs2StreamKind::Color, 0, 640, 0, Rs2Format::Rgb8, 30)?;
+//!         .enable_stream(Rs2StreamKind::Depth, Some(0), 640, 0, Rs2Format::Z16, 30)?
+//!         .enable_stream(Rs2StreamKind::Color, Some(0), 640, 0, Rs2Format::Rgb8, 30)?;
 //!
 //!     let mut pipeline = pipeline.start(Some(&config))?;
 //!

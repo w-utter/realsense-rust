@@ -36,7 +36,7 @@ fn can_resolve_all_streams_always() {
 }
 
 #[test]
-fn can_resolve_color_and_depth_on_d400_series() {
+fn can_resolve_color_and_depth_and_infrared_on_d400_series() {
     let context = Context::new().unwrap();
     let devices = context.query_devices(HashSet::new());
 
@@ -54,9 +54,17 @@ fn can_resolve_color_and_depth_on_d400_series() {
             .unwrap()
             .disable_all_streams()
             .unwrap()
-            .enable_stream(Rs2StreamKind::Color, 0, 640, 0, Rs2Format::Rgba8, 30)
+            .enable_stream(Rs2StreamKind::Color, Some(0), 0, 0, Rs2Format::Rgba8, 30)
             .unwrap()
-            .enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Rs2Format::Z16, 30)
+            .enable_stream(Rs2StreamKind::Depth, Some(0), 0, 0, Rs2Format::Z16, 30)
+            .unwrap()
+            // RealSense doesn't seem to like index zero for the IR cameras
+            //
+            // Really not sure why? This seems like an implementation issue, but in practice most
+            // won't be after the IR image directly (I think?).
+            .enable_stream(Rs2StreamKind::Infrared, Some(1), 0, 0, Rs2Format::Any, 30)
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Infrared, Some(2), 0, 0, Rs2Format::Any, 30)
             .unwrap();
 
         let pipeline = InactivePipeline::try_from(&context).unwrap();
