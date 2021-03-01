@@ -156,9 +156,12 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
                 metadata_kind.to_u32().unwrap(),
                 &mut err,
             );
-            err.as_ref()?;
-
-            Some(val)
+            if err.as_ref().is_none() {
+                Some(val)
+            } else {
+                sys::rs2_free_error(err);
+                None
+            }
         }
     }
 
@@ -172,7 +175,12 @@ impl<'a> FrameEx<'a> for MotionFrame<'a> {
                 &mut err,
             );
 
-            err.as_ref().is_none() && supports_metadata != 0
+            if err.as_ref().is_none() {
+                supports_metadata != 0
+            } else {
+                sys::rs2_free_error(err);
+                false
+            }
         }
     }
 
