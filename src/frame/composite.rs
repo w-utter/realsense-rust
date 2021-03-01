@@ -38,10 +38,11 @@ impl CompositeFrame {
         unsafe {
             let mut err: *mut sys::rs2_error = std::ptr::null_mut::<sys::rs2_error>();
             let count = sys::rs2_embedded_frames_count(self.ptr.as_ptr(), &mut err);
-            if NonNull::new(err).is_some() {
-                0
-            } else {
+            if err.as_ref().is_none() {
                 count as usize
+            } else {
+                sys::rs2_free_error(err);
+                0
             }
         }
     }
@@ -70,36 +71,38 @@ impl CompositeFrame {
     {
         let mut frames = Vec::new();
         for i in 0..self.count() {
-            let ptr = unsafe {
+            unsafe {
                 let mut err = std::ptr::null_mut::<sys::rs2_error>();
-                let ptr =
+                let frame_ptr =
                     sys::rs2_extract_frame(self.ptr.as_ptr(), i as std::os::raw::c_int, &mut err);
 
-                if NonNull::new(err).is_some() {
+                if err.as_ref().is_some() {
                     sys::rs2_free_error(err);
-                    None
-                } else {
-                    NonNull::new(ptr)
+                    continue;
                 }
-            };
 
-            if let Some(ptr) = ptr {
-                unsafe {
-                    let mut err = std::ptr::null_mut::<sys::rs2_error>();
-                    let is_kind = sys::rs2_is_frame_extendable_to(
-                        ptr.as_ptr(),
-                        E::extension().to_u32().unwrap(),
-                        &mut err,
-                    );
+                let nonnull_frame_ptr = NonNull::new(frame_ptr).unwrap();
 
-                    if err.as_ref().is_none() && is_kind != 0 {
-                        if let Ok(f) = E::try_from(ptr) {
+                let is_kind = sys::rs2_is_frame_extendable_to(
+                    nonnull_frame_ptr.as_ptr(),
+                    E::extension().to_u32().unwrap(),
+                    &mut err,
+                );
+
+                if err.as_ref().is_none() {
+                    if is_kind != 0 {
+                        if let Ok(f) = E::try_from(nonnull_frame_ptr) {
                             frames.push(f);
+                            // This continue is to skip releasing the frame at the end of the loop.
+                            // If the call to try_from above is successful and we can push, then
+                            // the frame is owned by the type `E` and we should not release it.
+                            continue;
                         }
-                    } else {
-                        sys::rs2_free_error(err);
                     }
+                } else {
+                    sys::rs2_free_error(err);
                 }
+                sys::rs2_release_frame(nonnull_frame_ptr.as_ptr());
             }
         }
         frames
