@@ -83,14 +83,14 @@ impl CompositeFrame {
 
                 let nonnull_frame_ptr = NonNull::new(frame_ptr).unwrap();
 
-                let is_kind = sys::rs2_is_frame_extendable_to(
+                let is_extendable_to = sys::rs2_is_frame_extendable_to(
                     nonnull_frame_ptr.as_ptr(),
                     E::extension().to_u32().unwrap(),
                     &mut err,
                 );
 
                 if err.as_ref().is_none() {
-                    if is_kind != 0 {
+                    if is_extendable_to != 0 {
                         if let Ok(f) = E::try_from(nonnull_frame_ptr) {
                             frames.push(f);
                             // This continue is to skip releasing the frame at the end of the loop.
