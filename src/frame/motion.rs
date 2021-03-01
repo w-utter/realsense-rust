@@ -122,7 +122,7 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a> {
 }
 
 impl<'a> FrameEx<'a> for MotionFrame<'a> {
-    fn profile(&'a self) -> &'a StreamProfile<'a> {
+    fn stream_profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 

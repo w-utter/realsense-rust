@@ -47,7 +47,7 @@ impl<'a> Extension for PointsFrame<'a> {
 }
 
 impl<'a> FrameEx<'a> for PointsFrame<'a> {
-    fn profile(&'a self) -> &'a StreamProfile<'a> {
+    fn stream_profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 

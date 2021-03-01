@@ -231,7 +231,7 @@ impl<'a> Extension for VideoFrame<'a> {
 }
 
 impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
-    fn profile(&'a self) -> &'a StreamProfile<'a> {
+    fn stream_profile(&'a self) -> &'a StreamProfile<'a> {
         &self.frame_stream_profile
     }
 

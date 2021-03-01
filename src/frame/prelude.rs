@@ -76,10 +76,10 @@ pub struct CouldNotGetFrameSensorError(pub Rs2Exception, pub String);
 
 /// Describes common functionality across frame types.
 pub trait FrameEx<'a> {
-    /// Get the stream profile of the object.
-    fn profile(&'a self) -> &'a StreamProfile<'a>;
+    /// Get the stream profile associated with the frame.
+    fn stream_profile(&'a self) -> &'a StreamProfile<'a>;
 
-    /// Get the frame sensor.
+    /// Get the sensor associated with the frame.
     fn sensor(&self) -> Result<Sensor>;
 
     /// Get the frame timestamp.
@@ -88,7 +88,9 @@ pub trait FrameEx<'a> {
     /// Get the RealSense timestamp domain for the current timestamp.
     fn timestamp_domain(&self) -> Rs2TimestampDomain;
 
-    /// Get the frame metadata.
+    /// Get frame metadata.
+    ///
+    /// Returns `None` if the `metadata_kind` is not supported by the frame type.
     fn metadata(&self, metadata_kind: Rs2FrameMetadata) -> Option<std::os::raw::c_longlong>;
 
     /// Test whether the metadata arguemnt is supported by the frame.
