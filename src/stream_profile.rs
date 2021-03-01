@@ -246,7 +246,7 @@ impl<'a> StreamProfile<'a> {
     /// Gets the stream kind from the stream data.
     ///
     /// This can be e.g. Depth, Video, Accel, Gyro, etc.
-    pub fn stream(&self) -> Rs2StreamKind {
+    pub fn kind(&self) -> Rs2StreamKind {
         self.stream
     }
 
@@ -262,7 +262,7 @@ impl<'a> StreamProfile<'a> {
     /// Gets the stream's index.
     ///
     /// This is useful if you want to enable / disable a particular stream according to its index.
-    pub fn stream_index(&self) -> usize {
+    pub fn index(&self) -> usize {
         self.index
     }
 
