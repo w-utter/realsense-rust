@@ -6,9 +6,10 @@
 //!
 //! This is typically what is delivered from the pipeline.
 
-use crate::{common::*, kind::Extension};
+use crate::kind::Extension;
 use num_traits::ToPrimitive;
-use std::convert::{From, TryFrom};
+use realsense_sys as sys;
+use std::{convert::TryFrom, ptr::NonNull};
 
 /// Holds the raw data pointer from an RS2 Composite frame type.
 pub struct CompositeFrame {
@@ -35,7 +36,7 @@ impl CompositeFrame {
     /// Gets the number of individual frames included in the composite frame.
     pub fn count(&self) -> usize {
         unsafe {
-            let mut err: *mut sys::rs2_error = ptr::null_mut();
+            let mut err: *mut sys::rs2_error = std::ptr::null_mut::<sys::rs2_error>();
             let count = sys::rs2_embedded_frames_count(self.ptr.as_ptr(), &mut err);
             if NonNull::new(err).is_some() {
                 0
@@ -70,10 +71,12 @@ impl CompositeFrame {
         let mut frames = Vec::new();
         for i in 0..self.count() {
             let ptr = unsafe {
-                let mut err: *mut sys::rs2_error = ptr::null_mut();
-                let ptr = sys::rs2_extract_frame(self.ptr.as_ptr(), i as c_int, &mut err);
+                let mut err = std::ptr::null_mut::<sys::rs2_error>();
+                let ptr =
+                    sys::rs2_extract_frame(self.ptr.as_ptr(), i as std::os::raw::c_int, &mut err);
 
                 if NonNull::new(err).is_some() {
+                    sys::rs2_free_error(err);
                     None
                 } else {
                     NonNull::new(ptr)
@@ -82,16 +85,19 @@ impl CompositeFrame {
 
             if let Some(ptr) = ptr {
                 unsafe {
-                    let mut err: *mut sys::rs2_error = ptr::null_mut();
+                    let mut err = std::ptr::null_mut::<sys::rs2_error>();
                     let is_kind = sys::rs2_is_frame_extendable_to(
                         ptr.as_ptr(),
                         E::extension().to_u32().unwrap(),
                         &mut err,
                     );
-                    if NonNull::new(err).is_none() && is_kind != 0 {
+
+                    if err.as_ref().is_none() && is_kind != 0 {
                         if let Ok(f) = E::try_from(ptr) {
                             frames.push(f);
                         }
+                    } else {
+                        sys::rs2_free_error(err);
                     }
                 }
             }
