@@ -8,7 +8,7 @@ use realsense_rust::{
     kind::{Rs2CameraInfo, Rs2Format, Rs2ProductLine, Rs2StreamKind},
     pipeline::InactivePipeline,
 };
-use std::{collections::HashSet, convert::TryFrom};
+use std::{collections::HashSet, convert::TryFrom, time::Duration};
 
 /// Ensure at least one intel device is "connected" as far as the driver is concerned.
 ///
@@ -38,14 +38,13 @@ fn can_resolve_all_streams_always() {
 #[test]
 fn can_resolve_color_and_depth_and_infrared_on_d400_series() {
     let context = Context::new().unwrap();
-    let devices = context.query_devices(HashSet::new());
 
-    let device = devices.iter().find(|d| {
-        let product = d.info(Rs2CameraInfo::ProductLine).unwrap();
-        product.to_str().unwrap() == "D400"
-    });
+    let mut queryable_set = HashSet::new();
+    queryable_set.insert(Rs2ProductLine::D400);
 
-    if let Some(device) = device {
+    let devices = context.query_devices(queryable_set);
+
+    if let Some(device) = devices.get(0) {
         let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
         let mut config = Config::new();
 
@@ -100,16 +99,15 @@ fn cannot_resolve_bad_config() {
 }
 
 #[test]
-fn streams_at_expected_framerate() {
+fn d400_streams_at_expected_framerate() {
     let context = Context::new().unwrap();
-    let devices = context.query_devices(HashSet::new());
 
-    let device = devices.iter().find(|d| {
-        let product = d.info(Rs2CameraInfo::ProductLine).unwrap();
-        product.to_str().unwrap() == "D400"
-    });
+    let mut queryable_set = HashSet::new();
+    queryable_set.insert(Rs2ProductLine::D400);
 
-    if let Some(device) = device {
+    let devices = context.query_devices(queryable_set);
+
+    if let Some(device) = devices.get(0) {
         let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
         let mut config = Config::new();
 
@@ -144,8 +142,16 @@ fn streams_at_expected_framerate() {
 
         let begin = std::time::SystemTime::now();
 
-        for _ in 0..iters {
-            let frames = pipeline.wait(None).unwrap();
+        for i in 0..iters {
+            let frames = if i == 0 {
+                // The first frames captured always seems to have a delay.
+                //
+                // For the D400, this is ~300ms but can probably get worse than this. Instead, we
+                // choose the default timeout for the first frame.
+                pipeline.wait(None).unwrap()
+            } else {
+                pipeline.wait(Some(Duration::from_millis(34))).unwrap()
+            };
             nframes += frames.count();
         }
 
@@ -160,6 +166,82 @@ fn streams_at_expected_framerate() {
 
         assert!(
             absdiff_from_expected <= 500,
+            "Difference in time from expected time: {}",
+            absdiff_from_expected
+        );
+
+        assert_eq!(nframes, framerate * number_of_seconds * 2);
+    }
+}
+
+#[test]
+fn l500_streams_at_expected_framerate() {
+    let context = Context::new().unwrap();
+
+    let mut queryable_set = HashSet::new();
+    queryable_set.insert(Rs2ProductLine::L500);
+
+    let devices = context.query_devices(queryable_set);
+
+    if let Some(device) = devices.get(0) {
+        let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
+        let mut config = Config::new();
+
+        let framerate = 30;
+
+        config
+            .enable_device_from_serial(serial)
+            .unwrap()
+            .disable_all_streams()
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Depth, None, 0, 0, Rs2Format::Z16, framerate)
+            .unwrap()
+            .enable_stream(
+                Rs2StreamKind::Infrared,
+                None,
+                0,
+                0,
+                Rs2Format::Y8,
+                framerate,
+            )
+            .unwrap();
+
+        let pipeline = InactivePipeline::try_from(&context).unwrap();
+
+        assert!(pipeline.can_resolve(&config));
+
+        let mut pipeline = pipeline.start(Some(&config)).unwrap();
+
+        let mut nframes = 0usize;
+        let number_of_seconds = 5;
+        let iters = number_of_seconds * framerate;
+
+        let begin = std::time::SystemTime::now();
+
+        for i in 0..iters {
+            let frames = if i == 0 {
+                // The first frame captured always seems to have a delay.
+                //
+                // For the L515, this is observably around 1.5s, but can probably be worse than
+                // this. Instead, we choose the default timeout for the first frame.
+                pipeline.wait(None).unwrap()
+            } else {
+                pipeline.wait(Some(Duration::from_millis(34))).unwrap()
+            };
+            nframes += frames.count();
+        }
+
+        let elapsed_time_ms = begin.elapsed().unwrap().as_millis();
+        let expected_time_ms = 1000 * (number_of_seconds as u128);
+
+        let absdiff_from_expected = if elapsed_time_ms > expected_time_ms {
+            elapsed_time_ms - expected_time_ms
+        } else {
+            expected_time_ms - elapsed_time_ms
+        };
+
+        assert!(
+            absdiff_from_expected <= 1700,
             "Difference in time from expected time: {}",
             absdiff_from_expected
         );
