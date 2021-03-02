@@ -3,7 +3,7 @@ use realsense_rust::{
     config::Config,
     context::Context,
     frame::DepthFrame,
-    kind::{Rs2Format, Rs2ProductLine, Rs2StreamKind},
+    kind::{Rs2CameraInfo, Rs2Format, Rs2ProductLine, Rs2StreamKind},
     pipeline::InactivePipeline,
 };
 use std::{

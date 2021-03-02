@@ -3,19 +3,15 @@ use realsense_rust::{
     config::Config,
     context::Context,
     frame::{DepthFrame, MotionFrame},
-    kind::{Rs2Format, Rs2ProductLine, Rs2StreamKind},
+    kind::{Rs2CameraInfo, Rs2Format, Rs2ProductLine, Rs2StreamKind},
     pipeline::InactivePipeline,
 };
-use std::{
-    collections::HashSet,
-    convert::TryFrom,
-    io::{self, Write},
-    time::Duration,
-};
+use std::{collections::HashSet, convert::TryFrom, time::Duration};
+
 pub fn main() -> Result<()> {
     // Check for depth or color-compatible devices.
     let mut queried_devices = HashSet::new();
-    queried_devices.insert(Rs2ProductLine::Any);
+    queried_devices.insert(Rs2ProductLine::D400);
     let context = Context::new()?;
     let devices = context.query_devices(queried_devices);
     ensure!(!devices.is_empty(), "No devices found");

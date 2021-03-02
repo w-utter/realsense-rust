@@ -1,9 +1,5 @@
 use anyhow::{ensure, Result};
-use realsense_rust::{
-    context::Context,
-    device::Device,
-    kind::{Rs2CameraInfo, Rs2ProductLine},
-};
+use realsense_rust::{context::Context, device::Device, kind::Rs2CameraInfo};
 use std::collections::HashSet;
 
 fn match_info(device: &Device, info_param: Rs2CameraInfo) -> String {
