@@ -2,7 +2,7 @@ use anyhow::{ensure, Result};
 use realsense_rust::{
     config::Config,
     context::Context,
-    frame::DepthFrame,
+    frame::{DepthFrame, MotionFrame},
     kind::{Rs2Format, Rs2ProductLine, Rs2StreamKind},
     pipeline::InactivePipeline,
 };
@@ -25,30 +25,44 @@ pub fn main() -> Result<()> {
     let mut config = Config::new();
     config.enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Rs2Format::Z16, 30)?;
     config.enable_stream(Rs2StreamKind::Color, 0, 640, 0, Rs2Format::Rgb8, 30)?;
-    // config.enable_stream(Rs2StreamKind::Gyro, 0, 0, 0, Rs2Format::MotionRaw, 50)?;
+    config.enable_stream(Rs2StreamKind::Gyro, 0, 0, 0, Rs2Format::Any, 0)?;
     if !pipeline.can_resolve(&config) {
         println!("Cannot resolve assigned config. Check the config for incompatible types.");
         return Ok(());
     }
     let mut pipeline = pipeline.start(Some(&config))?;
-
+    let mut distance = 0.0;
+    let mut motion = [0.0, 0.0, 0.0];
     // process frames
-    for _ in 0..1000 {
-        let timeout = Duration::from_millis(1000);
+    for i in 0..1000 {
+        let timeout = Duration::from_millis(5000);
         let frames = pipeline.wait(Some(timeout))?;
+
+        // Get depth
         let mut depth_frames = frames.frames_of_extension::<DepthFrame>();
-        if depth_frames.is_empty() {
-            continue;
+        if !depth_frames.is_empty() {
+            let depth_frame = depth_frames.pop().unwrap();
+            let tmp_distance =
+                depth_frame.distance(depth_frame.width() / 2, depth_frame.height() / 2)?;
+            if tmp_distance != 0.0 {
+                distance = tmp_distance;
+            }
         }
 
-        // Debug width and height calls
-        let depth_frame = depth_frames.pop().unwrap();
-        let distance = depth_frame.distance(depth_frame.width() / 2, depth_frame.height() / 2)?;
-        if distance == 0.0 {
-            continue;
+        if i % 10 == 0 {
+            // Get gyro
+            let motion_frames = frames.frames_of_extension::<MotionFrame>();
+            if !motion_frames.is_empty() {
+                motion = *motion_frames[0].motion();
+            }
         }
-        print!("\rCurrent distance of center pixel: {:<15} m", distance);
-        io::stdout().flush().unwrap();
+
+        // Print our results
+        println!(
+            "Distance of center pixel: {:<10} m | Gyro reading: {:>15}, {:>15}, {:>15}",
+            distance, motion[0], motion[1], motion[2]
+        );
+        //io::stdout().flush().unwrap();
     }
 
     Ok(())
