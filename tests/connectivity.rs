@@ -5,6 +5,7 @@
 use realsense_rust::{
     config::Config,
     context::Context,
+    frame::{ColorFrame, DepthFrame, InfraredFrame},
     kind::{Rs2CameraInfo, Rs2Format, Rs2ProductLine, Rs2StreamKind},
     pipeline::InactivePipeline,
 };
@@ -150,14 +151,7 @@ fn d400_streams_at_expected_framerate() {
             .unwrap()
             .disable_all_streams()
             .unwrap()
-            .enable_stream(
-                Rs2StreamKind::Color,
-                Some(0),
-                0,
-                0,
-                Rs2Format::Rgba8,
-                framerate,
-            )
+            .enable_stream(Rs2StreamKind::Color, None, 0, 0, Rs2Format::Rgb8, framerate)
             .unwrap()
             .enable_stream(Rs2StreamKind::Depth, None, 0, 0, Rs2Format::Z16, framerate)
             .unwrap();
@@ -173,14 +167,17 @@ fn d400_streams_at_expected_framerate() {
         let iters = number_of_seconds * framerate;
 
         let begin = std::time::SystemTime::now();
+        let mut first_iter_time = 0;
 
         for i in 0..iters {
             let frames = if i == 0 {
                 // The first frames captured always seems to have a delay.
                 //
-                // For the D400, this is ~300ms but can probably get worse than this. Instead, we
+                // For the D400, this is 1.5s but can probably get worse than this. Instead, we
                 // choose the default timeout for the first frame.
-                pipeline.wait(None).unwrap()
+                let frames = pipeline.wait(None).unwrap();
+                first_iter_time = begin.elapsed().unwrap().as_millis();
+                frames
             } else {
                 pipeline.wait(Some(Duration::from_millis(34))).unwrap()
             };
@@ -197,7 +194,7 @@ fn d400_streams_at_expected_framerate() {
         };
 
         assert!(
-            absdiff_from_expected <= 500,
+            absdiff_from_expected <= first_iter_time + 200,
             "Difference in time from expected time: {}",
             absdiff_from_expected
         );
@@ -249,6 +246,7 @@ fn l500_streams_at_expected_framerate() {
         let iters = number_of_seconds * framerate;
 
         let begin = std::time::SystemTime::now();
+        let mut first_iter_time = 0;
 
         for i in 0..iters {
             let frames = if i == 0 {
@@ -256,7 +254,9 @@ fn l500_streams_at_expected_framerate() {
                 //
                 // For the L515, this is observably around 1.5s, but can probably be worse than
                 // this. Instead, we choose the default timeout for the first frame.
-                pipeline.wait(None).unwrap()
+                let frames = pipeline.wait(None).unwrap();
+                first_iter_time = begin.elapsed().unwrap().as_millis();
+                frames
             } else {
                 pipeline.wait(Some(Duration::from_millis(34))).unwrap()
             };
@@ -273,11 +273,89 @@ fn l500_streams_at_expected_framerate() {
         };
 
         assert!(
-            absdiff_from_expected <= 1700,
+            absdiff_from_expected <= first_iter_time + 200,
             "Difference in time from expected time: {}",
             absdiff_from_expected
         );
 
         assert_eq!(nframes, framerate * number_of_seconds * 2);
+    }
+}
+
+#[test]
+fn d400_streams_are_distinct() {
+    let context = Context::new().unwrap();
+
+    let mut queryable_set = HashSet::new();
+    queryable_set.insert(Rs2ProductLine::D400);
+
+    let devices = context.query_devices(queryable_set);
+
+    if let Some(device) = devices.get(0) {
+        let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
+        let mut config = Config::new();
+
+        // Gyro / accel streams not included here because they have a different framerate
+        config
+            .enable_device_from_serial(serial)
+            .unwrap()
+            .disable_all_streams()
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Color, None, 0, 0, Rs2Format::Rgba8, 30)
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Depth, None, 0, 0, Rs2Format::Z16, 30)
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Infrared, Some(1), 0, 0, Rs2Format::Y8, 30)
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Infrared, Some(2), 0, 0, Rs2Format::Any, 30)
+            .unwrap();
+
+        let pipeline = InactivePipeline::try_from(&context).unwrap();
+        let mut pipeline = pipeline.start(Some(&config)).unwrap();
+
+        let frames = pipeline.wait(None).unwrap();
+
+        assert_eq!(frames.count(), 4);
+        assert_eq!(frames.frames_of_type::<ColorFrame>().len(), 1);
+        assert_eq!(frames.frames_of_type::<DepthFrame>().len(), 1);
+        assert_eq!(frames.frames_of_type::<InfraredFrame>().len(), 2);
+    }
+}
+
+#[test]
+fn l515_streams_are_distinct() {
+    let context = Context::new().unwrap();
+
+    let mut queryable_set = HashSet::new();
+    queryable_set.insert(Rs2ProductLine::L500);
+
+    let devices = context.query_devices(queryable_set);
+
+    if let Some(device) = devices.get(0) {
+        let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
+        let mut config = Config::new();
+
+        // Gyro / accel streams not included here because they have a different framerate
+        config
+            .enable_device_from_serial(serial)
+            .unwrap()
+            .disable_all_streams()
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Color, None, 0, 0, Rs2Format::Yuyv, 30)
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Depth, None, 0, 0, Rs2Format::Z16, 30)
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Infrared, None, 0, 0, Rs2Format::Y8, 30)
+            .unwrap();
+
+        let pipeline = InactivePipeline::try_from(&context).unwrap();
+        let mut pipeline = pipeline.start(Some(&config)).unwrap();
+
+        let frames = pipeline.wait(None).unwrap();
+
+        assert_eq!(frames.count(), 3);
+        assert_eq!(frames.frames_of_type::<ColorFrame>().len(), 1);
+        assert_eq!(frames.frames_of_type::<DepthFrame>().len(), 1);
+        assert_eq!(frames.frames_of_type::<InfraredFrame>().len(), 1);
     }
 }
