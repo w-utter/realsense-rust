@@ -29,7 +29,6 @@ fn main() -> Result<()> {
             ">  {:25} | SN: {:15} | Curr Fw Ver: {:15} | Rec FW Ver: {:15}",
             name, sn, fw, rec_fw
         );
-        device.hardware_reset();
     }
     println!("---");
     Ok(())
