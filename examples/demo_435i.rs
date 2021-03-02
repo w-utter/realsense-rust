@@ -24,6 +24,12 @@ pub fn main() -> Result<()> {
         .disable_all_streams()?
         .enable_stream(Rs2StreamKind::Depth, None, 640, 0, Rs2Format::Z16, 30)?
         .enable_stream(Rs2StreamKind::Color, None, 640, 0, Rs2Format::Rgb8, 30)?
+        // RealSense doesn't seem to like index zero for the IR cameras on D435i
+        //
+        // Really not sure why? This seems like an implementation issue, but in practice most
+        // won't be after the IR image directly.
+        .enable_stream(Rs2StreamKind::Infrared, Some(1), 640, 0, Rs2Format::Y8, 30)?
+        .enable_stream(Rs2StreamKind::Infrared, Some(2), 640, 0, Rs2Format::Y8, 30)?
         .enable_stream(Rs2StreamKind::Gyro, None, 0, 0, Rs2Format::Any, 0)?;
     // Change pipeline's type from InactivePipeline -> ActivePipeline
     let mut pipeline = pipeline.start(Some(&config))?;
