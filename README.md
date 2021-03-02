@@ -12,16 +12,17 @@ to improve or have a question regarding how things work.
 
 ## Hardware Considerations
 
-- **USB Current Draw**: Many RealSense devices draw more current than a standard USB cable can provide. For example, standard USB
-can run 0.9 amps, while the RealSense 435i draws 2 amps. Using a USB cable that doesn't have the right current capability will
-interfere with the USB connection on the host, and the device will seem to disconnect. A device power cycle doesn't always remedy this, either.
-In many cases, the host USB hub itself will need a reset. Make sure any USB cables used are able to draw at least 2 amps.
-Read more on the issue [here](https://support.intelrealsense.com/hc/en-us/community/posts/360033595714-D435-USB-connection-issues).
+- **USB Current Draw**: Many RealSense devices draw more current than a standard USB cable can provide. For example,
+  standard USB can run 0.9 amps, while the RealSense 435i draws 2 amps. Using a USB cable that doesn't have the right
+  current capability will interfere with the USB connection on the host, and the device will seem to disconnect. A
+  device power cycle doesn't always remedy this, either. In many cases, the host USB hub itself will need a reset. Make
+  sure any USB cables used are able to draw at least 2 amps. Read more on the issue
+  [here](https://support.intelrealsense.com/hc/en-us/community/posts/360033595714-D435-USB-connection-issues).
 
 ## API Use
 
-Make sure librealsense 2.41.0 is installed on your system. Visit the [RealSense official repository](https://github.com/IntelRealSense/librealsense)
-to download and install this on the host machine.
+Make sure librealsense 2.41.0 is installed on your system. Visit the [RealSense official
+repository](https://github.com/IntelRealSense/librealsense) to download and install this on the host machine.
 
 Once that's done, add this crate to your project's `Cargo.toml`:
 
@@ -32,8 +33,8 @@ realsense-rust = "0.5"
 
 ...and you should be good to go!
 
-**Backwards compatibility**: If you're using an older librealsense version, you may enable `buildtime-bindgen` to re-generate
-the bindings. We make no claims of backwards compatibility; good luck.
+**Backwards compatibility**: If you're using an older librealsense version, you may enable `buildtime-bindgen` to
+re-generate the bindings. We make no claims of backwards compatibility; good luck.
 
 ```toml
 [dependencies]
@@ -47,9 +48,8 @@ realsense-rust = { version = "0.5", features = ["buildtime-bindgen"] }
 
 ## Getting started + Examples
 
-Check out the examples folder for minimal configurations that fit your device. We have included a
-README.md there that explains the functionality that one can get from this API. For more explanation, see
-the crate documentation.
+Check out the examples folder for minimal configurations that fit your device. We have included a README.md there that
+explains the functionality that one can get from this API. For more explanation, see the crate documentation.
 
 ## Contributing to this project
 
@@ -72,8 +72,7 @@ and you can call low level C functions.
 
 ### Generate documents from source code
 
-The API changes may not be found on docs.rs. To generate document from the most
-recent commit,
+The API changes may not be found on docs.rs. To generate document from the most recent commit,
 
 ```sh
 cargo doc --open
