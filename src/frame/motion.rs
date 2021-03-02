@@ -283,3 +283,14 @@ impl<'a> GyroFrame<'a> {
         &self.motion
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn frame_has_correct_kind() {
+        assert_eq!(AccelFrame::kind(), Rs2StreamKind::Accel);
+        assert_eq!(GyroFrame::kind(), Rs2StreamKind::Gyro);
+    }
+}

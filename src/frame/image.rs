@@ -259,7 +259,7 @@ impl<'a> FrameCategory for DisparityFrame<'a> {
     }
 
     fn kind() -> Rs2StreamKind {
-        Rs2StreamKind::Depth
+        Rs2StreamKind::Any
     }
 
     fn has_correct_kind(&self) -> bool {
@@ -542,5 +542,20 @@ impl<'a, K> ImageFrame<'a, K> {
         } else {
             Some(self.get_unchecked(col, row))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn frame_has_correct_kind() {
+        assert_eq!(ColorFrame::kind(), Rs2StreamKind::Color);
+        assert_eq!(DepthFrame::kind(), Rs2StreamKind::Depth);
+        assert_eq!(DisparityFrame::kind(), Rs2StreamKind::Any);
+        assert_eq!(InfraredFrame::kind(), Rs2StreamKind::Infrared);
+        assert_eq!(FisheyeFrame::kind(), Rs2StreamKind::Fisheye);
+        assert_eq!(ConfidenceFrame::kind(), Rs2StreamKind::Confidence);
     }
 }

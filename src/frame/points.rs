@@ -236,3 +236,13 @@ impl<'a> PointsFrame<'a> {
         self.num_points
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn frame_has_correct_kind() {
+        assert_eq!(PointsFrame::kind(), Rs2StreamKind::Any);
+    }
+}

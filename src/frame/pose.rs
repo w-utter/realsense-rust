@@ -257,3 +257,13 @@ impl<'a> FrameEx<'a> for PoseFrame<'a> {
         self.frame_ptr
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn frame_has_correct_kind() {
+        assert_eq!(PoseFrame::kind(), Rs2StreamKind::Pose);
+    }
+}
