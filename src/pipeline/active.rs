@@ -123,13 +123,13 @@ impl<'a> ActivePipeline<'a> {
             );
             check_rs2_error!(err, FrameWaitError::DidErrorDuringFrameWait)?;
 
-            if did_get_frame == 0 {
-                return Err(anyhow::anyhow!(
+            if did_get_frame != 0 {
+                Ok(CompositeFrame::from(NonNull::new(frame).unwrap()))
+            } else {
+                Err(anyhow::anyhow!(
                     FrameWaitError::DidTimeoutBeforeFrameArrival
-                ));
+                ))
             }
-
-            Ok(CompositeFrame::from(NonNull::new(frame).unwrap()))
         }
     }
 
