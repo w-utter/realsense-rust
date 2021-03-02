@@ -74,6 +74,36 @@ fn can_resolve_color_and_depth_and_infrared_on_d400_series() {
 }
 
 #[test]
+fn can_resolve_depth_and_infrared_on_l500_series() {
+    let context = Context::new().unwrap();
+
+    let mut queryable_set = HashSet::new();
+    queryable_set.insert(Rs2ProductLine::L500);
+
+    let devices = context.query_devices(queryable_set);
+
+    if let Some(device) = devices.get(0) {
+        let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
+        let mut config = Config::new();
+
+        config
+            .enable_device_from_serial(serial)
+            .unwrap()
+            .disable_all_streams()
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Depth, Some(0), 0, 0, Rs2Format::Z16, 30)
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Infrared, Some(0), 0, 0, Rs2Format::Y8, 30)
+            .unwrap();
+
+        let pipeline = InactivePipeline::try_from(&context).unwrap();
+
+        assert!(pipeline.can_resolve(&config));
+        assert!(pipeline.resolve(&config).is_some());
+    }
+}
+
+#[test]
 fn cannot_resolve_bad_config() {
     let context = Context::new().unwrap();
     let mut config = Config::new();
