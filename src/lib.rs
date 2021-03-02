@@ -16,12 +16,12 @@
 //! You can start by using [`InactivePipeline`](crate::pipeline::InactivePipeline). This is the
 //! minimal example to capture color and depth images.
 //!
-//! ```rust
+//! ```no_run
 //! use anyhow::Result;
 //! use realsense_rust::{
 //!     context::Context,
 //!     config::Config,
-//!     frame::{DepthFrame, VideoFrame},
+//!     frame::{DepthFrame, ColorFrame},
 //!     kind::{Rs2Format, Rs2StreamKind},
 //!     pipeline::InactivePipeline,
 //! };
@@ -39,10 +39,10 @@
 //!     let mut pipeline = pipeline.start(Some(&config))?;
 //!
 //!     let frames = pipeline.wait(None)?;
-//!     let video_frames = frames.frames_of_extension::<VideoFrame>();
-//!     let depth_frames = frames.frames_of_extension::<DepthFrame>();
+//!     let color_frames = frames.frames_of_type::<ColorFrame>();
+//!     let depth_frames = frames.frames_of_type::<DepthFrame>();
 //!
-//!     for f in video_frames {
+//!     for f in color_frames {
 //!         // process video / color frames
 //!     }
 //!

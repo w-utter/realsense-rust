@@ -12,7 +12,7 @@ pub use self::image::{
     ColorFrame, ConfidenceFrame, DepthFrame, DisparityFrame, FisheyeFrame, ImageFrame,
     InfraredFrame,
 };
-pub use self::motion::MotionFrame;
+pub use self::motion::{AccelFrame, GyroFrame, MotionFrame};
 pub use self::points::PointsFrame;
 pub use composite::CompositeFrame;
 pub use pixel::PixelKind;
