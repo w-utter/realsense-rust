@@ -398,6 +398,7 @@ impl<'a, K> ImageFrame<'a, K> {
     ///
     /// This makes a call directly to the underlying data pointer inherited from
     /// the `rs2_frame`.
+    #[inline(always)]
     pub fn get_unchecked(&'a self, col: usize, row: usize) -> PixelKind<'a> {
         unsafe {
             get_pixel(
