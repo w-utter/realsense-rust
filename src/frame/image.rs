@@ -273,7 +273,7 @@ impl<'a> FrameCategory for ColorFrame<'a> {
     }
 
     fn kind() -> Rs2StreamKind {
-        Rs2StreamKind::Depth
+        Rs2StreamKind::Color
     }
 
     fn has_correct_kind(&self) -> bool {
@@ -287,7 +287,7 @@ impl<'a> FrameCategory for InfraredFrame<'a> {
     }
 
     fn kind() -> Rs2StreamKind {
-        Rs2StreamKind::Color
+        Rs2StreamKind::Infrared
     }
 
     fn has_correct_kind(&self) -> bool {
