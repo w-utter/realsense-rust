@@ -16,7 +16,7 @@ use std::{
 pub fn main() -> Result<()> {
     // Check for depth or color-compatible devices.
     let mut queried_devices = HashSet::new();
-    queried_devices.insert(Rs2ProductLine::Any);
+    queried_devices.insert(Rs2ProductLine::L500);
     let context = Context::new()?;
     let devices = context.query_devices(queried_devices);
     ensure!(!devices.is_empty(), "No devices found.");
