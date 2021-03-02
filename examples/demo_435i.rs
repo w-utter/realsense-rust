@@ -23,16 +23,17 @@ pub fn main() -> Result<()> {
     // create pipeline
     let pipeline = InactivePipeline::try_from(&context)?;
     let mut config = Config::new();
-    config.enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Rs2Format::Z16, 30)?;
-    config.enable_stream(Rs2StreamKind::Color, 0, 640, 0, Rs2Format::Rgb8, 30)?;
-    config.enable_stream(Rs2StreamKind::Gyro, 0, 0, 0, Rs2Format::Any, 0)?;
-    if !pipeline.can_resolve(&config) {
-        println!("Cannot resolve assigned config. Check the config for incompatible types.");
-        return Ok(());
-    }
+    config
+        .enable_device_from_serial(devices[0].info(Rs2CameraInfo::SerialNumber).unwrap())?
+        .disable_all_streams()?
+        .enable_stream(Rs2StreamKind::Depth, 0, 640, 0, Rs2Format::Z16, 30)?
+        .enable_stream(Rs2StreamKind::Color, 0, 640, 0, Rs2Format::Rgb8, 30)?
+        .enable_stream(Rs2StreamKind::Gyro, 0, 0, 0, Rs2Format::Any, 0)?;
+    // Change pipeline's type from InactivePipeline -> ActivePipeline
     let mut pipeline = pipeline.start(Some(&config))?;
     let mut distance = 0.0;
     let mut motion = [0.0, 0.0, 0.0];
+
     // process frames
     for i in 0..1000 {
         let timeout = Duration::from_millis(5000);
