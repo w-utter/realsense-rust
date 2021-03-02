@@ -27,7 +27,7 @@ pub fn main() -> Result<()> {
     config.enable_stream(Rs2StreamKind::Depth, 0, 320, 0, Rs2Format::Z16, 30)?;
     config.enable_stream(Rs2StreamKind::Infrared, 0, 320, 0, Rs2Format::Y8, 30)?;
     if !pipeline.can_resolve(&config) {
-        println!("Cannot resolve assigned config. Check the config for incompaible types.");
+        println!("Cannot resolve assigned config. Check the config for incompatible types.");
         return Ok(());
     }
     let mut pipeline = pipeline.start(Some(&config))?;
@@ -42,8 +42,6 @@ pub fn main() -> Result<()> {
         if depth_frames.is_empty() {
             continue;
         }
-
-        // Debug width and height calls
         let depth_frame = depth_frames.pop().unwrap();
         let distance = depth_frame.distance(depth_frame.width() / 2, depth_frame.height() / 2)?;
         if distance == 0.0 {
