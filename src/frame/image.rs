@@ -11,13 +11,13 @@
 
 use super::pixel::{get_pixel, PixelKind};
 use super::prelude::{
-    CouldNotGetFrameSensorError, DepthError, DisparityError, FrameConstructionError, FrameEx,
-    BITS_PER_BYTE,
+    CouldNotGetFrameSensorError, DepthError, DisparityError, FrameCategory, FrameConstructionError,
+    FrameEx, BITS_PER_BYTE,
 };
 use crate::{
     check_rs2_error,
     common::*,
-    kind::{Extension, Rs2Extension, Rs2FrameMetadata, Rs2Option, Rs2TimestampDomain},
+    kind::{Rs2Extension, Rs2FrameMetadata, Rs2Option, Rs2TimestampDomain},
     sensor::Sensor,
     stream_profile::StreamProfile,
 };
@@ -31,9 +31,18 @@ pub struct Depth;
 /// A unit struct defining a Disparity frame.
 #[derive(Debug)]
 pub struct Disparity;
-/// A unit struct defining a Video frame.
+/// A unit struct defining a Color frame.
 #[derive(Debug)]
-pub struct Video;
+pub struct Color;
+/// A unit struct defining an Infrared frame.
+#[derive(Debug)]
+pub struct Infrared;
+/// A unit struct defining a Fisheye frame.
+#[derive(Debug)]
+pub struct Fisheye;
+/// A unit struct defining a Confidence frame.
+#[derive(Debug)]
+pub struct Confidence;
 
 /// Holds the raw data pointer and derived data for an RS2 Image frame.
 ///
@@ -107,12 +116,30 @@ pub type DepthFrame<'a> = ImageFrame<'a, Depth>;
 /// Everything called from here during runtime should be valid as long as the
 /// Frame is in scope... like normal Rust.
 pub type DisparityFrame<'a> = ImageFrame<'a, Disparity>;
-/// An ImageFrame type holding the raw pointer and derived metadata for an RS2 Video frame.
+/// An ImageFrame type holding the raw pointer and derived metadata for an RS2 Color frame.
 ///
 /// All fields in this struct are initialized during struct creation (via `try_from`).
 /// Everything called from here during runtime should be valid as long as the
 /// Frame is in scope... like normal Rust.
-pub type VideoFrame<'a> = ImageFrame<'a, Video>;
+pub type ColorFrame<'a> = ImageFrame<'a, Color>;
+/// An ImageFrame type holding the raw pointer and derived metadata for an RS2 Infrared frame.
+///
+/// All fields in this struct are initialized during struct creation (via `try_from`).
+/// Everything called from here during runtime should be valid as long as the
+/// Frame is in scope... like normal Rust.
+pub type InfraredFrame<'a> = ImageFrame<'a, Infrared>;
+/// An ImageFrame type holding the raw pointer and derived metadata for an RS2 Fisheye frame.
+///
+/// All fields in this struct are initialized during struct creation (via `try_from`).
+/// Everything called from here during runtime should be valid as long as the
+/// Frame is in scope... like normal Rust.
+pub type FisheyeFrame<'a> = ImageFrame<'a, Fisheye>;
+/// An ImageFrame type holding the raw pointer and derived metadata for an RS2 Confidence frame.
+///
+/// All fields in this struct are initialized during struct creation (via `try_from`).
+/// Everything called from here during runtime should be valid as long as the
+/// Frame is in scope... like normal Rust.
+pub type ConfidenceFrame<'a> = ImageFrame<'a, Confidence>;
 
 impl<'a, K> Drop for ImageFrame<'a, K> {
     fn drop(&mut self) {
@@ -212,21 +239,87 @@ impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
     }
 }
 
-impl<'a> Extension for DepthFrame<'a> {
+impl<'a> FrameCategory for DepthFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::DepthFrame
     }
-}
 
-impl<'a> Extension for DisparityFrame<'a> {
-    fn extension() -> Rs2Extension {
-        Rs2Extension::DisparityFrame
+    fn kind() -> Rs2StreamKind {
+        Rs2StreamKind::Depth
+    }
+
+    fn has_correct_kind(&self) -> bool {
+        self.frame_stream_profile.kind() == Self::kind()
     }
 }
 
-impl<'a> Extension for VideoFrame<'a> {
+impl<'a> FrameCategory for DisparityFrame<'a> {
+    fn extension() -> Rs2Extension {
+        Rs2Extension::DisparityFrame
+    }
+
+    fn kind() -> Rs2StreamKind {
+        Rs2StreamKind::Depth
+    }
+
+    fn has_correct_kind(&self) -> bool {
+        self.frame_stream_profile.kind() == Self::kind()
+    }
+}
+
+impl<'a> FrameCategory for ColorFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::VideoFrame
+    }
+
+    fn kind() -> Rs2StreamKind {
+        Rs2StreamKind::Depth
+    }
+
+    fn has_correct_kind(&self) -> bool {
+        self.frame_stream_profile.kind() == Self::kind()
+    }
+}
+
+impl<'a> FrameCategory for InfraredFrame<'a> {
+    fn extension() -> Rs2Extension {
+        Rs2Extension::VideoFrame
+    }
+
+    fn kind() -> Rs2StreamKind {
+        Rs2StreamKind::Color
+    }
+
+    fn has_correct_kind(&self) -> bool {
+        self.frame_stream_profile.kind() == Self::kind()
+    }
+}
+
+impl<'a> FrameCategory for FisheyeFrame<'a> {
+    fn extension() -> Rs2Extension {
+        Rs2Extension::VideoFrame
+    }
+
+    fn kind() -> Rs2StreamKind {
+        Rs2StreamKind::Fisheye
+    }
+
+    fn has_correct_kind(&self) -> bool {
+        self.frame_stream_profile.kind() == Self::kind()
+    }
+}
+
+impl<'a> FrameCategory for ConfidenceFrame<'a> {
+    fn extension() -> Rs2Extension {
+        Rs2Extension::VideoFrame
+    }
+
+    fn kind() -> Rs2StreamKind {
+        Rs2StreamKind::Confidence
+    }
+
+    fn has_correct_kind(&self) -> bool {
+        self.frame_stream_profile.kind() == Self::kind()
     }
 }
 

@@ -6,7 +6,7 @@
 
 use crate::{
     common::*,
-    kind::{Rs2Exception, Rs2FrameMetadata, Rs2TimestampDomain},
+    kind::{Rs2Exception, Rs2Extension, Rs2FrameMetadata, Rs2StreamKind, Rs2TimestampDomain},
     sensor::Sensor,
     stream_profile::StreamProfile,
 };
@@ -107,4 +107,29 @@ pub trait FrameEx<'a> {
     /// goes out of scope. Instead, the program expects that whatever
     /// object was assigned to by this function now manages the lifetime.
     unsafe fn get_owned_raw(self) -> NonNull<sys::rs2_frame>;
+}
+
+/// A trait for specifying which runtime stream kinds can be held within a frame type
+///
+/// This trait changes some of the semantics for how to think about librealsense2 frames. The
+/// reason for this is because frames in librealsense2 are more or less defined by three things:
+///
+/// 1. The data format ([`Rs2Format`](crate::kind::Rs2Format))
+/// 2. The extension type ([`Rs2Extension`](crate::kind::Rs2Extension),
+///    [`Extension`](crate::kind::Extension))
+/// 3. The "stream kind" ([`Rs2StreamKind`](crate::kind::Rs2StreamKind))
+///
+/// Knowing these three things, you can uniquely describe any frame. We aim for our types to be
+/// categorically distinct. Unfortunately, all three of the data points above are not encoded in
+/// the type information for a frame in librealsense2, but are rather things we check at runtime.
+///
+pub trait FrameCategory {
+    /// Identifies the corresponding [`Rs2Extension`] for the type implementing this trait.
+    fn extension() -> Rs2Extension;
+
+    /// Identifies the stream kind corresponding to a given type implementing this trait.
+    fn kind() -> Rs2StreamKind;
+
+    /// Predicate for checking if the RS2 frame's stream has the same kind as the frame category.
+    fn has_correct_kind(&self) -> bool;
 }

@@ -6,7 +6,8 @@
 //!
 //! This is typically what is delivered from the pipeline.
 
-use crate::kind::Extension;
+use super::prelude::FrameCategory;
+use crate::kind::Rs2StreamKind;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
 use std::{convert::TryFrom, ptr::NonNull};
@@ -56,18 +57,18 @@ impl CompositeFrame {
     ///
     /// # Generic Arguments
     ///
-    /// `E` must implement [`Extension`](crate::kind::Extension). Some examples of good types to
-    /// use for this are:
+    /// `F` must implement [`FrameCategory`](super::prelude::FrameCategory). Some examples of good
+    /// types to use for this are:
     ///
-    /// * [`VideoFrame`](crate::frame::VideoFrame)
+    /// * [`ColorFrame`](crate::frame::ColorFrame)
     /// * [`DepthFrame`](crate::frame::DepthFrame)
     /// * [`DisparityFrame`](crate::frame::DisparityFrame)
     /// * [`PoseFrame`](crate::frame::PoseFrame)
     /// * [`PointsFrame`](crate::frame::PointsFrame)
     ///
-    pub fn frames_of_extension<E>(&self) -> Vec<E>
+    pub fn frames_of_type<F>(&self) -> Vec<F>
     where
-        E: TryFrom<NonNull<sys::rs2_frame>> + Extension,
+        F: TryFrom<NonNull<sys::rs2_frame>> + FrameCategory,
     {
         let mut frames = Vec::new();
         for i in 0..self.count() {
@@ -85,14 +86,18 @@ impl CompositeFrame {
 
                 let is_extendable_to = sys::rs2_is_frame_extendable_to(
                     nonnull_frame_ptr.as_ptr(),
-                    E::extension().to_u32().unwrap(),
+                    F::extension().to_u32().unwrap(),
                     &mut err,
                 );
 
                 if err.as_ref().is_none() {
                     if is_extendable_to != 0 {
-                        if let Ok(f) = E::try_from(nonnull_frame_ptr) {
-                            frames.push(f);
+                        if let Ok(f) = F::try_from(nonnull_frame_ptr) {
+                            let kind_for_frame = F::kind();
+
+                            if kind_for_frame == Rs2StreamKind::Any || f.has_correct_kind() {
+                                frames.push(f);
+                            }
                             // This continue is to skip releasing the frame at the end of the loop.
                             // If the call to try_from above is successful and we can push, then
                             // the frame is owned by the type `E` and we should not release it.

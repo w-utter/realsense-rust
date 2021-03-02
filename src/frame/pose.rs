@@ -4,11 +4,11 @@
 //! at a point in time. See the member and function declarations for how these values are stored
 //! and retrieved.
 
-use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx};
+use super::prelude::{CouldNotGetFrameSensorError, FrameCategory, FrameConstructionError, FrameEx};
 use crate::{
     check_rs2_error,
     common::*,
-    kind::{Extension, Rs2Extension, Rs2FrameMetadata, Rs2TimestampDomain},
+    kind::{Rs2Extension, Rs2FrameMetadata, Rs2TimestampDomain},
     sensor::Sensor,
     stream_profile::StreamProfile,
 };
@@ -119,9 +119,17 @@ impl<'a> Drop for PoseFrame<'a> {
 
 unsafe impl<'a> Send for PoseFrame<'a> {}
 
-impl<'a> Extension for PoseFrame<'a> {
+impl<'a> FrameCategory for PoseFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::PoseFrame
+    }
+
+    fn kind() -> Rs2StreamKind {
+        Rs2StreamKind::Pose
+    }
+
+    fn has_correct_kind(&self) -> bool {
+        self.frame_stream_profile.kind() == Self::kind()
     }
 }
 

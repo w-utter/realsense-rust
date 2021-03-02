@@ -2,11 +2,11 @@
 //!
 //! A Points frame is a RealSense point cloud storage class.
 
-use super::prelude::{CouldNotGetFrameSensorError, FrameConstructionError, FrameEx};
+use super::prelude::{CouldNotGetFrameSensorError, FrameCategory, FrameConstructionError, FrameEx};
 use crate::{
     check_rs2_error,
     common::*,
-    kind::{Extension, Rs2Extension, Rs2FrameMetadata, Rs2TimestampDomain},
+    kind::{Rs2Extension, Rs2FrameMetadata, Rs2TimestampDomain},
     sensor::Sensor,
     stream_profile::StreamProfile,
 };
@@ -40,9 +40,17 @@ pub struct PointsFrame<'a> {
     should_drop: bool,
 }
 
-impl<'a> Extension for PointsFrame<'a> {
+impl<'a> FrameCategory for PointsFrame<'a> {
     fn extension() -> Rs2Extension {
         Rs2Extension::Points
+    }
+
+    fn kind() -> Rs2StreamKind {
+        Rs2StreamKind::Any
+    }
+
+    fn has_correct_kind(&self) -> bool {
+        self.frame_stream_profile.kind() == Self::kind()
     }
 }
 
