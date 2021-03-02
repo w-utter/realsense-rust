@@ -30,7 +30,7 @@ pub struct Gyro;
 /// Everything called from here during runtime should be valid as long as the
 /// Frame is in scope... like normal Rust.
 #[derive(Debug)]
-pub struct MotionFrame<'a> {
+pub struct MotionFrame<'a, Kind> {
     /// The raw data pointer from the original rs2 frame.
     frame_ptr: NonNull<sys::rs2_frame>,
     /// The timestamp of the frame.
