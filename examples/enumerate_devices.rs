@@ -15,9 +15,9 @@ fn match_info(device: &Device, info_param: Rs2CameraInfo) -> String {
 
 fn main() -> Result<()> {
     println!("----\nEnumerating all devices compatible with RealSense:\n----");
-    let mut queried_devices = HashSet::new();
-    queried_devices.insert(Rs2ProductLine::Any);
-    let devices = Context::new()?.query_devices(queried_devices);
+    // The below code is the equivalent of creating a HashSet of query_devices that just contains Rs2ProductLine::Any.
+    // In other words, this will look for any connected device that is compatible with RealSense.
+    let devices = Context::new()?.query_devices(HashSet::new());
     ensure!(!devices.is_empty(), "No devices found");
 
     for device in devices {
