@@ -5,13 +5,13 @@ default:
     # Update rust in case the latest version isn't built into our docker image.
     # For info about RUSTUP_PERMIT_COPY_RENAME, see
     # https://github.com/rust-lang/rustup/issues/2542
-    - RUSTUP_PERMIT_COPY_RENAME=1 rustup update
-
+    - rustup update stable
 
 stages:
   - test
   - doc
   - build_artifacts
+
 
 ##### ########## ########## ########## ########## #####
 # TEST STAGE
