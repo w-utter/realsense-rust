@@ -140,10 +140,10 @@ impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for MotionFrame<'a, K> {
             check_rs2_error!(err, FrameConstructionError::CouldNotGetData)?;
 
             let data_as_ptr = ptr.as_ref().unwrap() as *const std::os::raw::c_void;
-            let motion_raw = std::slice::from_raw_parts(
-                data_as_ptr.cast::<f32>(),
-                size as usize / std::mem::size_of::<f32>(),
-            );
+            let data_size_in_f32s = (size as usize) / std::mem::size_of::<f32>();
+
+            let motion_raw =
+                std::slice::from_raw_parts(data_as_ptr.cast::<f32>(), data_size_in_f32s);
 
             Ok(MotionFrame {
                 frame_ptr,
