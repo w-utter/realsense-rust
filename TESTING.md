@@ -1,3 +1,27 @@
+# Running tests
+
+By default the Rust test runner executes in parallel, trying to run as many tests concurrently as possible. This is a
+problem because the underlying librealsense2 API doesn't make any guarantees surrounding behaviour in parallel
+environments. In particular, if you try to run pipelines to the same device (or even different devices) on parallel
+threads, you may get some contention and random crashing at the libusb / kernel level. Unit tests can typically avoid
+this, as full streaming setups would be more in the realm of integration tests (in the `tests/` directory). The
+integration tests aim to setup streaming as a normal program might, so it is necessary to run these tests on a single
+thread of execution (otherwise, you'll get random crashes and failures, and the signal : noise on that isn't worth the
+time to investigate).
+
+## Running unit tests WITH NO DEVICE connected
+
+`cargo test`
+
+## Running integration tests WITH DEVICE(S) connected
+
+`RUST_TEST_THREADS=1 cargo test --all-features`
+
+Here, `--all-features` is just a quick way to enable the `test-single-device` feature (See [Cargo.toml](Cargo.toml)).
+
+Some of the integration tests will be hardware specific, and will do nothing if a device of expected category (e.g.
+D400, L500) is not connected. These tests are not run on CI checks, and will have to be run manually.
+
 # Testing
 
 Testing a project that incorporates hardware is going to be difficult by default, because the end-user expectations
@@ -38,29 +62,6 @@ With all that said, we explicitly have tested for the following devices:
 - [RealSense D435i](https://www.intelrealsense.com/lidar-camera-l515/)
 - [RealSense L515](https://www.intelrealsense.com/lidar-camera-l515/)
 
-# Running tests
-
-By default the Rust test runner executes in parallel, trying to run as many tests concurrently as possible. This is a
-problem because the underlying librealsense2 API doesn't make any guarantees surrounding behaviour in parallel
-environments. In particular, if you try to run pipelines to the same device (or even different devices) on parallel
-threads, you may get some contention and random crashing at the libusb / kernel level. Unit tests can typically avoid
-this, as full streaming setups would be more in the realm of integration tests (in the `tests/` directory). The
-integration tests aim to setup streaming as a normal program might, so it is necessary to run these tests on a single
-thread of execution (otherwise, you'll get random crashes and failures, and the signal : noise on that isn't worth the
-time to investigate).
-
-## Running unit tests WITH NO DEVICE connected
-
-`cargo test`
-
-## Running integration tests WITH DEVICE(S) connected
-
-`RUST_TEST_THREADS=1 cargo test --all-features`
-
-Here, `--all-features` is just a quick way to enable the `test-single-device` feature (See [Cargo.toml](Cargo.toml)).
-
-Some of the integration tests will be hardware specific, and will do nothing if a device of expected category (e.g.
-D400, L500) is not connected. These tests are not run on CI checks, and will have to be run manually.
 
 # Other things to be aware of
 
