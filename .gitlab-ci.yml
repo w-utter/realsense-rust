@@ -23,7 +23,7 @@ test:
   script:
     - rustc --version
     - cargo --version
-    - cargo test --verbose
+    - cargo test --features buildtime-bindgen --verbose
 
 lint:
   stage: test
