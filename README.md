@@ -19,6 +19,12 @@ to improve or have a question regarding how things work.
   sure any USB cables used are able to draw at least 2 amps. Read more on the issue
   [here](https://support.intelrealsense.com/hc/en-us/community/posts/360033595714-D435-USB-connection-issues).
 
+- **USB Bandwidth**: When a device is connected, librealsense will measure the transmission speed of data across its USB
+  connection. USB3 speeds can handle all streams running simultaneously. USB2 speeds _cannot_; trying to set a streaming
+  configuration that is too much for USB2 will result in a failed streaming config, and will cause the program to fail.
+  Luckily, this information can be looked up and compensated for during runtime. See the [device-specific demo
+  examples](examples/) for ways to achieve this.
+
 ## API Use
 
 Make sure librealsense 2.41.0 is installed on your system. Visit the [RealSense official
