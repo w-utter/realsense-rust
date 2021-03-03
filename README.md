@@ -3,7 +3,7 @@
 The project provides high-level bindings (crate `realsense_rust`) to librealsense2 library as well as low-level FFI
 (crate `realsense_sys`) interface.
 
-**Current librealsense version: 2.41.0**
+**Current librealsense version: 2.42.0**
 
 This project is hosted on both [Github](https://github.com/Tangram-Vision/realsense-rust) and
 [Gitlab](https://gitlab.com/tangram-vision-oss/realsense-rust/). While we're happy to receive pull / merge requests on
@@ -54,8 +54,8 @@ realsense-rust = { version = "0.5", features = ["buildtime-bindgen"] }
 
 ## Getting started + Examples
 
-Check out the examples folder for minimal configurations that fit your device. We have included a README.md there that
-explains the functionality that one can get from this API. For more explanation, see the crate documentation.
+Check out the examples folder for helpful snippets of code, as well as minimal configurations that fit some of the most
+popular RealSense devices. For more explanation, see the crate documentation.
 
 ## Contributing to this project
 
