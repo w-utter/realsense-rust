@@ -2,7 +2,6 @@
 authors = ["jerry73204 <jerry73204@gmail.com>", "Jeremy Steward <jeremy.steward@tangramvision.com>", "Brandon Minor <brandon@tangramvision.com>"]
 categories = ["external-ffi-bindings", "computer-vision", "hardware-support"]
 description = "Rust abstraction layer for the RealSense SDK C library"
-documentation = "https://docs.rs/realsense-sys/"
 edition = "2018"
 homepage = "https://gitlab.com/tangram-vision-oss/realsense-rust"
 keywords = ["Intel", "RealSense", "Sensor", "Robotics"]
@@ -30,7 +29,6 @@ buildtime-bindgen = ["bindgen"]
 [build-dependencies]
 anyhow = "1.0"
 bindgen = {version = "0.57", optional = true}
-cc = {version = "1.0", features = ["parallel"]}
 lazy_static = "1.4"
 
 [target.'cfg(not(target_env = "msvc"))'.build-dependencies]
