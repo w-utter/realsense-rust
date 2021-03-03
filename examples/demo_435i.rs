@@ -36,7 +36,7 @@ pub fn main() -> Result<()> {
     // CStr => str => f32
     let usb_cstr = devices[0].info(Rs2CameraInfo::UsbTypeDescriptor).unwrap();
     let usb_val: f32 = usb_cstr.to_str().unwrap().parse().unwrap();
-    if usb_val > 3.0 {
+    if usb_val >= 3.0 {
         config
             .enable_device_from_serial(devices[0].info(Rs2CameraInfo::SerialNumber).unwrap())?
             .disable_all_streams()?
