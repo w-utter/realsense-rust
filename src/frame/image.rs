@@ -160,6 +160,8 @@ impl<'a, K> IntoIterator for &'a ImageFrame<'a, K> {
     }
 }
 
+unsafe impl<'a, K> Send for ImageFrame<'a, K> {}
+
 impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
     type Error = anyhow::Error;
 
