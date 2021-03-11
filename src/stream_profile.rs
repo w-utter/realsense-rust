@@ -39,7 +39,7 @@
 
 use crate::{
     check_rs2_error,
-    kind::{Rs2Exception, Rs2Format, Rs2StreamKind},
+    kind::{Rs2DistortionModel, Rs2Exception, Rs2Format, Rs2StreamKind},
 };
 use anyhow::Result;
 use num_traits::FromPrimitive;
@@ -92,6 +92,51 @@ pub enum DataError {
     /// Could not get motion intrinsics from the requested stream.
     #[error("Could not get motion intrinsics. Type: {0}; Reason: {1}")]
     CouldNotGetMotionIntrinsics(Rs2Exception, String),
+}
+
+
+/// The profile describing the way that light bends in a stream.
+///
+/// This stores the focal length, principal point, dimensions, and distortion model used on the image frame. See the
+/// documentation for [Rs2Distortion] for specifics on the available distortion models for RealSense devices.
+///
+/// Use the function `stream_profile.intrinsics()` to retrieve these intrinsics from a certain stream.
+#[derive(Debug)]
+pub struct Rs2Intrinsics(sys::rs2_intrinsics);
+
+impl Rs2Intrinsics {
+    /// Width of the image in pixels
+    pub fn width(&self) -> usize {
+        self.0.width as usize
+    }
+    /// Height of the image in pixels
+    pub fn height(&self) -> usize {
+        self.0.height as usize
+    }
+
+    /// Horizontal coordinate of the principal point of the image, as a pixel offset from the left edge
+    pub fn ppx(&self) -> f32 {
+        self.0.ppx
+    }
+    /// Vertical coordinate of the principal point of the image, as a pixel offset from the top edge
+    pub fn ppy(&self) -> f32 {
+        self.0.ppy
+    }
+    /// Focal length of the image plane, as a multiple of pixel width
+    pub fn fx(&self) -> f32 {
+        self.0.fx
+    }
+    /// Focal length of the image plane, as a multiple of pixel height
+    pub fn fy(&self) -> f32 {
+        self.0.fy
+    }
+    /// Distortion model and coefficients of the image
+    pub fn distortion(&self) -> Rs2Distortion {
+        Rs2Distortion {
+            model: Rs2DistortionModel::from_u32(self.0.model).unwrap(),
+            coeffs: self.0.coeffs,
+        }
+    }
 }
 
 /// Type for holding the stream profile information.
@@ -352,7 +397,7 @@ impl<'a> StreamProfile<'a> {
     ///
     /// Returns [`DataError::CouldNotGetIntrinsics`] if this call fails for any other reason.
     ///
-    pub fn intrinsics(&self) -> Result<sys::rs2_intrinsics, DataError> {
+    pub fn intrinsics(&self) -> Result<Rs2Intrinsics, DataError> {
         match self.stream {
             Rs2StreamKind::Depth => (),
             Rs2StreamKind::Color => (),
@@ -373,7 +418,7 @@ impl<'a> StreamProfile<'a> {
             );
             check_rs2_error!(err, DataError::CouldNotGetIntrinsics)?;
 
-            Ok(intrinsics.assume_init())
+            Ok(Rs2Intrinsics(intrinsics.assume_init()))
         }
     }
 
