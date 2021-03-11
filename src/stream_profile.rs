@@ -94,6 +94,35 @@ pub enum DataError {
     CouldNotGetMotionIntrinsics(Rs2Exception, String),
 }
 
+#[derive(Debug)]
+pub struct Rs2MotionDeviceIntrinsics(sys::rs2_motion_device_intrinsic);
+
+/// Profile the scale, bias, and variances for a given motion device
+///
+/// The bias and scale factors are stored as one large matrix; see the documentation on `data()` for the correct way to
+/// retrieve these parameters.
+///
+/// Use the function `stream_profile.motion_intrinsics()` to retrieve these intrinsics from a certain stream.
+impl Rs2MotionDeviceIntrinsics {
+    /// A 3x4 matrix describing the scale and bias intrinsics of the motion device.
+    ///
+    /// This matrix is stored internally like so:
+    /// [ Scale X    | cross axis  | cross axis | Bias X ]
+    /// [ cross axis | Scale Y     | cross axis | Bias Y ]
+    /// [ cross axis | cross axis  | Scale Z    | Bias Z ]
+    ///
+    pub fn data(&self) -> [[f32; 4usize]; 3usize] {
+        self.0.data
+    }
+    /// Variance of noise for X, Y, and Z axis.
+    pub fn noise_variances(&self) -> [f32; 3usize] {
+        self.0.noise_variances
+    }
+    /// Variance of bias for X, Y, and Z axis.
+    pub fn bias_variances(&self) -> [f32; 3usize] {
+        self.0.bias_variances
+    }
+}
 
 /// The profile describing the way that light bends in a stream.
 ///
@@ -436,7 +465,7 @@ impl<'a> StreamProfile<'a> {
     /// Returns [`DataError::CouldNotGetMotionIntrinsics`](DataError::CouldNotGetMotionIntrinsics)
     /// if this call fails for any other reason.
     ///
-    pub fn motion_intrinsics(&self) -> Result<sys::rs2_motion_device_intrinsic, DataError> {
+    pub fn motion_intrinsics(&self) -> Result<Rs2MotionDeviceIntrinsics, DataError> {
         match self.stream {
             Rs2StreamKind::Gyro => (),
             Rs2StreamKind::Accel => (),
@@ -451,7 +480,7 @@ impl<'a> StreamProfile<'a> {
             sys::rs2_get_motion_intrinsics(self.ptr.as_ptr(), intrinsics.as_mut_ptr(), &mut err);
             check_rs2_error!(err, DataError::CouldNotGetMotionIntrinsics)?;
 
-            Ok(intrinsics.assume_init())
+            Ok(Rs2MotionDeviceIntrinsics(intrinsics.assume_init()))
         }
     }
 }
