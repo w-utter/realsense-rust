@@ -186,6 +186,24 @@ impl Rs2Intrinsics {
     }
 }
 
+/// The topology describing how the different devices are oriented.
+///
+/// Use the function `stream_profile.extrinsics()` to retrieve these extrinsics from a certain stream in relation to
+/// another stream on the same device.
+#[derive(Debug)]
+pub struct Rs2Extrinsics(sys::rs2_extrinsics);
+
+impl Rs2Extrinsics {
+    /// Column-major 3x3 rotation matrix
+    pub fn rotation(&self) -> [f32; 9usize] {
+        self.0.rotation
+    }
+    /// Three-element translation vector, in meters
+    pub fn translation(&self) -> [f32; 3usize] {
+        self.0.translation
+    }
+}
+
 /// Type for holding the stream profile information.
 ///
 /// This type exists as a high-level wrapper around an underlying `rs2_stream_profile` pointer. On
@@ -384,10 +402,7 @@ impl<'a> StreamProfile<'a> {
     ///
     /// Returns [`DataError::CouldNotGetExtrinsics`] if this call fails for whatever reason.
     ///
-    pub fn get_extrinsics(
-        &self,
-        to_profile: &StreamProfile,
-    ) -> Result<sys::rs2_extrinsics, DataError> {
+    pub fn extrinsics(&self, to_profile: &StreamProfile) -> Result<Rs2Extrinsics, DataError> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let mut extrinsics = MaybeUninit::<sys::rs2_extrinsics>::uninit();
@@ -400,7 +415,7 @@ impl<'a> StreamProfile<'a> {
             );
             check_rs2_error!(err, DataError::CouldNotGetExtrinsics)?;
 
-            Ok(extrinsics.assume_init())
+            Ok(Rs2Extrinsics(extrinsics.assume_init()))
         }
     }
 
@@ -416,14 +431,14 @@ impl<'a> StreamProfile<'a> {
     pub fn set_extrinsics(
         &self,
         to_profile: &StreamProfile,
-        extrinsics: sys::rs2_extrinsics,
+        extrinsics: Rs2Extrinsics,
     ) -> Result<(), DataError> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_register_extrinsics(
                 self.ptr.as_ptr(),
                 to_profile.ptr.as_ptr(),
-                extrinsics,
+                extrinsics.0,
                 &mut err,
             );
             check_rs2_error!(err, DataError::CouldNotSetExtrinsics)?;
