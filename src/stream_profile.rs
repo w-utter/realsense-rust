@@ -124,6 +124,24 @@ impl Rs2MotionDeviceIntrinsics {
     }
 }
 
+/// Describe the distortion model and coefficients of the lens used.
+///
+/// The data in `coeffs` means different things for different models.
+///
+/// - Brown-Conrady: [k1, k2, p1, p2, k3].
+/// - F-Theta Fisheye: [k1, k2, k3, k4, 0].
+/// - Kannala-Brandt: [k1, k2, k3, k4, 0].
+///
+/// The Intel RealSense documentation claims that "Other models are subject to their own interpretations". This is
+/// admittedly not too helpful, but it's worth noting in case your model isn't covered here.
+#[derive(Debug)]
+pub struct Rs2Distortion {
+    /// Distortion model of the image.
+    model: Rs2DistortionModel,
+    /// Distortion coefficients.
+    coeffs: [f32; 5usize],
+}
+
 /// The profile describing the way that light bends in a stream.
 ///
 /// This stores the focal length, principal point, dimensions, and distortion model used on the image frame. See the
