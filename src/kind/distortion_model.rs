@@ -1,6 +1,12 @@
 //! Enumeration describing the possible kinds of distortions present in a stream profile.
 //!
-//! TODO
+//! Different RealSense devices use different distortion models to describe their intrinsics. For instance, the D415
+//! uses the Modified Brown Conrady distortion model on its color camera, while the SR300 uses the Inverse Brown
+//! Conrady. Ultimately, the user will need to interrogate a Stream's intrinsics directly using `.intrinsics()` to be
+//! sure about the model being used.
+//!
+//! See the Intel docs about [Projection in RealSense SDK
+//! 2.0](https://dev.intelrealsense.com/docs/projection-in-intel-realsense-sdk-20) for more information.
 
 use num_derive::{FromPrimitive, ToPrimitive};
 use realsense_sys as sys;
@@ -8,7 +14,7 @@ use realsense_sys as sys;
 #[repr(u32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2DistortionModel {
-    /// Rectilinear images. No distortion compensation required.    
+    /// Rectilinear images. No distortion compensation required.
     None = sys::rs2_distortion_RS2_DISTORTION_NONE,
     /// Unmodified Brown-Conrady distortion model
     BrownConrady = sys::rs2_distortion_RS2_DISTORTION_BROWN_CONRADY,
