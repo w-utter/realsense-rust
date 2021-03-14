@@ -31,7 +31,6 @@ buildtime-bindgen = ["bindgen"]
 # None required. However, access to the RealSense library is necessary.
 
 [build-dependencies]
-anyhow = "1.0"
 bindgen = { version = "0.57", optional = true }
-lazy_static = "1.4"
 pkg-config = { version = "0.3" }
+cc = { version = "1.0", features = ["parallel"] }
