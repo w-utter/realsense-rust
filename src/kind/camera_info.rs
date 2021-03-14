@@ -15,38 +15,39 @@ use realsense_sys as sys;
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2CameraInfo {
     /// The name of the sensor or device.
-    Name = sys::rs2_camera_info_RS2_CAMERA_INFO_NAME,
+    Name = sys::rs2_camera_info_RS2_CAMERA_INFO_NAME as u32,
     /// The serial number of the device.
-    SerialNumber = sys::rs2_camera_info_RS2_CAMERA_INFO_SERIAL_NUMBER,
+    SerialNumber = sys::rs2_camera_info_RS2_CAMERA_INFO_SERIAL_NUMBER as u32,
     /// The firmware version that the device is running.
-    FirmwareVersion = sys::rs2_camera_info_RS2_CAMERA_INFO_FIRMWARE_VERSION,
+    FirmwareVersion = sys::rs2_camera_info_RS2_CAMERA_INFO_FIRMWARE_VERSION as u32,
     /// The recommended firmware version for a given device.
     ///
     /// The value that corresponds to this key may change depending on what version of
     /// librealsense2 this crate is built against!
-    RecommendedFirmwareVersion = sys::rs2_camera_info_RS2_CAMERA_INFO_RECOMMENDED_FIRMWARE_VERSION,
+    RecommendedFirmwareVersion =
+        sys::rs2_camera_info_RS2_CAMERA_INFO_RECOMMENDED_FIRMWARE_VERSION as u32,
     /// A description of the unique identifier of the physical port that the device is connected to.
     ///
     /// The format of the value associated with this key will be platform specific.
-    PhysicalPort = sys::rs2_camera_info_RS2_CAMERA_INFO_PHYSICAL_PORT,
+    PhysicalPort = sys::rs2_camera_info_RS2_CAMERA_INFO_PHYSICAL_PORT as u32,
     /// If the device supports firmware logging, this is the command you send to get those logs.
-    DebugOpCode = sys::rs2_camera_info_RS2_CAMERA_INFO_DEBUG_OP_CODE,
+    DebugOpCode = sys::rs2_camera_info_RS2_CAMERA_INFO_DEBUG_OP_CODE as u32,
     /// Tells you whether the device is in advanced mode.
-    AdvancedMode = sys::rs2_camera_info_RS2_CAMERA_INFO_ADVANCED_MODE,
+    AdvancedMode = sys::rs2_camera_info_RS2_CAMERA_INFO_ADVANCED_MODE as u32,
     /// The product identifier for the device (as reported by its USB descriptor).
-    ProductId = sys::rs2_camera_info_RS2_CAMERA_INFO_PRODUCT_ID,
+    ProductId = sys::rs2_camera_info_RS2_CAMERA_INFO_PRODUCT_ID as u32,
     /// Tells you whether the EEPROM is locked.
-    CameraLocked = sys::rs2_camera_info_RS2_CAMERA_INFO_CAMERA_LOCKED,
+    CameraLocked = sys::rs2_camera_info_RS2_CAMERA_INFO_CAMERA_LOCKED as u32,
     /// Tells you the designated USB specification (i.e. USB2 or USB3).
-    UsbTypeDescriptor = sys::rs2_camera_info_RS2_CAMERA_INFO_USB_TYPE_DESCRIPTOR,
+    UsbTypeDescriptor = sys::rs2_camera_info_RS2_CAMERA_INFO_USB_TYPE_DESCRIPTOR as u32,
     /// Device product line (e.g. D400 / SR300 / L500 / T200)
-    ProductLine = sys::rs2_camera_info_RS2_CAMERA_INFO_PRODUCT_LINE,
+    ProductLine = sys::rs2_camera_info_RS2_CAMERA_INFO_PRODUCT_LINE as u32,
     /// The ASIC serial number of the device.
-    AsicSerialNumber = sys::rs2_camera_info_RS2_CAMERA_INFO_ASIC_SERIAL_NUMBER,
+    AsicSerialNumber = sys::rs2_camera_info_RS2_CAMERA_INFO_ASIC_SERIAL_NUMBER as u32,
     /// Provides the firmware update identifier for the device.
-    FirmwareUpdateId = sys::rs2_camera_info_RS2_CAMERA_INFO_FIRMWARE_UPDATE_ID,
+    FirmwareUpdateId = sys::rs2_camera_info_RS2_CAMERA_INFO_FIRMWARE_UPDATE_ID as u32,
     /// IP address for remote camera.
-    IpAddress = sys::rs2_camera_info_RS2_CAMERA_INFO_IP_ADDRESS,
+    IpAddress = sys::rs2_camera_info_RS2_CAMERA_INFO_IP_ADDRESS as u32,
     // Not included since this just tells us the total number of camera info options
     //
     // Count = sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT,
@@ -59,7 +60,7 @@ mod tests {
 
     #[test]
     fn all_variants_exist() {
-        for i in 0..sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT {
+        for i in 0..sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT as u32 {
             assert!(
                 Rs2CameraInfo::from_u32(i).is_some(),
                 "Rs2CameraInfo variant for ordinal {} does not exist.",

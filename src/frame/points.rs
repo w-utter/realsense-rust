@@ -13,7 +13,7 @@ use anyhow::Result;
 use num_traits::{FromPrimitive, ToPrimitive};
 use realsense_sys as sys;
 use std::{
-    convert::TryFrom,
+    convert::{TryFrom, TryInto},
     ptr::{self, NonNull},
     slice,
 };
@@ -91,7 +91,7 @@ impl<'a> FrameEx<'a> for PointsFrame<'a> {
 
             let val = sys::rs2_get_frame_metadata(
                 self.frame_ptr.as_ptr(),
-                metadata_kind.to_u32().unwrap(),
+                metadata_kind.to_u32().unwrap().try_into().unwrap(),
                 &mut err,
             );
 
@@ -110,7 +110,7 @@ impl<'a> FrameEx<'a> for PointsFrame<'a> {
 
             let supports_metadata = sys::rs2_supports_frame_metadata(
                 self.frame_ptr.as_ptr(),
-                metadata_kind.to_u32().unwrap(),
+                metadata_kind.to_u32().unwrap().try_into().unwrap(),
                 &mut err,
             );
 
@@ -195,7 +195,10 @@ impl<'a> std::convert::TryFrom<NonNull<sys::rs2_frame>> for PointsFrame<'a> {
             Ok(PointsFrame {
                 frame_ptr,
                 timestamp,
-                timestamp_domain: Rs2TimestampDomain::from_u32(timestamp_domain).unwrap(),
+                timestamp_domain: Rs2TimestampDomain::from_u32(
+                    timestamp_domain.try_into().unwrap(),
+                )
+                .unwrap(),
                 frame_stream_profile: profile,
                 num_points: num_points as usize,
                 vertices_data_ptr: NonNull::new(vertices_ptr).unwrap(),

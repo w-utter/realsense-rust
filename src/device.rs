@@ -13,7 +13,11 @@ use crate::{
 use anyhow::Result;
 use num_traits::ToPrimitive;
 use realsense_sys as sys;
-use std::{convert::From, ffi::CStr, ptr::NonNull};
+use std::{
+    convert::{From, TryInto},
+    ffi::CStr,
+    ptr::NonNull,
+};
 use thiserror::Error;
 
 /// Enumeration of possible errors that can occur during device construction
@@ -164,7 +168,7 @@ impl Device {
 
             let val = sys::rs2_get_device_info(
                 self.device_ptr.as_ptr(),
-                camera_info.to_u32().unwrap(),
+                camera_info.to_u32().unwrap().try_into().unwrap(),
                 &mut err,
             );
 
@@ -186,7 +190,7 @@ impl Device {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let supports_info = sys::rs2_supports_device_info(
                 self.device_ptr.as_ptr(),
-                camera_info.to_u32().unwrap(),
+                camera_info.to_u32().unwrap().try_into().unwrap(),
                 &mut err,
             );
 

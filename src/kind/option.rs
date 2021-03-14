@@ -65,48 +65,48 @@ pub enum OptionSetError {
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2Option {
     /// Enable/disable color backlight compensation.
-    BacklightCompensation = sys::rs2_option_RS2_OPTION_BACKLIGHT_COMPENSATION,
+    BacklightCompensation = sys::rs2_option_RS2_OPTION_BACKLIGHT_COMPENSATION as u32,
     /// Set color image brightness.
-    Brightness = sys::rs2_option_RS2_OPTION_BRIGHTNESS,
+    Brightness = sys::rs2_option_RS2_OPTION_BRIGHTNESS as u32,
     /// Set color image contrast.
-    Contrast = sys::rs2_option_RS2_OPTION_CONTRAST,
+    Contrast = sys::rs2_option_RS2_OPTION_CONTRAST as u32,
     /// Set exposure time of color camera. Setting any value will disable auto exposure.
-    Exposure = sys::rs2_option_RS2_OPTION_EXPOSURE,
+    Exposure = sys::rs2_option_RS2_OPTION_EXPOSURE as u32,
     /// Set color image gain.
-    Gain = sys::rs2_option_RS2_OPTION_GAIN,
+    Gain = sys::rs2_option_RS2_OPTION_GAIN as u32,
     /// Set color image gamma setting.
-    Gamma = sys::rs2_option_RS2_OPTION_GAMMA,
+    Gamma = sys::rs2_option_RS2_OPTION_GAMMA as u32,
     /// Set color image hue.
-    Hue = sys::rs2_option_RS2_OPTION_HUE,
+    Hue = sys::rs2_option_RS2_OPTION_HUE as u32,
     /// Set color image saturation.
-    Saturation = sys::rs2_option_RS2_OPTION_SATURATION,
+    Saturation = sys::rs2_option_RS2_OPTION_SATURATION as u32,
     /// Set color image sharpness.
-    Sharpness = sys::rs2_option_RS2_OPTION_SHARPNESS,
+    Sharpness = sys::rs2_option_RS2_OPTION_SHARPNESS as u32,
     /// Set white balance of color image. Setting any value will disable auto white balance.
-    WhiteBalance = sys::rs2_option_RS2_OPTION_WHITE_BALANCE,
+    WhiteBalance = sys::rs2_option_RS2_OPTION_WHITE_BALANCE as u32,
     /// Enable/disable color image auto-exposure.
-    EnableAutoExposure = sys::rs2_option_RS2_OPTION_ENABLE_AUTO_EXPOSURE,
+    EnableAutoExposure = sys::rs2_option_RS2_OPTION_ENABLE_AUTO_EXPOSURE as u32,
     /// Enable/disable color image auto-white-balance
-    EnableAutoWhiteBalance = sys::rs2_option_RS2_OPTION_ENABLE_AUTO_WHITE_BALANCE,
+    EnableAutoWhiteBalance = sys::rs2_option_RS2_OPTION_ENABLE_AUTO_WHITE_BALANCE as u32,
     /// Set the visual preset on the sensor. `sensor.get_option_range()` provides
     /// access to several recommend sets of option presets for a depth camera. The preset
     /// selection varies between devices and sensors.
-    VisualPreset = sys::rs2_option_RS2_OPTION_VISUAL_PRESET,
+    VisualPreset = sys::rs2_option_RS2_OPTION_VISUAL_PRESET as u32,
     /// Set the power of the laser emitter, with 0 meaning projector off.
-    LaserPower = sys::rs2_option_RS2_OPTION_LASER_POWER,
+    LaserPower = sys::rs2_option_RS2_OPTION_LASER_POWER as u32,
     /// Set the number of patterns projected per frame. The higher the accuracy value,
     /// the more patterns projected. Increasing the number of patterns helps to achieve
     /// better accuracy. Note that this control affects Depth FPS.
-    Accuracy = sys::rs2_option_RS2_OPTION_ACCURACY,
+    Accuracy = sys::rs2_option_RS2_OPTION_ACCURACY as u32,
     /// Set the motion vs. range trade-off. Lower values allow for better motion sensitivity.
     /// Higher values allow for better depth range.
-    MotionRange = sys::rs2_option_RS2_OPTION_MOTION_RANGE,
+    MotionRange = sys::rs2_option_RS2_OPTION_MOTION_RANGE as u32,
     /// Set the filter to apply to each depth frame. Each one of the filter is optimized per the
     /// application requirements.
-    FilterOption = sys::rs2_option_RS2_OPTION_FILTER_OPTION,
+    FilterOption = sys::rs2_option_RS2_OPTION_FILTER_OPTION as u32,
     /// Set the confidence level threshold used by the Depth algorithm pipe.
     /// This determines whether a pixel will get a valid range or will be marked as invalid.
-    ConfidenceThreshold = sys::rs2_option_RS2_OPTION_CONFIDENCE_THRESHOLD,
+    ConfidenceThreshold = sys::rs2_option_RS2_OPTION_CONFIDENCE_THRESHOLD as u32,
     /// Enable/disable emitters. Emitter selection:
     ///
     /// - `0`: disable all emitters
@@ -114,19 +114,19 @@ pub enum Rs2Option {
     /// - `2`: enable auto laser
     /// - `3`: enable LED
     ///
-    EmitterEnabled = sys::rs2_option_RS2_OPTION_EMITTER_ENABLED,
+    EmitterEnabled = sys::rs2_option_RS2_OPTION_EMITTER_ENABLED as u32,
     /// Set the number of frames the user is allowed to keep per stream.
     /// Trying to hold on to more frames will cause frame drops.
-    FramesQueueSize = sys::rs2_option_RS2_OPTION_FRAMES_QUEUE_SIZE,
+    FramesQueueSize = sys::rs2_option_RS2_OPTION_FRAMES_QUEUE_SIZE as u32,
     /// Get the total number of detected frame drops from all streams.
-    TotalFrameDrops = sys::rs2_option_RS2_OPTION_TOTAL_FRAME_DROPS,
+    TotalFrameDrops = sys::rs2_option_RS2_OPTION_TOTAL_FRAME_DROPS as u32,
     /// Set the auto-exposure mode:
     ///
     /// - Static
     /// - Anti-Flicker
     /// - Hybrid
     ///
-    AutoExposureMode = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_MODE,
+    AutoExposureMode = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_MODE as u32,
     /// Set the power line frequency control for anti-flickering:
     ///
     /// - Off
@@ -134,143 +134,143 @@ pub enum Rs2Option {
     /// - 60Hz
     /// - Auto
     ///
-    PowerLineFrequency = sys::rs2_option_RS2_OPTION_POWER_LINE_FREQUENCY,
+    PowerLineFrequency = sys::rs2_option_RS2_OPTION_POWER_LINE_FREQUENCY as u32,
     /// Get the current Temperature of the ASIC.
-    AsicTemperature = sys::rs2_option_RS2_OPTION_ASIC_TEMPERATURE,
+    AsicTemperature = sys::rs2_option_RS2_OPTION_ASIC_TEMPERATURE as u32,
     /// Enable/disable error handling.
-    ErrorPollingEnabled = sys::rs2_option_RS2_OPTION_ERROR_POLLING_ENABLED,
+    ErrorPollingEnabled = sys::rs2_option_RS2_OPTION_ERROR_POLLING_ENABLED as u32,
     /// Get the Current Temperature of the projector.
-    ProjectorTemperature = sys::rs2_option_RS2_OPTION_PROJECTOR_TEMPERATURE,
+    ProjectorTemperature = sys::rs2_option_RS2_OPTION_PROJECTOR_TEMPERATURE as u32,
     /// Enable/disable trigger to be outputed from the camera to any external device on
     /// every depth frame.
-    OutputTriggerEnabled = sys::rs2_option_RS2_OPTION_OUTPUT_TRIGGER_ENABLED,
+    OutputTriggerEnabled = sys::rs2_option_RS2_OPTION_OUTPUT_TRIGGER_ENABLED as u32,
     /// Get the current Motion-Module Temperature.
-    MotionModuleTemperature = sys::rs2_option_RS2_OPTION_MOTION_MODULE_TEMPERATURE,
+    MotionModuleTemperature = sys::rs2_option_RS2_OPTION_MOTION_MODULE_TEMPERATURE as u32,
     /// Set the number of meters represented by a single depth unit.
-    DepthUnits = sys::rs2_option_RS2_OPTION_DEPTH_UNITS,
+    DepthUnits = sys::rs2_option_RS2_OPTION_DEPTH_UNITS as u32,
     /// Enable/Disable automatic correction of the motion data.
-    EnableMotionCorrection = sys::rs2_option_RS2_OPTION_ENABLE_MOTION_CORRECTION,
+    EnableMotionCorrection = sys::rs2_option_RS2_OPTION_ENABLE_MOTION_CORRECTION as u32,
     /// Allows sensor to dynamically ajust the frame rate depending on lighting conditions.
-    AutoExposurePriority = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_PRIORITY,
+    AutoExposurePriority = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_PRIORITY as u32,
     /// Set the color scheme for data visualization.
-    ColorScheme = sys::rs2_option_RS2_OPTION_COLOR_SCHEME,
+    ColorScheme = sys::rs2_option_RS2_OPTION_COLOR_SCHEME as u32,
     /// Enable/disable histogram equalization post-processing on the depth data.
-    HistogramEqualizationEnabled = sys::rs2_option_RS2_OPTION_HISTOGRAM_EQUALIZATION_ENABLED,
+    HistogramEqualizationEnabled = sys::rs2_option_RS2_OPTION_HISTOGRAM_EQUALIZATION_ENABLED as u32,
     /// Set the Minimal distance to the target.
-    MinDistance = sys::rs2_option_RS2_OPTION_MIN_DISTANCE,
+    MinDistance = sys::rs2_option_RS2_OPTION_MIN_DISTANCE as u32,
     /// Set the Maximum distance to the target.
-    MaxDistance = sys::rs2_option_RS2_OPTION_MAX_DISTANCE,
+    MaxDistance = sys::rs2_option_RS2_OPTION_MAX_DISTANCE as u32,
     /// Get the texture mapping stream unique ID.
-    TextureSource = sys::rs2_option_RS2_OPTION_TEXTURE_SOURCE,
+    TextureSource = sys::rs2_option_RS2_OPTION_TEXTURE_SOURCE as u32,
     /// Set the 2D-filter effect. The specific interpretation is given within the context of the filter.
-    FilterMagnitude = sys::rs2_option_RS2_OPTION_FILTER_MAGNITUDE,
+    FilterMagnitude = sys::rs2_option_RS2_OPTION_FILTER_MAGNITUDE as u32,
     /// Set the 2D-filter parameter that controls the weight/radius for smoothing.
-    FilterSmoothAlpha = sys::rs2_option_RS2_OPTION_FILTER_SMOOTH_ALPHA,
+    FilterSmoothAlpha = sys::rs2_option_RS2_OPTION_FILTER_SMOOTH_ALPHA as u32,
     /// Set the 2D-filter range/validity threshold.
-    FilterSmoothDelta = sys::rs2_option_RS2_OPTION_FILTER_SMOOTH_DELTA,
+    FilterSmoothDelta = sys::rs2_option_RS2_OPTION_FILTER_SMOOTH_DELTA as u32,
     /// Enhance depth data post-processing with holes filling where appropriate.
-    HolesFill = sys::rs2_option_RS2_OPTION_HOLES_FILL,
+    HolesFill = sys::rs2_option_RS2_OPTION_HOLES_FILL as u32,
     /// Get the distance in mm between the first and the second imagers in stereo-based depth cameras.
-    StereoBaseline = sys::rs2_option_RS2_OPTION_STEREO_BASELINE,
+    StereoBaseline = sys::rs2_option_RS2_OPTION_STEREO_BASELINE as u32,
     /// Allows dynamically ajust the converge step value of the target exposure in
     /// the Auto-Exposure algorithm.
-    AutoExposureConvergeStep = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_CONVERGE_STEP,
+    AutoExposureConvergeStep = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_CONVERGE_STEP as u32,
     /// Impose Inter-camera HW synchronization mode. Applicable for D400/L500/Rolling Shutter SKUs.
-    InterCamSyncMode = sys::rs2_option_RS2_OPTION_INTER_CAM_SYNC_MODE,
+    InterCamSyncMode = sys::rs2_option_RS2_OPTION_INTER_CAM_SYNC_MODE as u32,
     /// Select a stream to process.
-    StreamFilter = sys::rs2_option_RS2_OPTION_STREAM_FILTER,
+    StreamFilter = sys::rs2_option_RS2_OPTION_STREAM_FILTER as u32,
     /// Select a stream format to process.
-    StreamFormatFilter = sys::rs2_option_RS2_OPTION_STREAM_FORMAT_FILTER,
+    StreamFormatFilter = sys::rs2_option_RS2_OPTION_STREAM_FORMAT_FILTER as u32,
     /// Select a stream index to process.
-    StreamIndexFilter = sys::rs2_option_RS2_OPTION_STREAM_INDEX_FILTER,
+    StreamIndexFilter = sys::rs2_option_RS2_OPTION_STREAM_INDEX_FILTER as u32,
     /// When supported, this option make the camera to switch the emitter state every frame.
     /// 0 for disabled, 1 for enabled.
-    EmitterOnOff = sys::rs2_option_RS2_OPTION_EMITTER_ON_OFF,
+    EmitterOnOff = sys::rs2_option_RS2_OPTION_EMITTER_ON_OFF as u32,
     /// Get the LDD temperature.
-    LldTemperature = sys::rs2_option_RS2_OPTION_LLD_TEMPERATURE,
+    LldTemperature = sys::rs2_option_RS2_OPTION_LLD_TEMPERATURE as u32,
     /// Get the MC temperature.
-    McTemperature = sys::rs2_option_RS2_OPTION_MC_TEMPERATURE,
+    McTemperature = sys::rs2_option_RS2_OPTION_MC_TEMPERATURE as u32,
     /// Get the MA temperature.
-    MaTemperature = sys::rs2_option_RS2_OPTION_MA_TEMPERATURE,
+    MaTemperature = sys::rs2_option_RS2_OPTION_MA_TEMPERATURE as u32,
     /// Hardware stream configuration.
-    HardwarePreset = sys::rs2_option_RS2_OPTION_HARDWARE_PRESET,
+    HardwarePreset = sys::rs2_option_RS2_OPTION_HARDWARE_PRESET as u32,
     /// Enable/disable global time.
-    GlobalTimeEnabled = sys::rs2_option_RS2_OPTION_GLOBAL_TIME_ENABLED,
+    GlobalTimeEnabled = sys::rs2_option_RS2_OPTION_GLOBAL_TIME_ENABLED as u32,
     /// Get the APD temperature.
-    ApdTemperature = sys::rs2_option_RS2_OPTION_APD_TEMPERATURE,
+    ApdTemperature = sys::rs2_option_RS2_OPTION_APD_TEMPERATURE as u32,
     /// Enable/disable an internal map.
-    EnableMapping = sys::rs2_option_RS2_OPTION_ENABLE_MAPPING,
+    EnableMapping = sys::rs2_option_RS2_OPTION_ENABLE_MAPPING as u32,
     /// Enable/disable appearance-based relocalization.
-    EnableRelocalization = sys::rs2_option_RS2_OPTION_ENABLE_RELOCALIZATION,
+    EnableRelocalization = sys::rs2_option_RS2_OPTION_ENABLE_RELOCALIZATION as u32,
     /// Enable/disable position jumping.
-    EnablePoseJumping = sys::rs2_option_RS2_OPTION_ENABLE_POSE_JUMPING,
+    EnablePoseJumping = sys::rs2_option_RS2_OPTION_ENABLE_POSE_JUMPING as u32,
     /// Enable/disable dynamic calibration.
-    EnableDynamicCalibration = sys::rs2_option_RS2_OPTION_ENABLE_DYNAMIC_CALIBRATION,
+    EnableDynamicCalibration = sys::rs2_option_RS2_OPTION_ENABLE_DYNAMIC_CALIBRATION as u32,
     /// Get the offset from sensor to depth origin in millimeters.
-    DepthOffset = sys::rs2_option_RS2_OPTION_DEPTH_OFFSET,
+    DepthOffset = sys::rs2_option_RS2_OPTION_DEPTH_OFFSET as u32,
     /// Set the power of the LED (light emitting diode), with 0 meaning off
-    LedPower = sys::rs2_option_RS2_OPTION_LED_POWER,
+    LedPower = sys::rs2_option_RS2_OPTION_LED_POWER as u32,
     /// Preserve the previous map when starting.
-    EnableMapPreservation = sys::rs2_option_RS2_OPTION_ENABLE_MAP_PRESERVATION,
+    EnableMapPreservation = sys::rs2_option_RS2_OPTION_ENABLE_MAP_PRESERVATION as u32,
     /// Enable/disable sensor shutdown when a free-fall is detected (on by default).
-    FreefallDetectionEnabled = sys::rs2_option_RS2_OPTION_FREEFALL_DETECTION_ENABLED,
+    FreefallDetectionEnabled = sys::rs2_option_RS2_OPTION_FREEFALL_DETECTION_ENABLED as u32,
     /// Changes the exposure time of Avalanche Photo Diode in the receiver.
-    AvalanchePhotoDiode = sys::rs2_option_RS2_OPTION_AVALANCHE_PHOTO_DIODE,
+    AvalanchePhotoDiode = sys::rs2_option_RS2_OPTION_AVALANCHE_PHOTO_DIODE as u32,
     /// Changes the amount of sharpening in the post-processed image.
-    PostProcessingSharpening = sys::rs2_option_RS2_OPTION_POST_PROCESSING_SHARPENING,
+    PostProcessingSharpening = sys::rs2_option_RS2_OPTION_POST_PROCESSING_SHARPENING as u32,
     /// Changes the amount of sharpening in the pre-processed image.
-    PreProcessingSharpening = sys::rs2_option_RS2_OPTION_PRE_PROCESSING_SHARPENING,
+    PreProcessingSharpening = sys::rs2_option_RS2_OPTION_PRE_PROCESSING_SHARPENING as u32,
     /// Control edges and background noise.
-    NoiseFiltering = sys::rs2_option_RS2_OPTION_NOISE_FILTERING,
+    NoiseFiltering = sys::rs2_option_RS2_OPTION_NOISE_FILTERING as u32,
     /// Enable/disable pixel invalidation.
-    InvalidationBypass = sys::rs2_option_RS2_OPTION_INVALIDATION_BYPASS,
+    InvalidationBypass = sys::rs2_option_RS2_OPTION_INVALIDATION_BYPASS as u32,
     /// Change the depth digital gain see rs2_digital_gain for values.
-    DigitalGain = sys::rs2_option_RS2_OPTION_DIGITAL_GAIN,
+    DigitalGain = sys::rs2_option_RS2_OPTION_DIGITAL_GAIN as u32,
     /// The resolution mode: see rs2_sensor_mode for values.
-    SensoeMode = sys::rs2_option_RS2_OPTION_SENSOR_MODE,
+    SensoeMode = sys::rs2_option_RS2_OPTION_SENSOR_MODE as u32,
     /// Enable/disable Laser On constantly (GS SKU Only).
-    EmitterAlwaysOn = sys::rs2_option_RS2_OPTION_EMITTER_ALWAYS_ON,
+    EmitterAlwaysOn = sys::rs2_option_RS2_OPTION_EMITTER_ALWAYS_ON as u32,
     /// Depth Thermal Compensation for selected D400 SKUs.
-    ThermalCompensation = sys::rs2_option_RS2_OPTION_THERMAL_COMPENSATION,
+    ThermalCompensation = sys::rs2_option_RS2_OPTION_THERMAL_COMPENSATION as u32,
     /// Enable/disable depth & color frame sync with periodic calibration for proper alignment.
-    TriggerCameraAccuracyHealth = sys::rs2_option_RS2_OPTION_TRIGGER_CAMERA_ACCURACY_HEALTH,
+    TriggerCameraAccuracyHealth = sys::rs2_option_RS2_OPTION_TRIGGER_CAMERA_ACCURACY_HEALTH as u32,
     /// Reset Camera Accuracy metric (if affected by TriggerCameraAccuracyHealth option).
-    ResetCameraAccuracyHealth = sys::rs2_option_RS2_OPTION_RESET_CAMERA_ACCURACY_HEALTH,
+    ResetCameraAccuracyHealth = sys::rs2_option_RS2_OPTION_RESET_CAMERA_ACCURACY_HEALTH as u32,
     /// Set host performance mode to optimize device settings so host can keep up with workload.
     /// Take USB transaction granularity as an example. Setting option to low performance host leads
     /// to larger USB transaction sizes and a reduced number of transactions. This improves performance
     /// and stability if the host machine is relatively weak compared to the workload.
-    HostPerformance = sys::rs2_option_RS2_OPTION_HOST_PERFORMANCE,
+    HostPerformance = sys::rs2_option_RS2_OPTION_HOST_PERFORMANCE as u32,
     /// Enable/disable HDR.
-    HDREnabled = sys::rs2_option_RS2_OPTION_HDR_ENABLED,
+    HDREnabled = sys::rs2_option_RS2_OPTION_HDR_ENABLED as u32,
     /// Get HDR Sequence name.
-    SequenceName = sys::rs2_option_RS2_OPTION_SEQUENCE_NAME,
+    SequenceName = sys::rs2_option_RS2_OPTION_SEQUENCE_NAME as u32,
     /// Get HDR Sequence size.
-    SequenceSize = sys::rs2_option_RS2_OPTION_SEQUENCE_SIZE,
+    SequenceSize = sys::rs2_option_RS2_OPTION_SEQUENCE_SIZE as u32,
     /// Get HDR Sequence ID - 0 is not HDR; sequence ID for HDR configuration starts from 1.
-    SequenceId = sys::rs2_option_RS2_OPTION_SEQUENCE_ID,
+    SequenceId = sys::rs2_option_RS2_OPTION_SEQUENCE_ID as u32,
     /// Get Humidity temperature [in Celsius].
-    HumidityTemperature = sys::rs2_option_RS2_OPTION_HUMIDITY_TEMPERATURE,
+    HumidityTemperature = sys::rs2_option_RS2_OPTION_HUMIDITY_TEMPERATURE as u32,
     /// Enable/disable the maximum usable depth sensor range given the amount of ambient light in the scene.
-    EnableMaxUsableRange = sys::rs2_option_RS2_OPTION_ENABLE_MAX_USABLE_RANGE,
+    EnableMaxUsableRange = sys::rs2_option_RS2_OPTION_ENABLE_MAX_USABLE_RANGE as u32,
     /// Enable/disable the alternate IR, When enabling alternate IR, the IR image is holding the amplitude of the depth correlation.
-    AlternateIR = sys::rs2_option_RS2_OPTION_ALTERNATE_IR,
+    AlternateIR = sys::rs2_option_RS2_OPTION_ALTERNATE_IR as u32,
     /// Get an estimation of the noise on the IR image.
-    NoiseEstimation = sys::rs2_option_RS2_OPTION_NOISE_ESTIMATION,
+    NoiseEstimation = sys::rs2_option_RS2_OPTION_NOISE_ESTIMATION as u32,
     /// Enable/disable data collection for calculating IR pixel reflectivity.
-    EnableIRReflectivity = sys::rs2_option_RS2_OPTION_ENABLE_IR_REFLECTIVITY,
+    EnableIRReflectivity = sys::rs2_option_RS2_OPTION_ENABLE_IR_REFLECTIVITY as u32,
     /// Auto exposure limit in microseconds.
     ///
     /// Default is 0 which means full exposure range. If the requested exposure limit is greater
     /// than frame time, it will be set to frame time at runtime. Setting will not take effect
     /// until next streaming session.
-    AutoExposureLimit = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_LIMIT,
+    AutoExposureLimit = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_LIMIT as u32,
     /// Auto gain limits ranging from 16 to 248.
     ///
     /// Default is 0 which means full gain. If the requested gain limit is less than 16, it will be
     /// set to 16. If the requested gain limit is greater than 248, it will be set to 248. Setting
     /// will not take effect until next streaming session.
-    AutoGainLimit = sys::rs2_option_RS2_OPTION_AUTO_GAIN_LIMIT,
+    AutoGainLimit = sys::rs2_option_RS2_OPTION_AUTO_GAIN_LIMIT as u32,
     // Not included since this just tells us the total number of options.
     //
     // Count = sys::rs2_option_RS2_OPTION_COUNT,
@@ -318,13 +318,13 @@ mod tests {
     #[test]
     fn all_variants_exist() {
         const DEPRECATED_OPTIONS: [u32; 4] = [
-            sys::rs2_option_RS2_OPTION_ZERO_ORDER_POINT_X,
-            sys::rs2_option_RS2_OPTION_ZERO_ORDER_POINT_Y,
-            sys::rs2_option_RS2_OPTION_ZERO_ORDER_ENABLED,
-            sys::rs2_option_RS2_OPTION_AMBIENT_LIGHT,
+            sys::rs2_option_RS2_OPTION_ZERO_ORDER_POINT_X as u32,
+            sys::rs2_option_RS2_OPTION_ZERO_ORDER_POINT_Y as u32,
+            sys::rs2_option_RS2_OPTION_ZERO_ORDER_ENABLED as u32,
+            sys::rs2_option_RS2_OPTION_AMBIENT_LIGHT as u32,
         ];
 
-        for i in 0..sys::rs2_option_RS2_OPTION_COUNT {
+        for i in 0..sys::rs2_option_RS2_OPTION_COUNT as u32 {
             if DEPRECATED_OPTIONS.iter().any(|x| x == &i) {
                 continue;
             }

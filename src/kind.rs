@@ -48,7 +48,7 @@
 //! for i in 0..sys::rs2_camera_info_RS2_CAMERA_INFO_COUNT {
 //!     println!(
 //!         "The enum variant {:?} corresponds to the u32 value {}",
-//!         Rs2CameraInfo::from_u32(i).unwrap(),
+//!         Rs2CameraInfo::from_u32(i as u32).unwrap(),
 //!         i,
 //!     );
 //! }

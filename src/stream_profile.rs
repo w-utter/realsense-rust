@@ -45,7 +45,12 @@ use crate::{
 use anyhow::Result;
 use num_traits::FromPrimitive;
 use realsense_sys as sys;
-use std::{convert::TryFrom, marker::PhantomData, mem::MaybeUninit, ptr::NonNull};
+use std::{
+    convert::{TryFrom, TryInto},
+    marker::PhantomData,
+    mem::MaybeUninit,
+    ptr::NonNull,
+};
 use thiserror::Error;
 
 /// Type describing errors that can occur when trying to construct a stream profile.
@@ -196,8 +201,8 @@ impl<'a> TryFrom<NonNull<sys::rs2_stream_profile>> for StreamProfile<'a> {
 
             Ok(StreamProfile {
                 ptr: stream_profile_ptr,
-                stream: Rs2StreamKind::from_u32(stream.assume_init()).unwrap(),
-                format: Rs2Format::from_u32(format.assume_init()).unwrap(),
+                stream: Rs2StreamKind::from_u32(stream.assume_init().try_into().unwrap()).unwrap(),
+                format: Rs2Format::from_u32(format.assume_init().try_into().unwrap()).unwrap(),
                 index: index.assume_init() as usize,
                 unique_id: unique_id.assume_init(),
                 framerate: framerate.assume_init(),
