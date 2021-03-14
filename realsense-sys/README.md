@@ -48,7 +48,7 @@ Install pkg-config via Chocolatey:
 
 Set the pkg-config path in Powershell to the realsense-sys directory. One can do this in two ways: 
 
-*First Option*: Modify pkg-config's environment variables
+**First Option: Modify pkg-config's environment variables**
 
 To do this, run 
 
@@ -62,7 +62,7 @@ It's a good idea to set the `PKG_CONFIG_PATH` Environment Variable globally as w
 NOTE*: Environment Variables set through the Windows System Properties will not apply until the host machine is power
 cycled. Yep. That's a thing. 
 
-*Second Option*: Add [realsense2.pc](./realsense2.pc) to pkg-config's search directory
+**Second Option: Add [realsense2.pc](./realsense2.pc) to pkg-config's search directory**
 
 Run the following command...
 
