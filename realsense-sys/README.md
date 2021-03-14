@@ -35,11 +35,11 @@ the SDK in `C:/Program Files (x86)/Intel RealSense SDK 2.0`. If your installatio
 
 ### Install Pkg-config and Clang
 
- install pkg-config via Chocolatey: 
+Install pkg-config via Chocolatey: 
 
 1. https://chocolatey.org/install (if not already on the system)
 2. `choco install pkgconfiglite`
-3. `choco install llvm`
+3. `choco install llvm` for bindgen (if not already installed)
 
 ### Guide Pkg-config to realsense2.pc
 
@@ -55,9 +55,9 @@ This will help pkg-config find the `realsense2.pc` file located in this director
 locate the headers and libraries necessary for RealSense operation. The Windows wizard does not provide this file, so we
 provide it ourselves. 
 
-It's a good idea to set this Environment Variable globally as well through the Windows System Properties. *BUT NOTE*:
-Environment Variables set through the Windows System Properties will not apply until the host machine is power cycled.
-Yep. That's a thing. 
+It's a good idea to set the `PKG_CONFIG_PATH` Environment Variable globally as well via the System Properties. *BUT
+NOTE*: Environment Variables set through the Windows System Properties will not apply until the host machine is power
+cycled. Yep. That's a thing. 
 
 *Second Option*: Add `realsense2.pc` to pkg-config's search directory
 
