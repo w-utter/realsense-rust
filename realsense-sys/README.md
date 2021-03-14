@@ -28,6 +28,9 @@ the necessary headers and libraries.
 
 ## Windows 
 
+**NOTE**: The current bindings are formatted for Linux. Users must run with the `buildtime-bindgen` feature active to
+reformat the bindings for Windows platforms. 
+
 This installation process assumes that the RealSense SDK was installed through the .exe wizard downloadable from [the
 librealsense asset page](https://github.com/IntelRealSense/librealsense/releases/tag/v2.42.0). This process will install
 the SDK in `C:/Program Files (x86)/Intel RealSense SDK 2.0`. If your installation is in another place, modify the
