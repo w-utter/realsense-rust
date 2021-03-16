@@ -220,7 +220,7 @@ fn supported_but_ignored_options_and_vals_map() -> HashMap<Rs2Option, Option<f32
 /// test has been written in a way that makes it easy to test more Options for this same behavior.
 #[test]
 fn d400_streams_check_supported_but_ignored_sensor_options() {
-    let options_set = possible_options_and_vals_map();
+    let options_to_set = possible_options_and_vals_map();
     let options_ignored = supported_but_ignored_options_and_vals_map();
 
     let context = Context::new().unwrap();
@@ -233,15 +233,13 @@ fn d400_streams_check_supported_but_ignored_sensor_options() {
     if let Some(device) = devices.get(0) {
         // Grab the sensor list
         for mut sensor in device.sensors() {
-            for option_to_set in &options_set {
+            for (option, val) in &options_to_set {
                 // We unwrap here because we don't care about the result of the set for this test. RealSense is pretty
                 // tricky when it comes to what can be set and what can't; the best way to check this would be to use
                 // `sensor.supports_option` or `sensor.is_option_read_only`.
-
+                //
                 // However, there are exceptions, as one can see from setting GlobalTimeEnabled on the L500 series.
-                sensor
-                    .set_option(*option_to_set.0, option_to_set.1.unwrap())
-                    .unwrap();
+                sensor.set_option(*option, val.unwrap()).unwrap();
             }
         }
         let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
@@ -262,23 +260,20 @@ fn d400_streams_check_supported_but_ignored_sensor_options() {
         let _pipeline = pipeline.start(Some(&config)).unwrap();
 
         for sensor in device.sensors() {
-            for option_that_was_set in &options_set {
+            for (option, val) in &options_to_set {
                 // Check that the Options we wanted to set are
                 // 1. Theoretically supported by the sensor, but
                 // 2. Actually discarded when set.
-                if options_ignored.contains_key(&option_that_was_set.0) {
-                    assert!(sensor.supports_option(*option_that_was_set.0));
+                if options_ignored.contains_key(&option) {
+                    assert!(sensor.supports_option(*option));
                     assert_ne!(
-                        sensor.get_option(*option_that_was_set.0),
-                        *options_ignored.get(&option_that_was_set.0).unwrap()
+                        sensor.get_option(*option),
+                        *options_ignored.get(&option).unwrap()
                     );
                 }
                 // If we get here, it means that the option should actually set successfully. Fail if it's not.
                 else {
-                    assert_eq!(
-                        sensor.get_option(*option_that_was_set.0),
-                        *option_that_was_set.1
-                    );
+                    assert_eq!(sensor.get_option(*option), *val);
                 }
             }
         }
