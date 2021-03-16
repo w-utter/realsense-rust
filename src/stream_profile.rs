@@ -38,8 +38,9 @@
 //!
 
 use crate::{
+    base::{Rs2Extrinsics, Rs2Intrinsics, Rs2MotionDeviceIntrinsics},
     check_rs2_error,
-    kind::{Rs2DistortionModel, Rs2Exception, Rs2Format, Rs2StreamKind},
+    kind::{Rs2Exception, Rs2Format, Rs2StreamKind},
 };
 use anyhow::Result;
 use num_traits::FromPrimitive;
@@ -94,116 +95,6 @@ pub enum DataError {
     CouldNotGetMotionIntrinsics(Rs2Exception, String),
 }
 
-#[derive(Debug)]
-pub struct Rs2MotionDeviceIntrinsics(sys::rs2_motion_device_intrinsic);
-
-/// Profile the scale, bias, and variances for a given motion device
-///
-/// The bias and scale factors are stored as one large matrix; see the documentation on `data()` for the correct way to
-/// retrieve these parameters.
-///
-/// Use the function `stream_profile.motion_intrinsics()` to retrieve these intrinsics from a certain stream.
-impl Rs2MotionDeviceIntrinsics {
-    /// A 3x4 matrix describing the scale and bias intrinsics of the motion device.
-    ///
-    /// This matrix is stored internally like so:
-    /// [ Scale X    | cross axis  | cross axis | Bias X ]
-    /// [ cross axis | Scale Y     | cross axis | Bias Y ]
-    /// [ cross axis | cross axis  | Scale Z    | Bias Z ]
-    ///
-    pub fn data(&self) -> [[f32; 4usize]; 3usize] {
-        self.0.data
-    }
-    /// Variance of noise for X, Y, and Z axis.
-    pub fn noise_variances(&self) -> [f32; 3usize] {
-        self.0.noise_variances
-    }
-    /// Variance of bias for X, Y, and Z axis.
-    pub fn bias_variances(&self) -> [f32; 3usize] {
-        self.0.bias_variances
-    }
-}
-
-/// Describe the distortion model and coefficients of the lens used.
-///
-/// The data in `coeffs` means different things for different models.
-///
-/// - Brown-Conrady: [k1, k2, p1, p2, k3].
-/// - F-Theta Fisheye: [k1, k2, k3, k4, 0].
-/// - Kannala-Brandt: [k1, k2, k3, k4, 0].
-///
-/// The Intel RealSense documentation claims that "Other models are subject to their own interpretations". This is
-/// admittedly not too helpful, but it's worth noting in case your model isn't covered here.
-#[derive(Debug)]
-pub struct Rs2Distortion {
-    /// Distortion model of the image.
-    model: Rs2DistortionModel,
-    /// Distortion coefficients.
-    coeffs: [f32; 5usize],
-}
-
-/// The profile describing the way that light bends in a stream.
-///
-/// This stores the focal length, principal point, dimensions, and distortion model used on the image frame. See the
-/// documentation for [Rs2Distortion] for specifics on the available distortion models for RealSense devices.
-///
-/// Use the function `stream_profile.intrinsics()` to retrieve these intrinsics from a certain stream.
-#[derive(Debug)]
-pub struct Rs2Intrinsics(sys::rs2_intrinsics);
-
-impl Rs2Intrinsics {
-    /// Width of the image in pixels
-    pub fn width(&self) -> usize {
-        self.0.width as usize
-    }
-    /// Height of the image in pixels
-    pub fn height(&self) -> usize {
-        self.0.height as usize
-    }
-
-    /// Horizontal coordinate of the principal point of the image, as a pixel offset from the left edge
-    pub fn ppx(&self) -> f32 {
-        self.0.ppx
-    }
-    /// Vertical coordinate of the principal point of the image, as a pixel offset from the top edge
-    pub fn ppy(&self) -> f32 {
-        self.0.ppy
-    }
-    /// Focal length of the image plane, as a multiple of pixel width
-    pub fn fx(&self) -> f32 {
-        self.0.fx
-    }
-    /// Focal length of the image plane, as a multiple of pixel height
-    pub fn fy(&self) -> f32 {
-        self.0.fy
-    }
-    /// Distortion model and coefficients of the image
-    pub fn distortion(&self) -> Rs2Distortion {
-        Rs2Distortion {
-            model: Rs2DistortionModel::from_u32(self.0.model).unwrap(),
-            coeffs: self.0.coeffs,
-        }
-    }
-}
-
-/// The topology describing how the different devices are oriented.
-///
-/// Use the function `stream_profile.extrinsics()` to retrieve these extrinsics from a certain stream in relation to
-/// another stream on the same device.
-#[derive(Debug)]
-pub struct Rs2Extrinsics(sys::rs2_extrinsics);
-
-impl Rs2Extrinsics {
-    /// Column-major 3x3 rotation matrix
-    pub fn rotation(&self) -> [f32; 9usize] {
-        self.0.rotation
-    }
-    /// Three-element translation vector, in meters
-    pub fn translation(&self) -> [f32; 3usize] {
-        self.0.translation
-    }
-}
-
 /// Type for holding the stream profile information.
 ///
 /// This type exists as a high-level wrapper around an underlying `rs2_stream_profile` pointer. On
@@ -231,6 +122,7 @@ pub struct StreamProfile<'a> {
     // be manually deleted using `rs2_delete_stream_profile`. Streams are owned and managed by
     // their corresponding sensor, which are owned and managed by their corresponding devices.
     // Stream profile pointers should only be manually deleted if they are created by
+
     // `rs2_clone_stream_profile`, which we do not use in the high-level API.
     ptr: NonNull<sys::rs2_stream_profile>,
     // The kind of stream (e.g. depth, video, accelerometer, gyroscope, etc.)
