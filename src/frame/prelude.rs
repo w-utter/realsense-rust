@@ -5,13 +5,13 @@
 //! with the wildcard describing the specialization that goes with that type.
 
 use crate::{
-    common::*,
     kind::{Rs2Exception, Rs2Extension, Rs2FrameMetadata, Rs2StreamKind, Rs2TimestampDomain},
     sensor::Sensor,
     stream_profile::StreamProfile,
 };
 use anyhow::Result;
 use realsense_sys as sys;
+use std::ptr::NonNull;
 use thiserror::Error;
 
 /// How many bits are in a byte? Who can truly say.
