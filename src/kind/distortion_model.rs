@@ -15,17 +15,17 @@ use realsense_sys as sys;
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2DistortionModel {
     /// Rectilinear images. No distortion compensation required.
-    None = sys::rs2_distortion_RS2_DISTORTION_NONE,
+    None = sys::rs2_distortion_RS2_DISTORTION_NONE as i32,
     /// Unmodified Brown-Conrady distortion model
-    BrownConrady = sys::rs2_distortion_RS2_DISTORTION_BROWN_CONRADY,
+    BrownConrady = sys::rs2_distortion_RS2_DISTORTION_BROWN_CONRADY as i32,
     /// Equivalent to Brown-Conrady distortion, except that tangential distortion is applied to radially distorted points
-    BrownConradyModified = sys::rs2_distortion_RS2_DISTORTION_MODIFIED_BROWN_CONRADY,
+    BrownConradyModified = sys::rs2_distortion_RS2_DISTORTION_MODIFIED_BROWN_CONRADY as i32,
     /// Equivalent to Brown-Conrady distortion, except undistorts image instead of distorting it
-    BrownConradyInverse = sys::rs2_distortion_RS2_DISTORTION_INVERSE_BROWN_CONRADY,
+    BrownConradyInverse = sys::rs2_distortion_RS2_DISTORTION_INVERSE_BROWN_CONRADY as i32,
     /// F-Theta fish-eye distortion model
-    FThetaFisheye = sys::rs2_distortion_RS2_DISTORTION_FTHETA,
+    FThetaFisheye = sys::rs2_distortion_RS2_DISTORTION_FTHETA as i32,
     /// Four parameter Kannala Brandt distortion model
-    KannalaBrandt = sys::rs2_distortion_RS2_DISTORTION_KANNALA_BRANDT4,
+    KannalaBrandt = sys::rs2_distortion_RS2_DISTORTION_KANNALA_BRANDT4 as i32,
     // Number of enumeration values. Not included.
     //
     // Count = sys::rs2_distortion_RS2_DISTORTION_COUNT
@@ -38,7 +38,7 @@ mod tests {
 
     #[test]
     fn all_variants_exist() {
-        for i in 0..sys::rs2_distortion_RS2_DISTORTION_COUNT {
+        for i in 0..sys::rs2_distortion_RS2_DISTORTION_COUNT as i32 {
             assert!(
                 Rs2DistortionModel::from_i32(i).is_some(),
                 "DistortionModel variant for ordinal {} does not exist.",

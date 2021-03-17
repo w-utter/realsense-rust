@@ -21,7 +21,7 @@ use crate::{
     stream_profile::StreamProfile,
 };
 use anyhow::Result;
-use num_traits::{FromPrimitive, ToPrimitive};
+use num_traits::FromPrimitive;
 use realsense_sys as sys;
 use std::{
     convert::{TryFrom, TryInto},
@@ -235,10 +235,7 @@ impl<'a, K> TryFrom<NonNull<sys::rs2_frame>> for ImageFrame<'a, K> {
                 stride: stride as usize,
                 bits_per_pixel: bits_per_pixel as usize,
                 timestamp,
-                timestamp_domain: Rs2TimestampDomain::from_u32(
-                    timestamp_domain.try_into().unwrap(),
-                )
-                .unwrap(),
+                timestamp_domain: Rs2TimestampDomain::from_i32(timestamp_domain as i32).unwrap(),
                 frame_stream_profile: profile,
                 data_size_in_bytes: size as usize,
                 data: ptr.as_ref().unwrap(),
@@ -366,7 +363,7 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
 
             let val = sys::rs2_get_frame_metadata(
                 self.frame_ptr.as_ptr(),
-                metadata_kind.to_u32().unwrap().try_into().unwrap(),
+                (metadata_kind as i32).try_into().unwrap(),
                 &mut err,
             );
 
@@ -385,7 +382,7 @@ impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
 
             let supports_metadata = sys::rs2_supports_frame_metadata(
                 self.frame_ptr.as_ptr(),
-                metadata_kind.to_u32().unwrap().try_into().unwrap(),
+                (metadata_kind as i32).try_into().unwrap(),
                 &mut err,
             );
 

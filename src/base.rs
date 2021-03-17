@@ -131,7 +131,7 @@ impl Rs2Intrinsics {
     /// Distortion model and coefficients of the image
     pub fn distortion(&self) -> Rs2Distortion {
         Rs2Distortion {
-            model: Rs2DistortionModel::from_i32(self.0.model).unwrap(),
+            model: Rs2DistortionModel::from_i32(self.0.model as i32).unwrap(),
             coeffs: self.0.coeffs,
         }
     }

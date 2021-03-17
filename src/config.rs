@@ -6,7 +6,6 @@ use crate::{
     kind::{Rs2Exception, Rs2Format, Rs2StreamKind},
 };
 use anyhow::Result;
-use num_traits::ToPrimitive;
 use realsense_sys as sys;
 use std::{convert::TryInto, ffi::CStr, path::Path, ptr::NonNull};
 use thiserror::Error;
@@ -121,11 +120,11 @@ impl Config {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_config_enable_stream(
                 self.config_ptr.as_ptr(),
-                stream.to_u32().unwrap().try_into().unwrap(),
+                (stream as i32).try_into().unwrap(),
                 index as i32,
                 width as i32,
                 height as i32,
-                format.to_u32().unwrap().try_into().unwrap(),
+                (format as i32).try_into().unwrap(),
                 framerate as i32,
                 &mut err,
             );
@@ -272,7 +271,7 @@ impl Config {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_config_disable_indexed_stream(
                 self.config_ptr.as_ptr(),
-                stream.to_u32().unwrap().try_into().unwrap(),
+                (stream as i32).try_into().unwrap(),
                 index as i32,
                 &mut err,
             );
@@ -299,7 +298,7 @@ impl Config {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_config_disable_stream(
                 self.config_ptr.as_ptr(),
-                stream.to_u32().unwrap().try_into().unwrap(),
+                (stream as i32).try_into().unwrap(),
                 &mut err,
             );
             check_rs2_error!(err, ConfigurationError::CouldNotDisableStream)?;

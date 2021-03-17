@@ -143,7 +143,7 @@ macro_rules! check_rs2_error {
             let err: *mut sys::rs2_error = $rs2_error;
             if err.as_ref().is_some() {
                 let res = $result(
-                    Rs2Exception::from_u32(
+                    Rs2Exception::from_i32(
                         sys::rs2_get_librealsense_exception_type(err)
                             .try_into()
                             .unwrap(),

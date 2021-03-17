@@ -11,7 +11,6 @@ use crate::{
     sensor::Sensor,
 };
 use anyhow::Result;
-use num_traits::ToPrimitive;
 use realsense_sys as sys;
 use std::{
     convert::{From, TryInto},
@@ -168,7 +167,7 @@ impl Device {
 
             let val = sys::rs2_get_device_info(
                 self.device_ptr.as_ptr(),
-                camera_info.to_u32().unwrap().try_into().unwrap(),
+                (camera_info as i32).try_into().unwrap(),
                 &mut err,
             );
 
@@ -190,7 +189,7 @@ impl Device {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let supports_info = sys::rs2_supports_device_info(
                 self.device_ptr.as_ptr(),
-                camera_info.to_u32().unwrap().try_into().unwrap(),
+                (camera_info as i32).try_into().unwrap(),
                 &mut err,
             );
 

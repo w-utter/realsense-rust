@@ -13,7 +13,6 @@ use crate::{
 };
 use anyhow::Result;
 use num_traits::FromPrimitive;
-use num_traits::ToPrimitive;
 use realsense_sys as sys;
 use std::{
     convert::{TryFrom, TryInto},
@@ -182,10 +181,7 @@ impl<'a> TryFrom<NonNull<sys::rs2_frame>> for PoseFrame<'a> {
             Ok(PoseFrame {
                 frame_ptr,
                 timestamp,
-                timestamp_domain: Rs2TimestampDomain::from_u32(
-                    timestamp_domain.try_into().unwrap(),
-                )
-                .unwrap(),
+                timestamp_domain: Rs2TimestampDomain::from_i32(timestamp_domain as i32).unwrap(),
                 frame_stream_profile: profile,
                 data: pose_data.assume_init(),
                 should_drop: true,
@@ -227,7 +223,7 @@ impl<'a> FrameEx<'a> for PoseFrame<'a> {
 
             let val = sys::rs2_get_frame_metadata(
                 self.frame_ptr.as_ptr(),
-                metadata_kind.to_u32().unwrap().try_into().unwrap(),
+                (metadata_kind as i32).try_into().unwrap(),
                 &mut err,
             );
 
@@ -246,7 +242,7 @@ impl<'a> FrameEx<'a> for PoseFrame<'a> {
 
             let supports_metadata = sys::rs2_supports_frame_metadata(
                 self.frame_ptr.as_ptr(),
-                metadata_kind.to_u32().unwrap().try_into().unwrap(),
+                (metadata_kind as i32).try_into().unwrap(),
                 &mut err,
             );
 

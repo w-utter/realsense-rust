@@ -8,7 +8,6 @@
 
 use super::prelude::FrameCategory;
 use crate::kind::Rs2StreamKind;
-use num_traits::ToPrimitive;
 use realsense_sys as sys;
 use std::{
     convert::{TryFrom, TryInto},
@@ -89,7 +88,7 @@ impl CompositeFrame {
 
                 let is_extendable_to = sys::rs2_is_frame_extendable_to(
                     nonnull_frame_ptr.as_ptr(),
-                    F::extension().to_u32().unwrap().try_into().unwrap(),
+                    (F::extension() as i32).try_into().unwrap(),
                     &mut err,
                 );
 
