@@ -120,10 +120,12 @@ impl Config {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_config_enable_stream(
                 self.config_ptr.as_ptr(),
+                #[allow(clippy::useless_conversion)]
                 (stream as i32).try_into().unwrap(),
                 index as i32,
                 width as i32,
                 height as i32,
+                #[allow(clippy::useless_conversion)]
                 (format as i32).try_into().unwrap(),
                 framerate as i32,
                 &mut err,
@@ -271,6 +273,7 @@ impl Config {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_config_disable_indexed_stream(
                 self.config_ptr.as_ptr(),
+                #[allow(clippy::useless_conversion)]
                 (stream as i32).try_into().unwrap(),
                 index as i32,
                 &mut err,
@@ -298,6 +301,7 @@ impl Config {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             sys::rs2_config_disable_stream(
                 self.config_ptr.as_ptr(),
+                #[allow(clippy::useless_conversion)]
                 (stream as i32).try_into().unwrap(),
                 &mut err,
             );

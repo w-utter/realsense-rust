@@ -194,6 +194,7 @@ impl<'a, K> FrameEx<'a> for MotionFrame<'a, K> {
 
             let val = sys::rs2_get_frame_metadata(
                 self.frame_ptr.as_ptr(),
+                #[allow(clippy::useless_conversion)]
                 (metadata_kind as i32).try_into().unwrap(),
                 &mut err,
             );
@@ -212,6 +213,7 @@ impl<'a, K> FrameEx<'a> for MotionFrame<'a, K> {
 
             let supports_metadata = sys::rs2_supports_frame_metadata(
                 self.frame_ptr.as_ptr(),
+                #[allow(clippy::useless_conversion)]
                 (metadata_kind as i32).try_into().unwrap(),
                 &mut err,
             );

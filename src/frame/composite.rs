@@ -88,6 +88,7 @@ impl CompositeFrame {
 
                 let is_extendable_to = sys::rs2_is_frame_extendable_to(
                     nonnull_frame_ptr.as_ptr(),
+                    #[allow(clippy::useless_conversion)]
                     (F::extension() as i32).try_into().unwrap(),
                     &mut err,
                 );

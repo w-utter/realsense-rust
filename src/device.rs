@@ -167,6 +167,7 @@ impl Device {
 
             let val = sys::rs2_get_device_info(
                 self.device_ptr.as_ptr(),
+                #[allow(clippy::useless_conversion)]
                 (camera_info as i32).try_into().unwrap(),
                 &mut err,
             );
@@ -189,6 +190,7 @@ impl Device {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let supports_info = sys::rs2_supports_device_info(
                 self.device_ptr.as_ptr(),
+                #[allow(clippy::useless_conversion)]
                 (camera_info as i32).try_into().unwrap(),
                 &mut err,
             );
