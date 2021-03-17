@@ -25,7 +25,7 @@ fn main() {
     #[cfg(feature = "buildtime-bindgen")]
     {
         use std::path::Path;
-        let cargo_manifest_dir: PathBuf = PathBuf::from(std::env::current_dir().unwrap());
+        let cargo_manifest_dir = std::env::current_dir().unwrap();
 
         // The function below will leave us with the directory <SDKHome>/include/librealsense2/
         let include_dir = library
