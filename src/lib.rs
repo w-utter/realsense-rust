@@ -83,6 +83,7 @@ pub mod config;
 pub mod context;
 pub mod device;
 pub mod device_hub;
+pub mod docs;
 mod error;
 pub mod frame;
 pub mod kind;
