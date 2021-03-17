@@ -4,7 +4,7 @@
 //!
 //! - Depth Frame: A depth frame taken from a synthetic depth camera.
 //! - Disparity Frame: A disparity frame taken from a synthetic depth camera.
-//! - Video Frame: A frame holding color or monochrome data.
+//! - Color Frame: A frame holding color or monochrome data.
 //!
 //! Each frame type can hold data in multiple formats. The data type presented
 //! depends on the settings and flags used at runtime on the RealSense device.
@@ -52,7 +52,7 @@ pub struct Confidence;
 /// Holds the raw data pointer and derived data for an RS2 Image frame.
 ///
 /// This generic type isn't particularly useful on it's own. In all cases, you want a specialized
-/// version of this class ([`DepthFrame`], [`VideoFrame`], [`DisparityFrame`]).
+/// version of this class ([`DepthFrame`], [`ColorFrame`], [`DisparityFrame`]).
 #[derive(Debug)]
 pub struct ImageFrame<'a, Kind> {
     /// The raw data pointer from the original rs2 frame.

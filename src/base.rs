@@ -73,7 +73,7 @@ impl Rs2MotionDeviceIntrinsics {
 
 unsafe impl Send for Rs2MotionDeviceIntrinsics {}
 
-/// Describe the distortion model and coefficients of the lens used.
+/// Type representing the intrinsic scale, bias, and variances for a given motion device.
 ///
 /// The data in `coeffs` means different things for different models.
 ///
@@ -93,7 +93,7 @@ pub struct Rs2Distortion {
 
 unsafe impl Send for Rs2Distortion {}
 
-/// The profile describing the way that light bends in a stream.
+/// Type representing the model for describing the way that light bends in a stream.
 ///
 /// This stores the focal length, principal point, dimensions, and distortion model used on the image frame. See the
 /// documentation for [Rs2Distortion] for specifics on the available distortion models for RealSense devices.

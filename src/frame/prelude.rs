@@ -115,8 +115,7 @@ pub trait FrameEx<'a> {
 /// reason for this is because frames in librealsense2 are more or less defined by three things:
 ///
 /// 1. The data format ([`Rs2Format`](crate::kind::Rs2Format))
-/// 2. The extension type ([`Rs2Extension`](crate::kind::Rs2Extension),
-///    [`Extension`](crate::kind::Extension))
+/// 2. The extension type ([`Rs2Extension`](crate::kind::Rs2Extension)
 /// 3. The "stream kind" ([`Rs2StreamKind`](crate::kind::Rs2StreamKind))
 ///
 /// Knowing these three things, you can uniquely describe any frame. We aim for our types to be

@@ -50,33 +50,23 @@
 //!   USB connection. USB3 speeds can handle all streams running simultaneously. USB2 speeds _cannot_; trying to set a
 //!   streaming configuration that is too much for USB2 will result in a failed streaming config, and will cause the
 //!   program to fail. Luckily, this information can be looked up and compensated for during runtime. See the
-//!   [device-specific demo examples](examples/) for ways to achieve this.
+//!   device-specific demo examples for ways to achieve this.
 //!
 //! - **Supported but Ignored Stream Options**: There are a few Sensor options that are registered as "supported" by the
 //!   sensor, but are actually just set to their default values on runtime. These options are listed and tested in
-//!   [check_supported_but_ignored_sensor_options](./tests/connectivity_l500.rs) device tests. Currently,
-//!   [Rs2Option::GlobalTimeEnabled] on the L500 is the only setting known to suffer from this. However, the test has
-//!   been written in a way that makes it easy to test more Options for this same behavior.
+//!   `check_supported_but_ignored_sensor_options()` device tests. Currently,
+//!   [GlobalTimeEnabled](kind::Rs2Option::GlobalTimeEnabled) on the L500 is the only setting known to suffer from this.
+//!   However, the test has been written in a way that makes it easy to test more Options for this same behavior.
 //!
 //! ## Realsense-sys: A low-level API
 //!
-//! The realsense-sys crate provides C bindings generated from librealsense headers. See the realsense-sys
-//! [README.md](./realsense-sys/README.md) for more information.
+//! The realsense-sys crate provides C bindings generated from librealsense headers. See the [realsense-sys
+//! crate](https://crates.io/crates/realsense-sys) documentation for more information.
 //!
 //! ## Design Philosophy
 //!
-//! There's a lot of thought that went into making this library Rust-safe. Check out the [DESIGN](DESIGN.md) doc for
-//! our thoughts on Rust safety, error handling, and more for this API.
-//!
-//! ## Contributing
-//!
-//! First, check out our [contributing guidelines](CONTRIBUTING.md). After that, make sure that you read through the
-//! documentation in [lib.rs](src/lib.rs) as well as any of the modules you might be interested in contributing to! If
-//! you find documentation missing, this is considered a bug, so please submit a bug report!
-//!
-//! ## License
-//!
-//! Apache 2.0. See [LICENSE](LICENSE) file.
+//! There's a lot of thought that went into making this library Rust-safe. Check out the
+//! [architecture](docs::architecture) doc for our thoughts on Rust safety, error handling, and more for this API.
 
 pub mod base;
 pub mod config;

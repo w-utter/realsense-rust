@@ -107,7 +107,7 @@ pub enum DataError {
 ///
 /// 1. The stream profile list via the [`stream_profiles`](crate::sensor::Sensor::stream_profiles))
 ///    method on the [`Sensor`](crate::sensor::Sensor) type.
-/// 2. The frame-specific stream profile via the [`profile`](crate::frame::FrameEx::profile).
+/// 2. The frame-specific `frame_stream_profile` member via the Frame type.
 ///
 /// Stream profiles do not outlive the parent object that you obtained them from. This is somewhat
 /// artificial because this lifetime is not enforced or even documented this way in the C bindings
