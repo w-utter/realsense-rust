@@ -66,7 +66,7 @@ The realsense-sys crate provides C bindings generated from librealsense headers.
 ## Design Philosophy
 
 There's a lot of thought that went into making this library Rust-safe. Check out the
-[architecture](./src/docs/architecture) doc for our thoughts on Rust safety, error handling, and more for this API. 
+[architecture](./src/docs/architecture.rs) doc for our thoughts on Rust safety, error handling, and more for this API. 
 
 ## Contributing
 
