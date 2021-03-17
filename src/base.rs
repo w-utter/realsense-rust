@@ -32,7 +32,7 @@ where
                 .chain(Some(0))
                 .map(|b| {
                     let b = b.to_ne_bytes();
-                    b.get(0).map(|s| *s).into_iter().chain(b.get(1).map(|s| *s))
+                    b.get(0).copied().into_iter().chain(b.get(1).copied())
                 })
                 .flatten(),
         );
