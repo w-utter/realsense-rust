@@ -5,8 +5,6 @@ fn main() {
         return;
     }
 
-    let cargo_manifest_dir: PathBuf = PathBuf::from(std::env::current_dir().unwrap());
-
     // Probe libary
     let library = pkg_config::probe_library("realsense2")
         .expect("pkg-config failed to find realsense2 package");
@@ -27,6 +25,7 @@ fn main() {
     #[cfg(feature = "buildtime-bindgen")]
     {
         use std::path::Path;
+        let cargo_manifest_dir: PathBuf = PathBuf::from(std::env::current_dir().unwrap());
 
         // The function below will leave us with the directory <SDKHome>/include/librealsense2/
         let include_dir = library
@@ -67,14 +66,6 @@ fn main() {
                     .unwrap(),
             )
             .header(include_dir.join("h").join("rs_config.h").to_str().unwrap())
-            .header(include_dir.join("rsutil.h").to_str().unwrap())
-            .header(
-                cargo_manifest_dir
-                    .join("c")
-                    .join("rsutil_delegate.h")
-                    .to_str()
-                    .unwrap(),
-            )
             .whitelist_var("RS2_.*")
             .whitelist_type("rs2_.*")
             .whitelist_function("rs2_.*")
@@ -97,12 +88,6 @@ fn main() {
             .write_to_file(bindings_file)
             .expect("Couldn't write bindings!");
     }
-
-    // compile and link rsutil_delegate.h statically
-    cc::Build::new()
-        .includes(&library.include_paths)
-        .file(cargo_manifest_dir.join("c").join("rsutil_delegate.c"))
-        .compile("rsutil_delegate");
 
     // link the libraries specified by pkg-config.
     for dir in &library.link_paths {
@@ -133,11 +118,11 @@ fn main() {
         exe_path.push("deps");
         exe_path.push("realsense2.dll");
         let dll_dest = exe_path.to_str().unwrap();
-        let mut dll_src = std::path::PathBuf::from(dll_loc);
+        let mut dll_src = PathBuf::from(dll_loc);
         dll_src.push("realsense2.dll");
         match std::fs::copy(dll_src.clone(), dll_dest) {
             Ok(_) => println!("DLL successfully copied to deps folder."),
-            Err(c) => panic!("{}; attempting from source {:#?}", c, dll_src),
+            Err(e) => panic!("{}; attempting from source {:#?}", e, dll_src),
         }
     }
 }
