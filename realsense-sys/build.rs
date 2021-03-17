@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 fn main() {
     if cfg!(feature = "doc-only") {
         return;
@@ -24,7 +22,6 @@ fn main() {
     // generate bindings
     #[cfg(feature = "buildtime-bindgen")]
     {
-        use std::path::Path;
         let cargo_manifest_dir = std::env::current_dir().unwrap();
 
         // The function below will leave us with the directory <SDKHome>/include/librealsense2/
@@ -32,7 +29,7 @@ fn main() {
             .include_paths
             .iter()
             .filter_map(|path| {
-                let dir = Path::new(path).join("librealsense2");
+                let dir = std::path::Path::new(path).join("librealsense2");
                 if dir.is_dir() {
                     Some(dir)
                 } else {
@@ -118,7 +115,7 @@ fn main() {
         exe_path.push("deps");
         exe_path.push("realsense2.dll");
         let dll_dest = exe_path.to_str().unwrap();
-        let mut dll_src = PathBuf::from(dll_loc);
+        let mut dll_src = std::path::PathBuf::from(dll_loc);
         dll_src.push("realsense2.dll");
         match std::fs::copy(dll_src.clone(), dll_dest) {
             Ok(_) => println!("DLL successfully copied to deps folder."),
