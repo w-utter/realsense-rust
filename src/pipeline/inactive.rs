@@ -80,7 +80,7 @@ impl<'a> InactivePipeline<'a> {
     /// Start the pipeline with an optional config.
     ///
     /// The method consumes inactive pipeline itself, and returns the started pipeine.
-    pub fn start(self, config: Option<&'a Config>) -> Result<ActivePipeline<'a>> {
+    pub fn start(self, config: Option<Config>) -> Result<ActivePipeline<'a>> {
         if let Some(c) = config {
             if !self.can_resolve(c) {
                 return Err(anyhow::anyhow!(
