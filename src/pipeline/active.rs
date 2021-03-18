@@ -97,7 +97,7 @@ impl<'a> ActivePipeline<'a> {
     /// Returns [`FrameWaitError::DidTimeoutBeforeFrameArrival`] if the thread waits more than
     /// `timeout_ms` (in milliseconds) without returning a frame.
     ///
-    pub fn wait(&mut self, timeout_ms: Option<Duration>) -> Result<CompositeFrame> {
+    pub fn wait(&mut self, timeout_ms: Option<Duration>) -> Result<CompositeFrame, FrameWaitError> {
         let timeout_ms = match timeout_ms {
             Some(d) => d.as_millis() as u32,
             None => sys::RS2_DEFAULT_TIMEOUT,
@@ -126,9 +126,7 @@ impl<'a> ActivePipeline<'a> {
             if did_get_frame != 0 {
                 Ok(CompositeFrame::from(NonNull::new(frame).unwrap()))
             } else {
-                Err(anyhow::anyhow!(
-                    FrameWaitError::DidTimeoutBeforeFrameArrival
-                ))
+                Err(FrameWaitError::DidTimeoutBeforeFrameArrival)
             }
         }
     }
