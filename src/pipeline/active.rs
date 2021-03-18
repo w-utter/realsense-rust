@@ -18,6 +18,13 @@ pub enum FrameWaitError {
     DidTimeoutBeforeFrameArrival,
 }
 
+/// Enumeration over possible polling states when calling [`ActivePipeline::poll`]
+#[derive(Debug)]
+pub enum Poll {
+    Pending,
+    Ready(CompositeFrame),
+}
+
 /// Type representing an "active" pipeline which is configured and can acquire frames.
 pub struct ActivePipeline<'a> {
     pipeline_ptr: NonNull<sys::rs2_pipeline>,
