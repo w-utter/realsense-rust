@@ -4,7 +4,7 @@ use super::{inactive::InactivePipeline, profile::PipelineProfile};
 use crate::{check_rs2_error, context::Context, frame::CompositeFrame, kind::Rs2Exception};
 use anyhow::Result;
 use realsense_sys as sys;
-use std::{ptr::NonNull, time::Duration};
+use std::{ptr::NonNull, task::Poll, time::Duration};
 use thiserror::Error;
 
 /// Enumeration over possible errors that can occur when waiting for a frame.
@@ -19,13 +19,6 @@ pub enum FrameWaitError {
     /// The associated function timed out while waiting for frames.
     #[error("Timed out while waiting for frame.")]
     DidTimeoutBeforeFrameArrival,
-}
-
-/// Enumeration over possible polling states when calling [`ActivePipeline::poll`]
-#[derive(Debug)]
-pub enum Poll {
-    Pending,
-    Ready(CompositeFrame),
 }
 
 /// Type representing an "active" pipeline which is configured and can acquire frames.
@@ -152,7 +145,7 @@ impl<'a> ActivePipeline<'a> {
     /// Returns [`FrameWaitError::DidErrorDuringFramePoll`] if an internal error occurs while
     /// polling for the next frame.
     ///
-    pub fn poll(&mut self) -> Result<Poll, FrameWaitError> {
+    pub fn poll(&mut self) -> Result<Poll<CompositeFrame>, FrameWaitError> {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let mut frame_ptr = std::ptr::null_mut::<sys::rs2_frame>();
