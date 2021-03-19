@@ -29,8 +29,3 @@ num-traits = "0.2"
 realsense-sys = { version = "0.3.0", path = "realsense-sys" }
 thiserror = "1.0"
 
-[dev-dependencies]
-anyhow = "1.0"
-crossbeam = "0.8"
-kiss3d = "0.29"
-lazy_static = "1.4"
