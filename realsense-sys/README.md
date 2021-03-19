@@ -6,6 +6,8 @@ realsense-rust if possible in order to better maintain Rust memory safety.
 
 Compatible with RealSense SDK v2.0 and up.
 
+**Default bindings are for librealsense version: 2.42.0**
+
 ## Usage
 
 This crate finds and links the RealSense SDK. Though one can use the generated bindings directly, this crate is meant as
@@ -16,6 +18,14 @@ To use this crate, add this line in your `Cargo.toml`.
 ```toml
 realsense-sys = "<current version number>"
 ```
+
+## Regenerating the API Bindings
+
+*Non-Linux users*: The current bindings are formatted for Linux. Users on systems other than Linux must run with the
+`buildtime-bindgen` feature to reformat the bindings. See more notes for your platform below.
+
+*Backwards compatibility*: If you're using an older librealsense version, you may enable the `buildtime-bindgen` feature
+to re-generate the bindings. We make no claims of backwards compatibility; good luck.
 
 # OS Installation Notes
 
