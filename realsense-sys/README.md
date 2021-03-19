@@ -14,7 +14,7 @@ a base layer for [realsense-rust](https://gitlab.com/tangram-vision-oss/realsens
 To use this crate, add this line in your `Cargo.toml`.
 
 ```toml
-realsense-sys = "0.2"
+realsense-sys = "<current version number>"
 ```
 
 # OS Installation Notes
