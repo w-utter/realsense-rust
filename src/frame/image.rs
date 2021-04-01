@@ -532,6 +532,14 @@ impl<K> ImageFrame<K> {
     }
 
     /// Get a reference to the raw data held by this Video frame.
+    ///
+    /// # Safety
+    ///
+    /// This is a raw pointer to the underlying data. This data has to be interpreted according to
+    /// the format of the frame itself. In most scenarios you will probably want to just use the
+    /// `get_unchecked` function associated with the [`FrameEx`](crate::fram::prelude::FrameEx)
+    /// trait, but this can be useful if you need more immediate access to the underlying pixel
+    /// data.
     pub unsafe fn get_data(&self) -> &std::os::raw::c_void {
         self.data.as_ref()
     }

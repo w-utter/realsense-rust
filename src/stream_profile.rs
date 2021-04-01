@@ -102,20 +102,23 @@ pub enum DataError {
 ///
 /// This type exists as a high-level wrapper around an underlying `rs2_stream_profile` pointer. On
 /// construction, we cache a copy of the stream data and also cache whether or not this stream
-/// profile is the default stream.
+/// profile is the default stream for a sensor.
 ///
 /// # Lifetimes
 ///
-/// Stream profiles are acquired one of two ways:
+/// Stream profiles are acquired one of three ways:
 ///
 /// 1. The stream profile list via the [`stream_profiles`](crate::sensor::Sensor::stream_profiles))
 ///    method on the [`Sensor`](crate::sensor::Sensor) type.
-/// 2. The frame-specific `frame_stream_profile` member via the Frame type.
+/// 2. The stream profile list via the
+///    [`streams`](crate::pipeline::profile::PipelineProfile::streams) associated function on the
+///    [`PipelineProfile`](crate::pipeline::profile::PipelineProfile) type.
+/// 3. The frame-specific `frame_stream_profile` member via the Frame type.
 ///
-/// Stream profiles do not outlive the parent object that you obtained them from. This is somewhat
-/// artificial because this lifetime is not enforced or even documented this way in the C bindings
-/// for librealsense2, however this is a useful feature so as to encourage always grabbing the
-/// latest stream profile from the correct source.
+/// Stream profiles from the sensor can outlive the parent object that you obtain them from. In the
+/// latter two cases we return references to a stream profile owned by that type, so they may not.
+/// In most cases you will probably want to grab the stream profile from the pipeline profile,
+/// which will give you all streams that are actively streaming from a given pipeline.
 ///
 #[derive(Debug)]
 pub struct StreamProfile {
