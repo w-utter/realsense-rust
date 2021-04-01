@@ -332,7 +332,7 @@ impl FrameCategory for ConfidenceFrame {
     }
 }
 
-impl<T> FrameEx<'_> for ImageFrame<T> {
+impl<T> FrameEx for ImageFrame<T> {
     fn stream_profile(&self) -> &StreamProfile {
         &self.frame_stream_profile
     }

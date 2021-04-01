@@ -190,7 +190,7 @@ impl TryFrom<NonNull<sys::rs2_frame>> for PoseFrame {
     }
 }
 
-impl FrameEx<'_> for PoseFrame {
+impl FrameEx for PoseFrame {
     fn stream_profile(&self) -> &StreamProfile {
         &self.frame_stream_profile
     }

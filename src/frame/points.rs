@@ -58,7 +58,7 @@ impl FrameCategory for PointsFrame {
     }
 }
 
-impl FrameEx<'_> for PointsFrame {
+impl FrameEx for PointsFrame {
     fn stream_profile(&self) -> &StreamProfile {
         &self.frame_stream_profile
     }
