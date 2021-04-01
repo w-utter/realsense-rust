@@ -115,10 +115,10 @@ pub enum DataError {
 ///    [`PipelineProfile`](crate::pipeline::profile::PipelineProfile) type.
 /// 3. The frame-specific `frame_stream_profile` member via the Frame type.
 ///
-/// Stream profiles from the sensor can outlive the parent object that you obtain them from. In the
-/// latter two cases we return references to a stream profile owned by that type, so they may not.
-/// In most cases you will probably want to grab the stream profile from the pipeline profile,
-/// which will give you all streams that are actively streaming from a given pipeline.
+/// Stream profiles from the sensor can outlive the parent object that you obtain them from. In
+/// cases two and three above we return references to a stream profile owned by that type, so they
+/// may not.  In most cases you will probably want to grab the stream profile from the pipeline
+/// profile, which will give you all streams that are actively streaming from a given pipeline.
 ///
 #[derive(Debug)]
 pub struct StreamProfile {
