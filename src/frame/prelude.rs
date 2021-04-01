@@ -77,7 +77,7 @@ pub struct CouldNotGetFrameSensorError(pub Rs2Exception, pub String);
 /// Describes common functionality across frame types.
 pub trait FrameEx<'a> {
     /// Get the stream profile associated with the frame.
-    fn stream_profile(&'a self) -> &'a StreamProfile<'a>;
+    fn stream_profile(&self) -> &StreamProfile;
 
     /// Get the sensor associated with the frame.
     fn sensor(&self) -> Result<Sensor>;

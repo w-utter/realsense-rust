@@ -70,7 +70,7 @@ pub struct ImageFrame<'a, Kind> {
     /// The RealSense time domain from which the timestamp is derived.
     timestamp_domain: Rs2TimestampDomain,
     /// The Stream Profile that created the frame.
-    frame_stream_profile: StreamProfile<'a>,
+    frame_stream_profile: StreamProfile,
     /// The size in bytes of the data contained in the frame.
     data_size_in_bytes: usize,
     /// The frame data contained in the frame.
@@ -331,7 +331,7 @@ impl<'a> FrameCategory for ConfidenceFrame<'a> {
 }
 
 impl<'a, T> FrameEx<'a> for ImageFrame<'a, T> {
-    fn stream_profile(&'a self) -> &'a StreamProfile<'a> {
+    fn stream_profile(&self) -> &StreamProfile {
         &self.frame_stream_profile
     }
 
