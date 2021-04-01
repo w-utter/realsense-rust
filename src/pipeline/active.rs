@@ -26,7 +26,6 @@ pub enum FrameWaitError {
 pub struct ActivePipeline {
     pipeline_ptr: NonNull<sys::rs2_pipeline>,
     profile: PipelineProfile,
-    context: Arc<Context>,
 }
 
 impl Drop for ActivePipeline {
@@ -43,11 +42,7 @@ impl ActivePipeline {
     /// Constructs a new active pipeline from the constituent components
     ///
     /// This is only to be used / called from the [`InactivePipeline`] type.
-    pub(crate) fn new(
-        pipeline_ptr: NonNull<sys::rs2_pipeline>,
-        profile: PipelineProfile,
-        context: Arc<Context>,
-    ) -> Self {
+    pub(crate) fn new(pipeline_ptr: NonNull<sys::rs2_pipeline>, profile: PipelineProfile) -> Self {
         Self {
             pipeline_ptr,
             profile,
