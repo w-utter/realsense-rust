@@ -6,7 +6,7 @@ realsense-rust if possible in order to better maintain Rust memory safety.
 
 Compatible with RealSense SDK v2.0 and up.
 
-**Default bindings are for librealsense version: 2.42.0**
+**Default bindings are for librealsense version: 2.44.0**
 
 ## Usage
 
