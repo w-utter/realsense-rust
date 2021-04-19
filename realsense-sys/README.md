@@ -37,6 +37,10 @@ With all of that said: Run the following to regenerate the realsense2 SDK bindin
 
 ## Linux
 
+You can install Clang using the following command:
+
+```sudo apt install libclang-dev clang```
+
 If the realsense2 SDK is installed, pkg-config will detect the [realsense2.pc](./realsense2.pc) config file automatically. This will load
 the necessary headers and libraries. 
 
