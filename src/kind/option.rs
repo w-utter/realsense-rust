@@ -287,15 +287,15 @@ pub enum Rs2Option {
 
 impl Rs2Option {
     /// Get the option as a CStr.
-    pub fn to_cstr(&self) -> &'static CStr {
+    pub fn to_cstr(self) -> &'static CStr {
         unsafe {
-            let ptr = sys::rs2_option_to_string(*self as sys::rs2_option);
+            let ptr = sys::rs2_option_to_string(self as sys::rs2_option);
             CStr::from_ptr(ptr)
         }
     }
 
     /// Get the option as a str.
-    pub fn to_str(&self) -> &'static str {
+    pub fn to_str(self) -> &'static str {
         self.to_cstr().to_str().unwrap()
     }
 }
