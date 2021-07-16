@@ -26,6 +26,8 @@ buildtime-bindgen = ["realsense-sys/buildtime-bindgen"]
 # - This feature does nothing in terms of library functionality / behaviour, but is instead for running tests that
 #   utilize a single device on the backend.
 test-single-device = []
+# Only build docs, don't link to anything
+docs-only = ["realsense-sys/docs-only"]
 
 [dependencies]
 anyhow = "1.0"
@@ -37,3 +39,7 @@ thiserror = "1.0"
 [dev-dependencies.opencv]
 version = "0.53"
 features = ["clang-runtime"]
+
+[package.metadata.docs.rs]
+no-default-features = true
+features = ["docs-only"]
