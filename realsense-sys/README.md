@@ -6,7 +6,7 @@ realsense-rust if possible in order to better maintain Rust memory safety.
 
 Compatible with RealSense SDK v2.0 and up.
 
-**Default bindings are for librealsense version: 2.47.0**
+**Default bindings are for librealsense version: 2.50.0**
 
 ## Usage
 
@@ -23,15 +23,15 @@ realsense-sys = "<current version number>"
 
 Bindgen relies on clang to generate new FFI bindings. See the OS Use Notes below for more.
 
-*Non-Linux users*: The current bindings are formatted for Linux. Users on systems other than Linux must run with the
+_Non-Linux users_: The current bindings are formatted for Linux. Users on systems other than Linux must run with the
 `buildtime-bindgen` feature to reformat the bindings. See more notes for your platform below.
 
-*Backwards compatibility*: If you're using an older librealsense version, you may enable the `buildtime-bindgen` feature
+_Backwards compatibility_: If you're using an older librealsense version, you may enable the `buildtime-bindgen` feature
 to re-generate the bindings. We make no claims of backwards compatibility; good luck.
 
 With all of that said: Run the following to regenerate the realsense2 SDK bindings:
 
-```cargo run --features buildtime-bindgen```
+`cargo build --features buildtime-bindgen`
 
 # OS Use Notes
 
@@ -39,7 +39,7 @@ With all of that said: Run the following to regenerate the realsense2 SDK bindin
 
 You can install Clang using the following command:
 
-```sudo apt install libclang-dev clang```
+`sudo apt install libclang-dev clang`
 
 If the realsense2 SDK is installed, pkg-config will detect the [realsense2.pc](./realsense2.pc) config file automatically. This will load
 the necessary headers and libraries.
@@ -76,15 +76,15 @@ This will help pkg-config find the [realsense2.pc](./realsense2.pc) file located
 locate the headers and libraries necessary for RealSense operation. The Windows wizard does not provide this file, so we
 provide it ourselves.
 
-It's a good idea to set the `PKG_CONFIG_PATH` Environment Variable globally as well via the System Properties. *BUT
-NOTE*: Environment Variables set through the Windows System Properties will not apply until the host machine is power
+It's a good idea to set the `PKG_CONFIG_PATH` Environment Variable globally as well via the System Properties. _BUT
+NOTE_: Environment Variables set through the Windows System Properties will not apply until the host machine is power
 cycled. Yep. That's a thing.
 
 **Second Option: Add [realsense2.pc](./realsense2.pc) to pkg-config's search directory**
 
 Run the following command...
 
-```pkg-config --variable pc_path pkg-config```
+`pkg-config --variable pc_path pkg-config`
 
-...to identify the directory (or directories) that pkg-config uses to find *.pc files. Copy [realsense2.pc](./realsense2.pc) to that
+...to identify the directory (or directories) that pkg-config uses to find \*.pc files. Copy [realsense2.pc](./realsense2.pc) to that
 directory. Boom, done.

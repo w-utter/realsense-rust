@@ -13,7 +13,7 @@
 //!
 //! ```text
 //! [dependencies]
-//! realsense-rust = "0.5.0"
+//! realsense-rust = "1.1.0"
 //! ```
 //!
 //! followed by this `use` statement in your code:
@@ -67,7 +67,7 @@
 //! # Regenerating bindings
 //!
 //! The bindings should be uniquely generated for every new release of librealsense2. Currently,
-//! the bindings in this crate are compatible with librealsense2 version 2.41.0.
+//! the bindings in this crate are compatible with librealsense2 version 2.50.0.
 //!
 //! If you want to regenerate the bindings for your version of realsense, enable the
 //! buildtime-bindgen feature of the crate. Note that in general this can break things if the API
