@@ -10,7 +10,6 @@ stages:
   - doc
   - build_artifacts
 
-
 ##### ########## ########## ########## ########## #####
 # TEST STAGE
 # - [PASS REQ] runs all unit tests in the build
@@ -30,7 +29,6 @@ lint:
     - cargo --version
     - cargo clippy --all-targets --features=buildtime-bindgen,test-single-device -- -D warnings
 
-
 ##### ########## ########## ########## ########## #####
 # DOC STAGE
 # - [PASS OPT] checks for documentation on all relevant pieces of code
@@ -40,6 +38,14 @@ doc-check:
   script:
     - cargo clippy --all-targets --features docs-only -- -A clippy::all -D clippy::missing_docs_in_private_items
   allow_failure: true
+
+readme-check:
+  stage: doc
+  variables:
+    # Catches and fails on non-zero status
+    FF_ENABLE_BASH_EXIT_CODE_CHECK: 1
+  script:
+    - readme_check.sh --no-badges --no-title --no-indent-headings --no-license
 
 build_badges:
   stage: build_artifacts
