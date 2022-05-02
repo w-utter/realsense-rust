@@ -5,7 +5,7 @@
 use realsense_rust::{
     config::Config,
     context::Context,
-    frame::{ColorFrame, DepthFrame, InfraredFrame},
+    frame::{ColorFrame, DepthFrame, FrameEx, InfraredFrame},
     kind::{Rs2CameraInfo, Rs2Format, Rs2Option, Rs2ProductLine, Rs2StreamKind},
     pipeline::InactivePipeline,
 };
@@ -281,6 +281,51 @@ fn d400_streams_check_supported_but_ignored_sensor_options() {
                     assert_eq!(sensor.get_option(*option), *val);
                 }
             }
+        }
+    }
+}
+
+/// After the startup-phase the frame number must increase by one for each new frameset as long
+/// as only one stream is active and the pipeline is queried for new framesets faster than the
+/// framerate.
+#[test]
+fn d400_frame_numbers_increase() {
+    let context = Context::new().unwrap();
+
+    let mut queryable_set = HashSet::new();
+    queryable_set.insert(Rs2ProductLine::D400);
+
+    let devices = context.query_devices(queryable_set);
+
+    if let Some(device) = devices.get(0) {
+        let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
+        let mut config = Config::new();
+
+        config
+            .enable_device_from_serial(serial)
+            .unwrap()
+            .disable_all_streams()
+            .unwrap()
+            .enable_stream(Rs2StreamKind::Depth, None, 0, 0, Rs2Format::Z16, 30)
+            .unwrap();
+
+        let pipeline = InactivePipeline::try_from(&context).unwrap();
+        let mut pipeline = pipeline.start(Some(config)).unwrap();
+
+        // Startup-phase: On startup the RealSense often drops some frames. Skip those.
+        for _ in 0..5 {
+            let _ = pipeline.wait(None).unwrap();
+        }
+
+        let mut last_frame_number: Option<u64> = None;
+        for _ in 0..5 {
+            let frameset = pipeline.wait(None).unwrap();
+            let depth_frames = frameset.frames_of_type::<DepthFrame>();
+            let frame_number = depth_frames.first().unwrap().frame_number();
+            if let Some(last_frame_number) = last_frame_number {
+                assert_eq!(last_frame_number + 1, frame_number);
+            }
+            last_frame_number = Some(frame_number);
         }
     }
 }
