@@ -33,7 +33,7 @@ pub struct PoseFrame {
     frame_number: u64,
     /// The Stream Profile that created the frame.
     frame_stream_profile: StreamProfile,
-    // The rs2 Pose data
+    /// The rs2 Pose data
     data: sys::rs2_pose,
     /// A boolean used during `Drop` calls. This allows for proper handling of the pointer
     /// during ownership transfer.

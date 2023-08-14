@@ -288,9 +288,12 @@ pub enum Rs2Option {
     AutoExposureLimitToggle = sys::rs2_option_RS2_OPTION_AUTO_EXPOSURE_LIMIT_TOGGLE as i32,
     /// Enable / disable color image auto-gain
     AutoGainLimitToggle = sys::rs2_option_RS2_OPTION_AUTO_GAIN_LIMIT_TOGGLE as i32,
-    /* Not included since this just tells us the total number of options.
-     *
-     * Count = sys::rs2_option_RS2_OPTION_COUNT, */
+    /// Select emitter (laser projector) frequency, see rs2_emitter_frequency for values
+    EmitterFrequency = sys::rs2_option_RS2_OPTION_EMITTER_FREQUENCY as i32,
+    /// Select depth sensor auto exposure mode see rs2_depth_auto_exposure_mode for values
+    DepthAutoExposureMode = sys::rs2_option_RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE as i32, /* Not included since this just tells us the total number of options.
+                                                                                         *
+                                                                                         * Count = sys::rs2_option_RS2_OPTION_COUNT, */
 }
 
 impl Rs2Option {

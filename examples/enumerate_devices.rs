@@ -1,7 +1,11 @@
+//! An example to enumerate every realsense compatible device connected to the host machine.
+
 use anyhow::{ensure, Result};
 use realsense_rust::{context::Context, device::Device, kind::Rs2CameraInfo};
 use std::collections::HashSet;
 
+/// Gets info from a device or returns "N/A" if a provided info parameter doesn't exist for the
+/// provided device.
 fn match_info(device: &Device, info_param: Rs2CameraInfo) -> String {
     match device.info(info_param) {
         Some(s) => String::from(s.to_str().unwrap()),
@@ -11,8 +15,9 @@ fn match_info(device: &Device, info_param: Rs2CameraInfo) -> String {
 
 fn main() -> Result<()> {
     println!("----\nEnumerating all devices compatible with RealSense:\n----");
-    // The below code is the equivalent of creating a HashSet of query_devices that just contains Rs2ProductLine::Any.
-    // In other words, this will look for any connected device that is compatible with RealSense.
+    // The below code is the equivalent of creating a HashSet of query_devices that just contains
+    // Rs2ProductLine::Any. In other words, this will look for any connected device that is
+    // compatible with RealSense.
     let devices = Context::new()?.query_devices(HashSet::new());
     ensure!(!devices.is_empty(), "No devices found");
 

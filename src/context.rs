@@ -16,6 +16,7 @@ use thiserror::Error;
 /// Type describing a RealSense context, used by the rest of the API.
 #[derive(Debug)]
 pub struct Context {
+    /// A non-null pointer to the underlying librealsense context.
     context_ptr: NonNull<sys::rs2_context>,
 }
 

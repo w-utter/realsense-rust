@@ -40,6 +40,7 @@ pub enum DeviceConstructionError {
 ///
 #[derive(Debug)]
 pub struct Device {
+    /// A non-null pointer to the underlying librealsense device
     device_ptr: NonNull<sys::rs2_device>,
 }
 

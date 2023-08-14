@@ -88,6 +88,7 @@ use realsense_sys as sys;
 /// * [`Rs2Extension::Video`]
 /// * [`Rs2Extension::Roi`]
 ///
+#[allow(missing_docs)]
 #[repr(i32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2Extension {
@@ -158,6 +159,7 @@ pub enum Rs2Extension {
     // Count = sys::rs2_extension_RS2_EXTENSION_COUNT,
 }
 
+/// A collection of the various rs2 sensor extensions
 pub const SENSOR_EXTENSIONS: [Rs2Extension; 12] = [
     Rs2Extension::ColorSensor,
     Rs2Extension::MotionSensor,
@@ -173,6 +175,7 @@ pub const SENSOR_EXTENSIONS: [Rs2Extension; 12] = [
     Rs2Extension::DebugStreamSensor,
 ];
 
+/// A collection of the various rs2 frame extensions
 pub const FRAME_EXTENSIONS: [Rs2Extension; 7] = [
     Rs2Extension::VideoFrame,
     Rs2Extension::MotionFrame,
@@ -183,6 +186,7 @@ pub const FRAME_EXTENSIONS: [Rs2Extension; 7] = [
     Rs2Extension::Points,
 ];
 
+/// A collection of the various rs2 filter extensions
 pub const FILTER_EXTENSIONS: [Rs2Extension; 9] = [
     Rs2Extension::DecimationFilter,
     Rs2Extension::ThresholdFilter,
@@ -195,12 +199,14 @@ pub const FILTER_EXTENSIONS: [Rs2Extension; 9] = [
     Rs2Extension::AutoCalibrationFilter,
 ];
 
+/// A collection of the various rs2 profile extensions
 pub const PROFILE_EXTENSIONS: [Rs2Extension; 3] = [
     Rs2Extension::VideoProfile,
     Rs2Extension::MotionProfile,
     Rs2Extension::PoseProfile,
 ];
 
+/// A collection of the various rs2 device extensions
 pub const DEVICE_EXTENSIONS: [Rs2Extension; 4] = [
     Rs2Extension::SoftwareDevice,
     Rs2Extension::UpdateDevice,
@@ -208,6 +214,7 @@ pub const DEVICE_EXTENSIONS: [Rs2Extension; 4] = [
     Rs2Extension::CalibrationChangeDevice,
 ];
 
+/// A collection of the various rs2 miscellaneous extensions
 pub const MISC_EXTENSIONS: [Rs2Extension; 15] = [
     Rs2Extension::AdvancedMode,
     Rs2Extension::Record,

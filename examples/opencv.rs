@@ -85,6 +85,7 @@ fn colorized_mat(mat: &core::Mat) -> core::Mat {
     colorized
 }
 
+/// Main function
 pub fn main() -> Result<()> {
     // Check for depth or color-compatible devices.
     let queried_devices = HashSet::new(); // Query any devices

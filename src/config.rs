@@ -36,6 +36,7 @@ pub enum ConfigurationError {
 /// Type representing the [`Pipeline`](crate::pipeline::InactivePipeline) configuration.
 #[derive(Debug)]
 pub struct Config {
+    /// A non-null pointer to the underlying librealsense2 configuration.
     config_ptr: NonNull<sys::rs2_config>,
 }
 
@@ -122,7 +123,7 @@ impl Config {
                 self.config_ptr.as_ptr(),
                 #[allow(clippy::useless_conversion)]
                 (stream as i32).try_into().unwrap(),
-                index as i32,
+                index,
                 width as i32,
                 height as i32,
                 #[allow(clippy::useless_conversion)]
