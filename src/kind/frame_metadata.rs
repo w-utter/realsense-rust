@@ -139,6 +139,20 @@ pub enum Rs2FrameMetadata {
     SequenceIdentifier = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_SEQUENCE_ID as i32,
     /// Sub-preset sequence size
     SequenceSize = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_SEQUENCE_SIZE as i32,
+    /// Frame trigger type
+    Trigger = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_TRIGGER as i32,
+    /// Preset id, used in MIPI SKU Metadata
+    Preset = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_PRESET as i32,
+    /// Frame input width in pixels, used as safety attribute
+    InputWidth = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_INPUT_WIDTH as i32,
+    /// Frame input height in pixels, used as safety attribute
+    InputHeight = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_INPUT_HEIGHT as i32,
+    /// Sub-preset information
+    SubPresetInfo = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_SUB_PRESET_INFO as i32,
+    /// FW-controlled frame counter to be using in Calibration scenarios
+    CalibInfo = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_CALIB_INFO as i32,
+    /// CRC checksum of the Metadata
+    Crc = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_CRC as i32,
     // Not included since this just tells us the total number of metadata fields
     //
     // Count = sys::rs2_frame_metadata_value_RS2_FRAME_METADATA_COUNT,

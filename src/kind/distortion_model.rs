@@ -11,6 +11,7 @@
 use num_derive::{FromPrimitive, ToPrimitive};
 use realsense_sys as sys;
 
+/// An enum for the various kinds of distortion models provided by librealsense2.
 #[repr(i32)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Rs2DistortionModel {

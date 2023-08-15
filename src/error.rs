@@ -137,9 +137,9 @@ macro_rules! check_rs2_error {
     ($rs2_error:expr, $result:expr) => {
         // We make this alias here to type check $rs2_error.
         {
-            use crate::kind::Rs2Exception;
             use num_traits::FromPrimitive;
             use std::convert::TryInto;
+            use $crate::kind::Rs2Exception;
             let err: *mut sys::rs2_error = $rs2_error;
             if err.as_ref().is_some() {
                 let res = $result(

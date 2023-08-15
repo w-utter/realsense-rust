@@ -84,9 +84,15 @@ pub struct ImageFrame<Kind> {
     _phantom: PhantomData<Kind>,
 }
 
+/// A type which acts as an iterator over an image frame of some pixel kind.
 pub struct Iter<'a, K> {
+    /// The image frame to iterate over.
     pub(crate) frame: &'a ImageFrame<K>,
+
+    /// The current column.
     pub(crate) column: usize,
+
+    /// The current row.
     pub(crate) row: usize,
 }
 

@@ -18,14 +18,24 @@ use num_derive::{FromPrimitive, ToPrimitive};
 #[repr(usize)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ColorScheme {
+    /// Jet color scheme
     Jet = 0,
+    /// Classic color scheme
     Classic = 1,
+    /// White to black color scheme
     WhiteToBlack = 2,
+    /// Black to white color scheme
     BlackToWhite = 3,
+    /// Bio color scheme
     Bio = 4,
+    /// Cold color scheme
     Cold = 5,
+    /// Warm color scheme
     Warm = 6,
+    /// Quantized color scheme
     Quantized = 7,
+    /// Pattern color scheme
     Pattern = 8,
+    /// Hue color scheme
     Hue = 9,
 }

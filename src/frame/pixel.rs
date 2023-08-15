@@ -12,41 +12,102 @@ use std::{os::raw::c_void, slice};
 pub enum PixelKind<'a> {
     /// 32-bit `y0, u, y1, v` data for every two pixels.
     /// Similar to YUV422 but packed in a different order - see [this link](https://en.wikipedia.org/wiki/YUV).
-    Yuyv { y: &'a u8, u: &'a u8, v: &'a u8 },
+    Yuyv {
+        /// The Y / luma value for a given pixel
+        y: &'a u8,
+        /// The U-chroma value for a given pixel
+        u: &'a u8,
+        /// The V-chroma value for a given pixel
+        v: &'a u8,
+    },
     /// Similar to the standard YUYV pixel format, but packed in a different order.
-    Uyvy { y: &'a u8, u: &'a u8, v: &'a u8 },
+    Uyvy {
+        /// The Y / luma value for a given pixel
+        y: &'a u8,
+        /// The U-chroma value for a given pixel
+        u: &'a u8,
+        /// The V-chroma value for a given pixel
+        v: &'a u8,
+    },
     /// 8-bit blue, green, and red channels -- suitable for OpenCV.
-    Bgr8 { b: &'a u8, g: &'a u8, r: &'a u8 },
+    Bgr8 {
+        /// The blue component of the BGR pixel
+        b: &'a u8,
+        /// The green component of the BGR pixel
+        g: &'a u8,
+        /// The red component of the BGR pixel
+        r: &'a u8,
+    },
     /// 8-bit blue, green, and red channels + constant alpha channel equal to FF.
     Bgra8 {
+        /// The blue component of the BGRA pixel
         b: &'a u8,
+        /// The green component of the BGRA pixel
         g: &'a u8,
+        /// The red component of the BGRA pixel
         r: &'a u8,
+        /// The alpha component of the BGRA pixel
         a: &'a u8,
     },
     /// 8-bit red, green and blue channels.
-    Rgb8 { r: &'a u8, g: &'a u8, b: &'a u8 },
+    Rgb8 {
+        /// The red component of the RGB pixel
+        r: &'a u8,
+        /// The green component of the RGB pixel
+        g: &'a u8,
+        /// The blue component of the RGB pixel
+        b: &'a u8,
+    },
     /// 8-bit red, green and blue channels + constant alpha channel equal to FF.
     Rgba8 {
+        /// The red component of the RGBA pixel
         r: &'a u8,
+        /// The green component of the RGBA pixel
         g: &'a u8,
+        /// The blue component of the RGBA pixel
         b: &'a u8,
+        /// The alpha component of the RGBA pixel
         a: &'a u8,
     },
     /// 8-bit raw image.
-    Raw8 { val: &'a u8 },
+    Raw8 {
+        /// The single luma value for a RAW8 image
+        val: &'a u8,
+    },
     /// 8-bit per-pixel grayscale image.
-    Y8 { y: &'a u8 },
+    Y8 {
+        /// The single luma value for a Y-channel only image
+        y: &'a u8,
+    },
     /// 16-bit per-pixel grayscale image.
-    Y16 { y: &'a u16 },
+    Y16 {
+        /// The single luma value for a Y-channel only image
+        y: &'a u16,
+    },
     /// 16-bit linear depth values. The depth is meters is equal to depth scale * pixel value.
-    Z16 { depth: &'a u16 },
+    Z16 {
+        /// Depth value in millimetres
+        depth: &'a u16,
+    },
     /// 32-bit float-point depth distance value.
-    Distance { distance: &'a f32 },
+    Distance {
+        /// Distance from camera origin in metres
+        distance: &'a f32,
+    },
     /// 32-bit float-point disparity values. Depth->Disparity conversion : Disparity = Baseline*FocalLength/Depth.
-    Disparity32 { disparity: &'a f32 },
+    Disparity32 {
+        /// The disparity relative to the opposite eye in a depth camera.
+        disparity: &'a f32,
+    },
     /// 32-bit floating point 3D coordinates.
-    Xyz32f { x: &'a f32, y: &'a f32, z: &'a f32 },
+    Xyz32f {
+        /// The X-coordinate
+        x: &'a f32,
+        /// The Y-coordinate
+        y: &'a f32,
+        /// The Z-coordinate
+        z: &'a f32,
+    },
 }
 
 /// Method to retrieve a pixel from a given rs2_frame in the requested Pixel format.

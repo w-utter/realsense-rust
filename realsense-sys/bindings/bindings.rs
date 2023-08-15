@@ -13,10 +13,10 @@ pub const RS2_UNSIGNED_UPDATE_MODE_UPDATE: u32 = 0;
 pub const RS2_UNSIGNED_UPDATE_MODE_READ_ONLY: u32 = 1;
 pub const RS2_UNSIGNED_UPDATE_MODE_FULL: u32 = 2;
 pub const RS2_API_MAJOR_VERSION: u32 = 2;
-pub const RS2_API_MINOR_VERSION: u32 = 50;
-pub const RS2_API_PATCH_VERSION: u32 = 0;
+pub const RS2_API_MINOR_VERSION: u32 = 54;
+pub const RS2_API_PATCH_VERSION: u32 = 1;
 pub const RS2_API_BUILD_VERSION: u32 = 0;
-pub const RS2_API_VERSION: u32 = 25000;
+pub const RS2_API_VERSION: u32 = 25401;
 pub const RS2_DEFAULT_TIMEOUT: u32 = 15000;
 pub type __uint16_t = ::std::os::raw::c_ushort;
 #[doc = "< Frames didn't arrived within 5 seconds"]
@@ -1214,7 +1214,7 @@ pub const rs2_format_RS2_FORMAT_INZI: rs2_format = 25;
 pub const rs2_format_RS2_FORMAT_INVI: rs2_format = 26;
 #[doc = "< Grey-scale image as a bit-packed array. 4 pixel data stream taking 5 bytes"]
 pub const rs2_format_RS2_FORMAT_W10: rs2_format = 27;
-#[doc = "< Variable-length Huffman-compressed 16-bit depth values."]
+#[doc = "< DEPRECATED! - Variable-length Huffman-compressed 16-bit depth values."]
 pub const rs2_format_RS2_FORMAT_Z16H: rs2_format = 28;
 #[doc = "< 16-bit per-pixel frame grabber format."]
 pub const rs2_format_RS2_FORMAT_FG: rs2_format = 29;
@@ -2259,6 +2259,31 @@ extern "C" {
     pub fn rs2_hardware_reset(device: *const rs2_device, error: *mut *mut rs2_error);
 }
 extern "C" {
+    #[doc = " Build debug_protocol raw data command from opcode, parameters and data."]
+    #[doc = " The result can be used as raw_data_to_send parameter in send_and_receive_raw_data"]
+    #[doc = " \\param[in]  device                    RealSense device to send data to"]
+    #[doc = " \\param[in]  opcode                    Commad opcode"]
+    #[doc = " \\param[in]  param1                    First input parameter"]
+    #[doc = " \\param[in]  param2                    Second parameter"]
+    #[doc = " \\param[in]  param3                    Third parameter"]
+    #[doc = " \\param[in]  param4                    Fourth parameter"]
+    #[doc = " \\param[in]  data                      Input Data (up to 1024 bytes)"]
+    #[doc = " \\param[in]  size_of_data              Size of input data in bytes"]
+    #[doc = " \\param[out] error                     If non-null, receives any error that occurs during this call, otherwise, errors are ignored"]
+    #[doc = " \\return                               rs2_raw_data_buffer which includes raw command"]
+    pub fn rs2_build_debug_protocol_command(
+        device: *mut rs2_device,
+        opcode: ::std::os::raw::c_uint,
+        param1: ::std::os::raw::c_uint,
+        param2: ::std::os::raw::c_uint,
+        param3: ::std::os::raw::c_uint,
+        param4: ::std::os::raw::c_uint,
+        data: *mut ::std::os::raw::c_void,
+        size_of_data: ::std::os::raw::c_uint,
+        error: *mut *mut rs2_error,
+    ) -> *const rs2_raw_data_buffer;
+}
+extern "C" {
     #[doc = " Send raw data to device"]
     #[doc = " \\param[in]  device                    RealSense device to send data to"]
     #[doc = " \\param[in]  raw_data_to_send          Raw data to be sent to device"]
@@ -2483,12 +2508,14 @@ extern "C" {
     #[doc = "\"speed\": 3,"]
     #[doc = "\"scan parameter\": 0,"]
     #[doc = "\"adjust both sides\": 0,"]
-    #[doc = "\"white wall mode\": 0"]
+    #[doc = "\"white wall mode\": 0,"]
+    #[doc = "\"host assistance\": 0"]
     #[doc = "}"]
-    #[doc = "calib_type - calibraton type: 0 = regular, 1 = focal length, 2 = both regular and focal length in order"]
+    #[doc = "calib_type - calibraton type: 0 = regular, 1 = focal length, 2 = both regular and focal length in order,"]
     #[doc = "speed - for regular calibration. value can be one of: Very fast = 0, Fast = 1, Medium = 2, Slow = 3, White wall = 4, default is Slow for type 0 and Fast for type 2"]
     #[doc = "scan_parameter - for regular calibration. value can be one of: Py scan (default) = 0, Rx scan = 1"]
     #[doc = "adjust_both_sides - for focal length calibration. value can be one of: 0 = adjust right only, 1 = adjust both sides"]
+    #[doc = "host_assistance: 0 for no assistance, 1 for starting with assistance, 2 for first part feeding host data to firmware, 3 for second part of feeding host data to firmware (calib_type 2 only)"]
     #[doc = "white_wall_mode - white wall mode: 0 for normal mode and 1 for white wall mode"]
     #[doc = "if json is nullptr it will be ignored and calibration will use the default parameters"]
     #[doc = " \\param[out] health            The absolute value of regular calibration Health-Check captures how far camera calibration is from the optimal one"]
@@ -2525,13 +2552,17 @@ extern "C" {
     #[doc = "\"speed\": 3,"]
     #[doc = "\"scan parameter\": 0,"]
     #[doc = "\"adjust both sides\": 0,"]
-    #[doc = "\"white wall mode\": 0"]
+    #[doc = "\"white wall mode\": 0,"]
+    #[doc = "\"host assistance\": 0"]
     #[doc = "}"]
     #[doc = "calib_type - calibraton type: 0 = regular, 1 = focal length, 2 = both regular and focal length in order"]
+    #[doc = "30 = regular for version 3, 31 = focal length for version 3, 32 = both regular and focal length in order for version 3,"]
+    #[doc = "33 = regular for second part of version 3"]
     #[doc = "speed - for regular calibration, value can be one of: Very fast = 0, Fast = 1, Medium = 2, Slow = 3, White wall = 4, default is Slow for type 0 and Fast for type 2"]
     #[doc = "scan_parameter - for regular calibration. value can be one of: Py scan (default) = 0, Rx scan = 1"]
     #[doc = "adjust_both_sides - for focal length calibration. value can be one of: 0 = adjust right only, 1 = adjust both sides"]
     #[doc = "white_wall_mode - white wall mode: 0 for normal mode and 1 for white wall mode"]
+    #[doc = "host_assistance: 0 for no assistance, 1 for starting with assistance, 2 for first part feeding host data to firmware, 3 for second part of feeding host data to firmware (calib_type 2 only)"]
     #[doc = "if json is nullptr it will be ignored and calibration will use the default parameters"]
     #[doc = " \\param[out] health            The absolute value of regular calibration Health-Check captures how far camera calibration is from the optimal one"]
     #[doc = "[0, 0.25) - Good"]
@@ -2570,23 +2601,48 @@ extern "C" {
     #[doc = "\"step count\": 20,"]
     #[doc = "\"accuracy\": 2,"]
     #[doc = "\"scan parameter\": 0,"]
-    #[doc = "\"data sampling\": 0"]
+    #[doc = "\"data sampling\": 0,"]
+    #[doc = "\"host assistance\": 0,"]
+    #[doc = "\"depth\" : 0"]
     #[doc = "}"]
     #[doc = "average step count - number of frames to average, must be between 1 - 30, default = 20"]
     #[doc = "step count - max iteration steps, must be between 5 - 30, default = 10"]
     #[doc = "accuracy - Subpixel accuracy level, value can be one of: Very high = 0 (0.025%), High = 1 (0.05%), Medium = 2 (0.1%), Low = 3 (0.2%), Default = Very high (0.025%), default is Medium"]
     #[doc = "scan_parameter - value can be one of: Py scan (default) = 0, Rx scan = 1"]
     #[doc = "data_sampling - value can be one of:polling data sampling = 0, interrupt data sampling = 1"]
+    #[doc = "host_assistance: 0 for no assistance, 1 for starting with assistance, 2 for feeding host data to firmware"]
+    #[doc = "depth: 0 for not relating to depth, > 0 for feeding depth from host to firmware, -1 for ending to feed depth from host to firmware"]
     #[doc = "if json is nullptr it will be ignored and calibration will use the default parameters"]
     #[doc = " \\param[in]  content_size       Json string size if its 0 the json will be ignored and calibration will use the default parameters"]
+    #[doc = " \\param[out] health            The absolute value of regular calibration Health-Check captures how far camera calibration is from the optimal one"]
+    #[doc = "[0, 0.25) - Good"]
+    #[doc = "[0.25, 0.75) - Can be Improved"]
+    #[doc = "[0.75, ) - Requires Calibration"]
     #[doc = " \\param[in]  callback           Optional callback to get progress notifications"]
     #[doc = " \\param[in]  timeout_ms         Timeout in ms (use 5000 msec unless instructed otherwise)"]
+    #[doc = " \\param[out] health             The health check numbers before and after calibration"]
     #[doc = " \\return                        New calibration table"]
     pub fn rs2_run_tare_calibration_cpp(
         dev: *mut rs2_device,
         ground_truth_mm: f32,
         json_content: *const ::std::os::raw::c_void,
         content_size: ::std::os::raw::c_int,
+        health: *mut f32,
+        progress_callback: *mut rs2_update_progress_callback,
+        timeout_ms: ::std::os::raw::c_int,
+        error: *mut *mut rs2_error,
+    ) -> *const rs2_raw_data_buffer;
+}
+extern "C" {
+    #[doc = " During host assisted calibration (Tare or on-chip), this is used to pump new depth frames until calibration is done."]
+    #[doc = " \\param[in]  f                  The next frame."]
+    #[doc = " \\param[in]  timeout_ms         Timeout in ms (use 5000 msec unless instructed otherwise)"]
+    #[doc = " \\param[out] health             The health check numbers before and after calibration"]
+    #[doc = " \\return                        New calibration table"]
+    pub fn rs2_process_calibration_frame(
+        dev: *mut rs2_device,
+        f: *const rs2_frame,
+        health: *mut f32,
         progress_callback: *mut rs2_update_progress_callback,
         timeout_ms: ::std::os::raw::c_int,
         error: *mut *mut rs2_error,
@@ -2676,24 +2732,30 @@ extern "C" {
     #[doc = "\"step count\": 20,"]
     #[doc = "\"accuracy\": 2,"]
     #[doc = "\"scan parameter\": 0,"]
-    #[doc = "\"data sampling\": 0"]
+    #[doc = "\"data sampling\": 0,"]
+    #[doc = "\"host assistance\": 0,"]
+    #[doc = "\"depth\": 0"]
     #[doc = "}"]
     #[doc = "average step count - number of frames to average, must be between 1 - 30, default = 20"]
     #[doc = "step count - max iteration steps, must be between 5 - 30, default = 10"]
     #[doc = "accuracy - Subpixel accuracy level, value can be one of: Very high = 0 (0.025%), High = 1 (0.05%), Medium = 2 (0.1%), Low = 3 (0.2%), Default = Very high (0.025%), default is Medium"]
     #[doc = "scan_parameter - value can be one of: Py scan (default) = 0, Rx scan = 1"]
     #[doc = "data_sampling - value can be one of:polling data sampling = 0, interrupt data sampling = 1"]
+    #[doc = "host_assistance: 0 for no assistance, 1 for starting with assistance, 2 for feeding host data to firmware"]
+    #[doc = "depth: 0 for not relating to depth, > 0 for feeding depth from host to firmware, -1 for ending to feed depth from host to firmware"]
     #[doc = "if json is nullptr it will be ignored and calibration will use the default parameters"]
     #[doc = " \\param[in]  content_size       Json string size if its 0 the json will be ignored and calibration will use the default parameters"]
     #[doc = " \\param[in]  callback           Optional callback for update progress notifications, the progress value is normailzed to 1"]
     #[doc = " \\param[in]  client_data        Optional client data for the callback"]
     #[doc = " \\param[in] timeout_ms          Timeout in ms (use 5000 msec unless instructed otherwise)"]
+    #[doc = " \\param[out] health             The health check numbers before and after calibration"]
     #[doc = " \\return                        New calibration table"]
     pub fn rs2_run_tare_calibration(
         dev: *mut rs2_device,
         ground_truth_mm: f32,
         json_content: *const ::std::os::raw::c_void,
         content_size: ::std::os::raw::c_int,
+        health: *mut f32,
         callback: rs2_update_progress_callback_ptr,
         client_data: *mut ::std::os::raw::c_void,
         timeout_ms: ::std::os::raw::c_int,
@@ -2977,7 +3039,22 @@ pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_SEQUENCE_NAME: rs2_frame_m
 pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_SEQUENCE_ID: rs2_frame_metadata_value = 34;
 #[doc = "< sub-preset sequence size"]
 pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_SEQUENCE_SIZE: rs2_frame_metadata_value = 35;
-pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_COUNT: rs2_frame_metadata_value = 36;
+#[doc = "< Frame trigger type"]
+pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_TRIGGER: rs2_frame_metadata_value = 36;
+#[doc = "< Preset id, used in MIPI SKU Metadata"]
+pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_PRESET: rs2_frame_metadata_value = 37;
+#[doc = "< Frame input width in pixels, used as safety attribute"]
+pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_INPUT_WIDTH: rs2_frame_metadata_value = 38;
+#[doc = "< Frame input height in pixels, used as safety attribute"]
+pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_INPUT_HEIGHT: rs2_frame_metadata_value = 39;
+#[doc = "< Sub-preset information"]
+pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_SUB_PRESET_INFO: rs2_frame_metadata_value =
+    40;
+#[doc = "< FW-controlled frame counter to be using in Calibration scenarios"]
+pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_CALIB_INFO: rs2_frame_metadata_value = 41;
+#[doc = "< CRC checksum of the Metadata"]
+pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_CRC: rs2_frame_metadata_value = 42;
+pub const rs2_frame_metadata_value_RS2_FRAME_METADATA_COUNT: rs2_frame_metadata_value = 43;
 #[doc = " \\brief Per-Frame-Metadata is the set of read-only properties that might be exposed for each individual frame."]
 pub type rs2_frame_metadata_value = ::std::os::raw::c_uint;
 extern "C" {
@@ -3348,10 +3425,10 @@ extern "C" {
     #[doc = " Extract the target dimensions on the specific target"]
     #[doc = " \\param[in] frame            Left or right camera frame of specified size based on the target type"]
     #[doc = " \\param[in] calib_type       Calibration target type"]
-    #[doc = " \\param[out] target_dims     The array to hold the result target dimensions calculated."]
-    #[doc = "For type RS2_CALIB_TARGET_RECT_GAUSSIAN_DOT_VERTICES and RS2_CALIB_TARGET_ROI_RECT_GAUSSIAN_DOT_VERTICES, the four rectangle side sizes in pixels with the order of top, bottom, left, and right"]
-    #[doc = "For type RS2_CALIB_TARGET_POS_GAUSSIAN_DOT_VERTICES, the four vertices coordinates in pixels with the order of top, bottom, left, and right"]
     #[doc = " \\param[in] target_dims_size Target dimension array size. 4 for RS2_CALIB_TARGET_RECT_GAUSSIAN_DOT_VERTICES and 8 for RS2_CALIB_TARGET_POS_GAUSSIAN_DOT_VERTICES."]
+    #[doc = " \\param[out] target_dims     The array to hold the result target dimensions calculated."]
+    #[doc = "For type RS2_CALIB_TARGET_RECT_GAUSSIAN_DOT_VERTICES, the four rectangle side sizes in pixels with the order of top, bottom, left, and right"]
+    #[doc = "For type RS2_CALIB_TARGET_POS_GAUSSIAN_DOT_VERTICES, the four vertices coordinates in pixels with the order of top, bottom, left, and right"]
     #[doc = " \\param[out] error           If non-null, receives any error that occurs during this call, otherwise, errors are ignored"]
     pub fn rs2_extract_target_dimensions(
         frame: *const rs2_frame,
@@ -3381,13 +3458,13 @@ pub const rs2_option_RS2_OPTION_SATURATION: rs2_option = 7;
 pub const rs2_option_RS2_OPTION_SHARPNESS: rs2_option = 8;
 #[doc = "< Controls white balance of color image. Setting any value will disable auto white balance"]
 pub const rs2_option_RS2_OPTION_WHITE_BALANCE: rs2_option = 9;
-#[doc = "< Enable / disable color image auto-exposure"]
+#[doc = "< Enable / disable auto-exposure"]
 pub const rs2_option_RS2_OPTION_ENABLE_AUTO_EXPOSURE: rs2_option = 10;
 #[doc = "< Enable / disable color image auto-white-balance"]
 pub const rs2_option_RS2_OPTION_ENABLE_AUTO_WHITE_BALANCE: rs2_option = 11;
 #[doc = "< Provide access to several recommend sets of option presets for the depth camera"]
 pub const rs2_option_RS2_OPTION_VISUAL_PRESET: rs2_option = 12;
-#[doc = "< Power of the laser emitter, with 0 meaning projector off"]
+#[doc = "< Power of the laser emitter (mW), with 0 meaning projector turned off"]
 pub const rs2_option_RS2_OPTION_LASER_POWER: rs2_option = 13;
 #[doc = "< Set the number of patterns projected per frame. The higher the accuracy value the more patterns projected. Increasing the number of patterns help to achieve better accuracy. Note that this control is affecting the Depth FPS"]
 pub const rs2_option_RS2_OPTION_ACCURACY: rs2_option = 14;
@@ -3397,7 +3474,7 @@ pub const rs2_option_RS2_OPTION_MOTION_RANGE: rs2_option = 15;
 pub const rs2_option_RS2_OPTION_FILTER_OPTION: rs2_option = 16;
 #[doc = "< The confidence level threshold used by the Depth algorithm pipe to set whether a pixel will get a valid range or will be marked with invalid range"]
 pub const rs2_option_RS2_OPTION_CONFIDENCE_THRESHOLD: rs2_option = 17;
-#[doc = "< Emitter select: 0 – disable all emitters. 1 – enable laser. 2 – enable auto laser. 3 – enable LED."]
+#[doc = "< Emitter select: 0 - disable all emitters. 1 - enable laser. 2 - enable auto laser. 3 - enable LED."]
 pub const rs2_option_RS2_OPTION_EMITTER_ENABLED: rs2_option = 18;
 #[doc = "< Number of frames the user is allowed to keep per stream. Trying to hold-on to more frames will cause frame-drops."]
 pub const rs2_option_RS2_OPTION_FRAMES_QUEUE_SIZE: rs2_option = 19;
@@ -3533,13 +3610,13 @@ pub const rs2_option_RS2_OPTION_ALTERNATE_IR: rs2_option = 82;
 pub const rs2_option_RS2_OPTION_NOISE_ESTIMATION: rs2_option = 83;
 #[doc = "< Enables data collection for calculating IR pixel reflectivity"]
 pub const rs2_option_RS2_OPTION_ENABLE_IR_REFLECTIVITY: rs2_option = 84;
-#[doc = "< Set and get auto exposure limit in microseconds. Default is 0 which means full exposure range. If the requested exposure limit is greater than frame time, it will be set to frame time at runtime. Setting will not take effect until next streaming session."]
+#[doc = "< Set and get auto exposure limit in microseconds. If the requested exposure limit is greater than frame time, it will be set to frame time at runtime. Setting will not take effect until next streaming session."]
 pub const rs2_option_RS2_OPTION_AUTO_EXPOSURE_LIMIT: rs2_option = 85;
-#[doc = "< Set and get auto gain limits ranging from 16 to 248. Default is 0 which means full gain. If the requested gain limit is less than 16, it will be set to 16. If the requested gain limit is greater than 248, it will be set to 248. Setting will not take effect until next streaming session."]
+#[doc = "< Set and get auto gain limits ranging from 16 to 248. If the requested gain limit is less than 16, it will be set to 16. If the requested gain limit is greater than 248, it will be set to 248. Setting will not take effect until next streaming session."]
 pub const rs2_option_RS2_OPTION_AUTO_GAIN_LIMIT: rs2_option = 86;
 #[doc = "< Enable receiver sensitivity according to ambient light, bounded by the Receiver Gain control."]
 pub const rs2_option_RS2_OPTION_AUTO_RX_SENSITIVITY: rs2_option = 87;
-#[doc = "<changes the transmitter frequencies increasing effective range over sharpness."]
+#[doc = "< changes the transmitter frequencies increasing effective range over sharpness."]
 pub const rs2_option_RS2_OPTION_TRANSMITTER_FREQUENCY: rs2_option = 88;
 #[doc = "< Enables vertical binning which increases the maximal sensed distance."]
 pub const rs2_option_RS2_OPTION_VERTICAL_BINNING: rs2_option = 89;
@@ -3549,8 +3626,12 @@ pub const rs2_option_RS2_OPTION_RECEIVER_SENSITIVITY: rs2_option = 90;
 pub const rs2_option_RS2_OPTION_AUTO_EXPOSURE_LIMIT_TOGGLE: rs2_option = 91;
 #[doc = "< Enable / disable color image auto-gain"]
 pub const rs2_option_RS2_OPTION_AUTO_GAIN_LIMIT_TOGGLE: rs2_option = 92;
+#[doc = "< Select emitter (laser projector) frequency, see rs2_emitter_frequency for values"]
+pub const rs2_option_RS2_OPTION_EMITTER_FREQUENCY: rs2_option = 93;
+#[doc = "< Select depth sensor auto exposure mode see rs2_depth_auto_exposure_mode for values"]
+pub const rs2_option_RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE: rs2_option = 94;
 #[doc = "< Number of enumeration values. Not a valid input: intended to be used in for-loops."]
-pub const rs2_option_RS2_OPTION_COUNT: rs2_option = 93;
+pub const rs2_option_RS2_OPTION_COUNT: rs2_option = 95;
 #[doc = " \\brief Defines general configuration controls."]
 #[doc = "These can generally be mapped to camera UVC controls, and can be set / queried at any time unless stated otherwise."]
 pub type rs2_option = ::std::os::raw::c_uint;
@@ -3664,6 +3745,35 @@ pub const rs2_host_perf_mode_RS2_HOST_PERF_COUNT: rs2_host_perf_mode = 3;
 pub type rs2_host_perf_mode = ::std::os::raw::c_uint;
 extern "C" {
     pub fn rs2_host_perf_mode_to_string(perf: rs2_host_perf_mode) -> *const ::std::os::raw::c_char;
+}
+#[doc = "< Emitter frequency shall be 57 [KHZ]"]
+pub const rs2_emitter_frequency_mode_RS2_EMITTER_FREQUENCY_57_KHZ: rs2_emitter_frequency_mode = 0;
+#[doc = "< Emitter frequency shall be 91 [KHZ]"]
+pub const rs2_emitter_frequency_mode_RS2_EMITTER_FREQUENCY_91_KHZ: rs2_emitter_frequency_mode = 1;
+#[doc = "< Number of enumeration values. Not a valid input: intended to be used in for-loops."]
+pub const rs2_emitter_frequency_mode_RS2_EMITTER_FREQUENCY_COUNT: rs2_emitter_frequency_mode = 2;
+#[doc = " \\brief values for RS2_EMITTER_FREQUENCY option."]
+pub type rs2_emitter_frequency_mode = ::std::os::raw::c_uint;
+extern "C" {
+    pub fn rs2_emitter_frequency_mode_to_string(
+        mode: rs2_emitter_frequency_mode,
+    ) -> *const ::std::os::raw::c_char;
+}
+#[doc = "< Choose regular algorithm for auto exposure"]
+pub const rs2_depth_auto_exposure_mode_RS2_DEPTH_AUTO_EXPOSURE_REGULAR:
+    rs2_depth_auto_exposure_mode = 0;
+#[doc = "< Choose accelerated algorithm for auto exposure"]
+pub const rs2_depth_auto_exposure_mode_RS2_DEPTH_AUTO_EXPOSURE_ACCELERATED:
+    rs2_depth_auto_exposure_mode = 1;
+#[doc = "< Number of enumeration values. Not a valid input: intended to be used in for-loops."]
+pub const rs2_depth_auto_exposure_mode_RS2_DEPTH_AUTO_EXPOSURE_COUNT: rs2_depth_auto_exposure_mode =
+    2;
+#[doc = " \\brief values for RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE option."]
+pub type rs2_depth_auto_exposure_mode = ::std::os::raw::c_uint;
+extern "C" {
+    pub fn rs2_depth_auto_exposure_mode_to_string(
+        mode: rs2_depth_auto_exposure_mode,
+    ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     #[doc = " check if an option is read-only"]

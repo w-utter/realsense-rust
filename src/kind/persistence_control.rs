@@ -2,6 +2,8 @@
 
 use num_derive::{FromPrimitive, ToPrimitive};
 
+/// An enumeration of the various persistence controls used in processing blocks.
+#[allow(missing_docs)]
 #[repr(usize)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum PersistenceControl {

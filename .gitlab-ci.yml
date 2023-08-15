@@ -22,30 +22,17 @@ stages:
 # - [PASS REQ] runs all unit tests in the build
 # - [PASS REQ] runs a lint checker over every piece of code
 
-test:
+test-and-lint:
   stage: test
   script:
     - rustc --version
     - cargo --version
     - cargo test --features buildtime-bindgen --verbose
-
-lint:
-  stage: test
-  script:
-    - rustc --version
-    - cargo --version
-    - cargo clippy --all-targets --features=buildtime-bindgen,test-single-device -- -D warnings
+    - cargo clippy --all-targets --features=buildtime-bindgen,test-single-device -- -D warnings -D missing_docs -D clippy::missing_docs_in_private_items
 
 ##### ########## ########## ########## ########## #####
 # DOC STAGE
-# - [PASS OPT] checks for documentation on all relevant pieces of code
 # - [PASS REQ] creates documentation pages
-doc-check:
-  stage: doc
-  script:
-    - cargo clippy --all-targets --features docs-only -- -A clippy::all -D clippy::missing_docs_in_private_items
-  allow_failure: true
-
 readme-check:
   stage: doc
   variables:

@@ -5,14 +5,17 @@ use num_traits::FromPrimitive;
 use realsense_sys as sys;
 use std::{ffi::CString, time::Duration};
 
+/// The default timeout duration in librealsense2
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_millis(sys::RS2_DEFAULT_TIMEOUT as u64);
 
-// Thanks, Tenders McChiken.
-// https://stackoverflow.com/questions/38948669/whats-the-most-direct-way-to-convert-a-path-to-a-c-char
+/// Helper function for converting a path to a series of `c_char` that can be interpreted as a
+/// sequence of bytes / native path for a given platform..
 pub(crate) fn from_path<P>(path: P) -> anyhow::Result<CString>
 where
     P: AsRef<std::path::Path>,
 {
+    // Thanks, Tenders McChiken.
+    // https://stackoverflow.com/questions/38948669/whats-the-most-direct-way-to-convert-a-path-to-a-c-char
     let mut buf = Vec::new();
 
     #[cfg(unix)]
@@ -41,6 +44,7 @@ where
     Ok(CString::new(buf)?)
 }
 
+/// Newtype wrapper for RealSense motion device intrinsics
 #[derive(Debug)]
 pub struct Rs2MotionDeviceIntrinsics(pub sys::rs2_motion_device_intrinsic);
 

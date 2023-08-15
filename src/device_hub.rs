@@ -22,6 +22,7 @@ pub struct CouldNotWaitForDeviceError(pub Rs2Exception, pub String);
 /// still connected.
 #[derive(Debug)]
 pub struct DeviceHub {
+    /// A non-null pointer to the underlying librealsense device hub.
     devicehub_ptr: NonNull<sys::rs2_device_hub>,
 }
 
