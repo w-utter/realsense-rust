@@ -19,7 +19,8 @@ pub enum Rs2DistortionModel {
     None = sys::rs2_distortion_RS2_DISTORTION_NONE as i32,
     /// Unmodified Brown-Conrady distortion model
     BrownConrady = sys::rs2_distortion_RS2_DISTORTION_BROWN_CONRADY as i32,
-    /// Equivalent to Brown-Conrady distortion, except that tangential distortion is applied to radially distorted points
+    /// Equivalent to Brown-Conrady distortion, except that tangential distortion is applied to
+    /// radially distorted points
     BrownConradyModified = sys::rs2_distortion_RS2_DISTORTION_MODIFIED_BROWN_CONRADY as i32,
     /// Equivalent to Brown-Conrady distortion, except undistorts image instead of distorting it
     BrownConradyInverse = sys::rs2_distortion_RS2_DISTORTION_INVERSE_BROWN_CONRADY as i32,

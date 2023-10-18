@@ -14,7 +14,6 @@ use num_derive::{FromPrimitive, ToPrimitive};
 /// [`ToPrimitive`](num_traits::ToPrimitive) from the `num_traits` crate. This is because we want
 /// to be able to take advantage of the [`to_f32()`](num_traits::ToPrimitive::to_f32()) function in
 /// the low-level API, but use actual color scheme names at a higher level.
-///
 #[repr(usize)]
 #[derive(FromPrimitive, ToPrimitive, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ColorScheme {

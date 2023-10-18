@@ -337,7 +337,7 @@ mod tests {
 
     #[test]
     fn all_variants_exist() {
-        let deprecated_options = vec![
+        let deprecated_options = [
             sys::rs2_option_RS2_OPTION_ZERO_ORDER_POINT_X as i32,
             sys::rs2_option_RS2_OPTION_ZERO_ORDER_POINT_Y as i32,
             sys::rs2_option_RS2_OPTION_ZERO_ORDER_ENABLED as i32,

@@ -348,9 +348,7 @@ impl Sensor {
                 return profiles;
             }
 
-            let nonnull_profiles_ptr =
-                NonNull::new(profiles_ptr as *mut sys::rs2_stream_profile_list).unwrap();
-
+            let nonnull_profiles_ptr = NonNull::new(profiles_ptr).unwrap();
             let len = sys::rs2_get_stream_profiles_count(nonnull_profiles_ptr.as_ptr(), &mut err);
 
             if err.as_ref().is_some() {

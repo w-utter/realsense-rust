@@ -261,8 +261,7 @@ impl StreamProfile {
             );
             check_rs2_error!(err, StreamConstructionError::CouldNotCloneProfile)?;
 
-            let nonnull_profile_ptr =
-                NonNull::new(profile_ptr as *mut sys::rs2_stream_profile).unwrap();
+            let nonnull_profile_ptr = NonNull::new(profile_ptr).unwrap();
             let mut stream_profile = Self::try_from(nonnull_profile_ptr)?;
             stream_profile.should_drop = true;
 
