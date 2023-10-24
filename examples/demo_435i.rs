@@ -20,8 +20,7 @@ use std::{
     time::Duration,
 };
 
-/// Main function
-pub fn main() -> Result<()> {
+fn main() -> Result<()> {
     // Check for depth or color-compatible devices.
     let mut queried_devices = HashSet::new();
     queried_devices.insert(Rs2ProductLine::D400);

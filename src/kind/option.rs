@@ -291,9 +291,10 @@ pub enum Rs2Option {
     /// Select emitter (laser projector) frequency, see rs2_emitter_frequency for values
     EmitterFrequency = sys::rs2_option_RS2_OPTION_EMITTER_FREQUENCY as i32,
     /// Select depth sensor auto exposure mode see rs2_depth_auto_exposure_mode for values
-    DepthAutoExposureMode = sys::rs2_option_RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE as i32, /* Not included since this just tells us the total number of options.
-                                                                                         *
-                                                                                         * Count = sys::rs2_option_RS2_OPTION_COUNT, */
+    DepthAutoExposureMode = sys::rs2_option_RS2_OPTION_DEPTH_AUTO_EXPOSURE_MODE as i32,
+    // Not included since this just tells us the total number of options.
+    //
+    // Count = sys::rs2_option_RS2_OPTION_COUNT as i32,
 }
 
 impl Rs2Option {
@@ -337,7 +338,7 @@ mod tests {
 
     #[test]
     fn all_variants_exist() {
-        let deprecated_options = vec![
+        let deprecated_options = [
             sys::rs2_option_RS2_OPTION_ZERO_ORDER_POINT_X as i32,
             sys::rs2_option_RS2_OPTION_ZERO_ORDER_POINT_Y as i32,
             sys::rs2_option_RS2_OPTION_ZERO_ORDER_ENABLED as i32,
