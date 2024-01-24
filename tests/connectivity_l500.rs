@@ -24,7 +24,7 @@ fn l500_can_resolve_color_and_depth_and_infrared() {
 
     let devices = context.query_devices(queryable_set);
 
-    if let Some(device) = devices.get(0) {
+    if let Some(device) = devices.first() {
         let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
         let mut config = Config::new();
 
@@ -56,7 +56,7 @@ fn l500_streams_at_expected_framerate() {
 
     let devices = context.query_devices(queryable_set);
 
-    if let Some(device) = devices.get(0) {
+    if let Some(device) = devices.first() {
         let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
         let mut config = Config::new();
 
@@ -149,7 +149,7 @@ fn l500_streams_are_distinct() {
 
     let devices = context.query_devices(queryable_set);
 
-    if let Some(device) = devices.get(0) {
+    if let Some(device) = devices.first() {
         let serial = device.info(Rs2CameraInfo::SerialNumber).unwrap();
         let mut config = Config::new();
         config
@@ -214,7 +214,7 @@ fn l500_streams_check_supported_but_ignored_sensor_options() {
 
     let devices = context.query_devices(queryable_set);
 
-    if let Some(device) = devices.get(0) {
+    if let Some(device) = devices.first() {
         // Grab the sensor list
         for mut sensor in device.sensors() {
             for (option, val) in &options_to_set {
