@@ -31,7 +31,7 @@ docs-only = []
 # None required. However, access to the RealSense library is necessary.
 
 [build-dependencies]
-bindgen = { version = "0.57", optional = true }
+bindgen = { version = "0.69", optional = true }
 pkg-config = { version = "0.3" }
 
 [package.metadata.docs.rs]
