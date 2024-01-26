@@ -34,6 +34,13 @@ docs-only = []
 bindgen = { version = "0.69", optional = true }
 pkg-config = { version = "0.3" }
 
+[lints.rust]
+warnings = "deny"
+missing_docs = "deny"
+
+[lints.clippy]
+missing_docs_in_private_items = "deny"
+
 [package.metadata.docs.rs]
 no-default-features = true
 features = ["docs-only"]
