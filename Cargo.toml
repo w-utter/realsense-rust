@@ -43,6 +43,13 @@ opencv = { version = "0.84", features = [
     "clang-runtime", # necessary for error "a `libclang` shared library is not loaded on this thread"
 ] }
 
+[lints.rust]
+warnings = "deny"
+missing_docs = "deny"
+
+[lints.clippy]
+missing_docs_in_private_items = "deny"
+
 [package.metadata.docs.rs]
 no-default-features = true
 features = ["docs-only"]

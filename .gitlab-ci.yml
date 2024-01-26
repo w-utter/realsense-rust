@@ -28,8 +28,7 @@ test-and-lint:
         - rustc --version
         - cargo --version
         - cargo test --features buildtime-bindgen --verbose
-        - cargo clippy --all-targets --features=buildtime-bindgen,test-single-device -- -D warnings
-          -D missing_docs -D clippy::missing_docs_in_private_items
+        - cargo clippy --all-targets --features=buildtime-bindgen,test-single-device
 
 build_badges:
     stage: build_artifacts
