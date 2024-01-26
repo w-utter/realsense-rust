@@ -62,7 +62,7 @@ impl TryFrom<NonNull<sys::rs2_pipeline_profile>> for PipelineProfile {
             )?;
 
             // Create the device object
-            let device = Device::try_from(NonNull::new(device_ptr).unwrap())?;
+            let device = Device::from(NonNull::new(device_ptr).unwrap());
 
             let stream_list_ptr =
                 sys::rs2_pipeline_profile_get_streams(pipeline_profile_ptr.as_ptr(), &mut err);

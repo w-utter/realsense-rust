@@ -13,7 +13,7 @@ use anyhow::Result;
 use num_traits::FromPrimitive;
 use realsense_sys as sys;
 use std::{
-    convert::{TryFrom, TryInto},
+    convert::TryInto,
     ptr::{self, NonNull},
     slice,
 };
@@ -71,7 +71,7 @@ impl FrameEx for PointsFrame {
             let sensor_ptr = sys::rs2_get_frame_sensor(self.frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, CouldNotGetFrameSensorError)?;
 
-            Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
+            Ok(Sensor::from(NonNull::new(sensor_ptr).unwrap()))
         }
     }
 

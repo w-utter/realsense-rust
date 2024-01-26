@@ -3,10 +3,7 @@
 use crate::{check_rs2_error, device::Device, kind::Rs2Exception};
 use anyhow::Result;
 use realsense_sys as sys;
-use std::{
-    convert::{From, TryFrom},
-    ptr::NonNull,
-};
+use std::{convert::From, ptr::NonNull};
 use thiserror::Error;
 
 /// Error describing when the device hub failed while attempting to wait for devices.
@@ -64,7 +61,7 @@ impl DeviceHub {
                 sys::rs2_device_hub_wait_for_device(self.devicehub_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, CouldNotWaitForDeviceError)?;
 
-            Ok(Device::try_from(NonNull::new(device_ptr).unwrap())?)
+            Ok(Device::from(NonNull::new(device_ptr).unwrap()))
         }
     }
 

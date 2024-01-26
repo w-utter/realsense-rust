@@ -207,7 +207,7 @@ impl FrameEx for PoseFrame {
             let sensor_ptr = sys::rs2_get_frame_sensor(self.frame_ptr.as_ptr(), &mut err);
             check_rs2_error!(err, CouldNotGetFrameSensorError)?;
 
-            Ok(Sensor::try_from(NonNull::new(sensor_ptr).unwrap())?)
+            Ok(Sensor::from(NonNull::new(sensor_ptr).unwrap()))
         }
     }
 

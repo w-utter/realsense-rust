@@ -75,10 +75,10 @@ fn main() {
                     .unwrap(),
             )
             .header(include_dir.join("h").join("rs_config.h").to_str().unwrap())
-            .whitelist_var("RS2_.*")
-            .whitelist_type("rs2_.*")
-            .whitelist_function("rs2_.*")
-            .whitelist_function("_rs2_.*")
+            .allowlist_var("RS2_.*")
+            .allowlist_type("rs2_.*")
+            .allowlist_function("rs2_.*")
+            .allowlist_function("_rs2_.*")
             .generate()
             .expect("Unable to generate bindings");
 
