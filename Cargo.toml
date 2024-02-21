@@ -42,6 +42,7 @@ opencv = { version = "0.84", features = [
     "imgproc",
     "clang-runtime", # necessary for error "a `libclang` shared library is not loaded on this thread"
 ] }
+getopts = "0.2"
 
 [lints.rust]
 warnings = "deny"
