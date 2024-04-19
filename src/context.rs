@@ -125,7 +125,7 @@ impl Context {
     //callback is (devices_removed, devices_added)
     pub fn on_devices_changed<'a, F>(&'a self, f: F) -> Result<DeviceMonitor<'a>, CouldNotSetDeviceCallbackError> 
         where
-            F: FnMut(&dyn Iterator<Item = Device>, &dyn Iterator<Item = Device>) + Send + 'static
+            F: FnMut(&mut dyn Iterator<Item = Device>, &mut dyn Iterator<Item = Device>) + Send + 'static
     {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -262,12 +262,12 @@ use std::os::raw::c_void;
 use core::marker::PhantomData;
 
 pub struct DeviceMonitor<'a> {
-    handle: *mut dyn FnMut(&dyn Iterator<Item = Device>, &dyn Iterator<Item = Device>),
+    handle: *mut dyn FnMut(&mut dyn Iterator<Item = Device>, &mut dyn Iterator<Item = Device>),
     _lt: PhantomData<&'a ()>
 }
 
 impl DeviceMonitor<'_> {
-    fn new(ptr: *mut dyn FnMut(&dyn Iterator<Item = Device>, &dyn Iterator<Item = Device>)) -> Self {
+    fn new(ptr: *mut dyn FnMut(&mut dyn Iterator<Item = Device>, &mut dyn Iterator<Item = Device>)) -> Self {
         Self {
             handle: ptr,
             _lt: PhantomData,
@@ -283,7 +283,7 @@ impl <'a> Drop for DeviceMonitor<'a> {
 
 unsafe extern "C" fn trampoline<F>(devices_removed: *mut sys::rs2_device_list, devices_joined: *mut sys::rs2_device_list, data: *mut c_void) 
 where
-    F: FnMut(&dyn Iterator<Item = Device>, &dyn Iterator<Item = Device>)
+    F: FnMut(&mut dyn Iterator<Item = Device>, &mut dyn Iterator<Item = Device>)
 {
     let panic = std::panic::catch_unwind(|| {
         if devices_removed.is_null() {
