@@ -244,13 +244,15 @@ impl Iterator for DeviceIter {
             return None;
         }
 
-        unsafe {
-            let mut err = std::ptr::null_mut::<sys::rs2_error>();
-            let device_ptr = sys::rs2_create_device(self.dev_list.as_ptr(), self.idx, &mut err);
-
-            let nonnull_device_ptr = NonNull::new(device_ptr).unwrap();
-            self.idx += 1;
-            Some(Device::from(nonnull_device_ptr))
+        match Device::try_create(&self.dev_list, self.idx) {
+            Ok(dev) => {
+                self.idx += 1;
+                Some(dev)
+            }
+            Err(_) => {
+                self.idx += 1;
+                self.next()
+            }
         }
     }
 }
@@ -295,14 +297,10 @@ where
         let mut err = std::ptr::null_mut::<sys::rs2_error>();
 
         let removed_len = sys::rs2_get_device_count(devices_removed, &mut err);
-        println!("{}", removed_len);
         let added_len = sys::rs2_get_device_count(devices_joined, &mut err);
 
         let mut added_devices = DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len);
         let mut removed_devices = DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len);
-
-        let peeked = removed_devices.next();
-        println!("{:?}", &peeked);
 
         assert!(err.as_ref().is_none());
 
