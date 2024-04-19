@@ -204,7 +204,7 @@ impl Context {
     }
 }
 
-struct DeviceIter {
+pub struct DeviceIter {
     idx: i32,
     len: i32,
     dev_list: NonNull<sys::rs2_device_list>,
@@ -261,7 +261,7 @@ use std::os::raw::c_void;
 
 use core::marker::PhantomData;
 
-struct DeviceMonitor<'a> {
+pub struct DeviceMonitor<'a> {
     handle: *mut dyn FnMut(&dyn Iterator<Item = Device>, &dyn Iterator<Item = Device>),
     _lt: PhantomData<&'a ()>
 }
