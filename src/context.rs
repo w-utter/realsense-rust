@@ -245,7 +245,7 @@ impl Iterator for DeviceIter {
             return None;
         }
 
-        match Device::try_create(self.dev_list.as_ptr(), self.idx) {
+        match Device::try_create(&self.dev_list, self.idx) {
             Ok(dev) => {
                 self.idx += 1;
                 Some(dev)
