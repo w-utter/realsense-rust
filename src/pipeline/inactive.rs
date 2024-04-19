@@ -112,7 +112,7 @@ impl InactivePipeline {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
 
             let f = Box::into_raw(Box::new(f));
-            let profile_ptr = sys::rs2_pipeline_start_with_callback(self.pipeline_ptr.as_ptr(), Some(trampoline::<F>), f, &mut err);
+            let profile_ptr = sys::rs2_pipeline_start_with_callback(self.pipeline_ptr.as_ptr(), Some(trampoline::<F>), f as *mut _, &mut err);
 
             check_rs2_error!(err, PipelineActivationError::CouldNotStartPipelineError)?;
 

@@ -130,7 +130,7 @@ impl Context {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let f = Box::into_raw(Box::new(f));
-            sys::rs2_set_devices_changed_callback(self.context_ptr.as_ptr(), f, Some(trampoline::<F>), &mut err);
+            sys::rs2_set_devices_changed_callback(self.context_ptr.as_ptr(), f as *mut _, Some(trampoline::<F>), &mut err);
 
             check_rs2_error!(err, CouldNotSetDeviceCallbackError)?;
 
@@ -300,8 +300,8 @@ where
         let removed_len = sys::rs2_get_device_count(devices_removed, &mut err);
         let added_len = sys::rs2_get_device_count(devices_joined, &mut err);
 
-        let removed_devices = core::mem::ManuallyDrop::new(DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len));
-        let added_devices = core::mem::ManuallyDrop::new(DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len));
+        let removed_devices = DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len);
+        let added_devices = DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len);
 
         if data.is_null() {
             panic!("empty data");
