@@ -48,10 +48,7 @@ impl StreamingPipeline {
     /// Constructs a new streaming pipeline from the constituent components
     ///
     /// This is only to be used / called from the [`InactivePipeline`] type.
-    pub(crate) fn new<F>(pipeline_ptr: NonNull<sys::rs2_pipeline>, profile: PipelineProfile, callback: F) -> Self 
-        where
-            F: FnMut(&Frame) + Send + 'static
-    {
+    pub(crate) fn new<F>(pipeline_ptr: NonNull<sys::rs2_pipeline>, profile: PipelineProfile, callback: *mut dyn FnMut(&Frame)) -> Self {
         Self {
             pipeline_ptr,
             callback,
