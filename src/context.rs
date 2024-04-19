@@ -299,8 +299,10 @@ where
         let removed_len = sys::rs2_get_device_count(devices_removed, &mut err);
         let added_len = sys::rs2_get_device_count(devices_joined, &mut err);
 
-        let mut removed_devices = DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len);
         let mut added_devices = DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len);
+        let mut removed_devices = DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len);
+
+        assert!(err.as_ref().is_none());
 
         if data.is_null() {
             panic!("empty data");
