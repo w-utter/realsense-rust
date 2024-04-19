@@ -6,18 +6,18 @@ use std::{ptr::NonNull, task::Poll, time::Duration};
 use thiserror::Error;
 use std::os::raw::c_void;
 use crate::frame::FrameCategory;
-use super::inactive::IntoFrame;
+use super::inactive::Frame;
 
 pub(crate) unsafe extern "C" fn trampoline<F>(frame: *mut sys::rs2_frame, data: *mut c_void) 
 where
-    F: FnMut(&dyn IntoFrame) + Send + 'static,
+    F: FnMut(&Frame) + Send + 'static,
 {
     let panic = std::panic::catch_unwind(|| {
         if frame.is_null() {
             panic!("null frame");
         }
 
-        let frame = core::mem::ManuallyDrop::new(NonNull::new_unchecked(frame));
+        let frame = core::mem::ManuallyDrop::new(Frame::new(NonNull::new_unchecked(frame)));
 
         if data.is_null() {
             panic!("empty data");
@@ -36,7 +36,7 @@ where
 
 pub struct StreamingPipeline {
     /// A pointer to the callback function for the pipeline.
-    callback: *mut dyn FnMut(&dyn IntoFrame),
+    callback: *mut dyn FnMut(&Frame),
     /// A (non-null) pointer to the pipeline.
     pipeline_ptr: NonNull<sys::rs2_pipeline>,
     /// The pipeline's profile, which contains the device the pipeline is configured for alongside
@@ -50,7 +50,7 @@ impl StreamingPipeline {
     /// This is only to be used / called from the [`InactivePipeline`] type.
     pub(crate) fn new<F>(pipeline_ptr: NonNull<sys::rs2_pipeline>, profile: PipelineProfile, callback: F) -> Self 
         where
-            F: FnMut(&dyn IntoFrame) + Send + 'static
+            F: FnMut(&Frame) + Send + 'static
     {
         Self {
             pipeline_ptr,

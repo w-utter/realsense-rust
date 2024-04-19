@@ -106,7 +106,7 @@ impl InactivePipeline {
 
     pub fn start_streaming<F>(self, f: F) -> Result<StreamingPipeline> 
     where
-        F: FnMut(&dyn IntoFrame) + Send + 'static
+        F: FnMut(&Frame) + Send + 'static
     {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
@@ -180,13 +180,20 @@ impl InactivePipeline {
     }
 }
 
-impl IntoFrame for NonNull<sys::rs2_frame> { }
+/// a blank frame
+pub struct Frame {
+    inner: NonNull<sys::rs2_frame>,
+}
 
-pub(crate) trait IntoFrame {
-    fn of_type<F>(self) -> Option<F>
+impl Frame {
+    pub fn of_type<F>(self) -> Option<F>
     where
-        F: TryFrom<Self> + FrameCategory
+        F: TryFrom<NonNull<sys::rs2_frame>> + FrameCategory
     {
-        F::try_from(self).ok()
+        F::try_from(self.inner).ok()
+    }
+
+    pub(crate) fn new(inner: NonNull<sys::rs2_frame>) -> Self {
+        Self { inner }
     }
 }
