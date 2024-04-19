@@ -249,6 +249,7 @@ impl Iterator for DeviceIter {
             let device_ptr = sys::rs2_create_device(self.dev_list.as_ptr(), self.idx, &mut err);
 
             let nonnull_device_ptr = NonNull::new(device_ptr).unwrap();
+            self.idx += 1;
             Some(Device::from(nonnull_device_ptr))
         }
     }
