@@ -303,6 +303,9 @@ where
         let mut added_devices = DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len);
         let mut removed_devices = DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len);
 
+        let peeked = removed_devices.next();
+        println!("{:?}", &peeked);
+
         assert!(err.as_ref().is_none());
 
         if data.is_null() {
