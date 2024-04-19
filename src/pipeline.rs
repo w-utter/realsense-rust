@@ -19,6 +19,7 @@
 mod active;
 mod inactive;
 mod profile;
+mod streaming;
 
 pub use active::{ActivePipeline, FrameWaitError};
 pub use inactive::{InactivePipeline, PipelineActivationError, PipelineConstructionError};

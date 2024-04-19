@@ -1,7 +1,8 @@
 //! Type for representing an "inactive" pipeline which is unconfigured and cannot acquire frames.
 
-use super::{active::ActivePipeline, profile::PipelineProfile};
+use super::{active::ActivePipeline, profile::PipelineProfile, streaming::{StreamingPipeline, trampoline}};
 use crate::{check_rs2_error, config::Config, context::Context, kind::Rs2Exception};
+use crate::frame::FrameCategory;
 use anyhow::Result;
 use realsense_sys as sys;
 use std::{convert::TryFrom, ptr::NonNull};
@@ -103,6 +104,27 @@ impl InactivePipeline {
         }
     }
 
+    pub fn start_streaming<F>(self, f: F) -> Result<StreamingPipeline> 
+    where
+        F: FnMut(&impl IntoFrame) + Send + 'static
+    {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+
+            let f = Box::into_raw(Box::new(f));
+            let profile_ptr = sys::rs2_pipeline_start_with_callback(self.pipeline_ptr.as_ptr(), Some(trampoline::<F>), f, &mut err);
+
+            check_rs2_error!(err, PipelineActivationError::CouldNotStartPipelineError)?;
+
+            let profile = PipelineProfile::try_from(NonNull::new(profile_ptr).unwrap())?;
+
+            let streaming = StreamingPipeline::new(self.pipeline_ptr, profile, f);
+
+            std::mem::forget(self);
+            Ok(streaming)
+        }
+    }
+
     /// Resolve a configuration and get the corresponding pipeline profile.
     ///
     /// This function checks the pipeline to see if this config can be used to start the pipeline,
@@ -155,5 +177,16 @@ impl InactivePipeline {
                 false
             }
         }
+    }
+}
+
+impl IntoFrame for NonNull<sys::rs2_frame> { }
+
+pub(crate) trait IntoFrame {
+    fn of_type<F>(self) -> Option<F>
+    where
+        F: TryFrom<Self> + FrameCategory
+    {
+        F::try_from(self).ok()
     }
 }
