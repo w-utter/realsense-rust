@@ -130,14 +130,13 @@ impl Context {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let f = Box::into_raw(Box::new(f));
-            sys::rs2_set_devices_changed_callback(self.context_ptr.as_ptr(), f as *mut _, Some(trampoline::<F>), &mut err);
+            sys::rs2_set_devices_changed_callback(self.context_ptr.as_ptr(), Some(trampoline::<F>), f as *mut _, &mut err);
 
             check_rs2_error!(err, CouldNotSetDeviceCallbackError)?;
 
             let monitor = DeviceMonitor::new(f);
             Ok(monitor)
         }
-        Ok(())
     }
 
     /// Create a new device and add it to the context.
