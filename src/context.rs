@@ -299,14 +299,14 @@ where
         let removed_len = sys::rs2_get_device_count(devices_removed, &mut err);
         let added_len = sys::rs2_get_device_count(devices_joined, &mut err);
 
-        let removed_devices = DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len);
-        let added_devices = DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len);
+        let mut removed_devices = DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len);
+        let mut added_devices = DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len);
 
         if data.is_null() {
             panic!("empty data");
         }
 
         let f = &mut *(data as *mut F);
-        f(&removed_devices, &added_devices);
+        f(&mut removed_devices, &mut added_devices);
     });
 }
