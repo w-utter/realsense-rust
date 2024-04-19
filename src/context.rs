@@ -297,6 +297,7 @@ where
         let mut err = std::ptr::null_mut::<sys::rs2_error>();
 
         let removed_len = sys::rs2_get_device_count(devices_removed, &mut err);
+        println!("{}", removed_len);
         let added_len = sys::rs2_get_device_count(devices_joined, &mut err);
 
         let mut added_devices = DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len);
