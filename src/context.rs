@@ -40,6 +40,11 @@ pub struct CouldNotAddDeviceError(pub Rs2Exception, pub String);
 #[error("Could not remove device from file. Type: {0}; Reason: {1}")]
 pub struct CouldNotRemoveDeviceError(pub Rs2Exception, pub String);
 
+/// An error type describing failure to attach a callback for devices
+#[derive(Error, Debug)]
+#[error("Could not remove device from file. Type: {0}; Reason: {1}")]
+pub struct CouldNotSetDeviceCallbackError(pub Rs2Exception, pub String);
+
 impl Drop for Context {
     fn drop(&mut self) {
         unsafe { sys::rs2_delete_context(self.context_ptr.as_ptr()) }
@@ -84,7 +89,7 @@ impl Context {
     }
 
     /// Get a list of devices that are already connected to the host.
-    pub fn query_devices(&self, product_mask: HashSet<Rs2ProductLine>) -> Vec<Device> {
+    pub fn query_devices(&self, product_mask: HashSet<Rs2ProductLine>) -> impl Iterator<Item = Device> {
         // TODO/TEST: Make sure that an empty mask (therefore giving no filter) gives
         // us _all_ devices, not _no_ devices.
 
@@ -94,7 +99,6 @@ impl Context {
             product_mask.iter().fold(0, |k, v| k | v.to_u32().unwrap()) as i32
         };
 
-        let mut devices = Vec::new();
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
             let device_list_ptr =
@@ -102,7 +106,7 @@ impl Context {
 
             if err.as_ref().is_some() {
                 sys::rs2_free_error(err);
-                return devices;
+                return DeviceIter::new_empty();
             }
 
             let device_list = NonNull::new(device_list_ptr).unwrap();
@@ -112,23 +116,28 @@ impl Context {
             if err.as_ref().is_some() {
                 sys::rs2_free_error(err);
                 sys::rs2_delete_device_list(device_list.as_ptr());
-                return devices;
+                return DeviceIter::new_empty();
             }
-
-            for i in 0..len {
-                match Device::try_create(&device_list, i) {
-                    Ok(d) => {
-                        devices.push(d);
-                    }
-                    Err(_) => {
-                        continue;
-                    }
-                }
-            }
-
-            sys::rs2_delete_device_list(device_list.as_ptr());
+            DeviceIter::new(device_list, len)
         }
-        devices
+    }
+
+    //callback is (devices_removed, devices_added)
+    pub fn on_devices_changed<'a, F>(&'a self, f: F) -> Result<DeviceMonitor<'a>, CouldNotSetDeviceCallbackError> 
+        where
+            F: FnMut(&impl Iterator<Item = Device>, &impl Iterator<Item = Device>) + Send + 'static
+    {
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let f = Box::into_raw(Box::new(f));
+            sys::rs2_set_devices_changed_callback(self.context_ptr.as_ptr(), f, Some(trampoline::<F>), &mut err);
+
+            check_rs2_error!(err, CouldNotSetDeviceCallbackError)?;
+
+            let monitor = DeviceMonitor::new(f);
+            Ok(monitor)
+        }
+        Ok(())
     }
 
     /// Create a new device and add it to the context.
@@ -194,4 +203,111 @@ impl Context {
     pub(crate) unsafe fn get_raw(&self) -> NonNull<sys::rs2_context> {
         self.context_ptr
     }
+}
+
+struct DeviceIter {
+    idx: i32,
+    len: i32,
+    dev_list: NonNull<sys::rs2_device_list>,
+}
+
+impl Drop for DeviceIter {
+    fn drop(&mut self) {
+        unsafe  {
+            sys::rs2_delete_device_list(self.dev_list.as_ptr());
+        }
+    }
+}
+
+impl DeviceIter {
+    fn new(list: NonNull<sys::rs2_device_list>, len: i32) -> Self {
+        Self {
+            dev_list: list,
+            len,
+            idx: 0,
+        }
+    }
+
+    fn new_empty() -> Self {
+        Self {
+            dev_list: unsafe { NonNull::new_unchecked(core::ptr::null_mut()) },
+            len: 0,
+            idx: 0,
+        }
+    }
+}
+
+impl Iterator for DeviceIter {
+    type Item = Device;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.idx == self.len {
+            return None;
+        }
+
+        match Device::try_create(self.dev_list.as_ptr(), self.idx) {
+            Ok(dev) => {
+                self.idx += 1;
+                Some(dev)
+            }
+            Err(_) => {
+                self.idx += 1;
+                self.next()
+            }
+        }
+    }
+}
+
+use std::os::raw::c_void;
+
+use core::marker::PhantomData;
+
+struct DeviceMonitor<'a> {
+    handle: *mut dyn FnMut(&impl Iterator<Item = Device>, &impl Iterator<Item = Device>),
+    _lt: PhantomData<&'a ()>
+}
+
+impl DeviceMonitor<'_> {
+    fn new(ptr: *mut dyn FnMut(&impl Iterator<Item = Device>, &impl Iterator<Item = Device>)) -> Self {
+        Self {
+            handle: ptr,
+            _lt: PhantomData,
+        }
+    }
+}
+
+impl <'a> Drop for DeviceMonitor<'a> {
+    fn drop(&mut self) {
+        let _ = unsafe { Box::from_raw(self.handle) };
+    }
+}
+
+unsafe extern "C" fn trampoline<F>(devices_removed: *mut sys::rs2_device_list, devices_joined: *mut sys::rs2_device_list, data: *mut c_void) 
+where
+    F: FnMut(&impl Iterator<Item = Device>, &impl Iterator<Item = Device>)
+{
+    let panic = std::panic::catch_unwind(|| {
+        if devices_removed.is_null() {
+            panic!("empty removed devices");
+        }
+
+        if devices_joined.is_null() {
+            panic!("empty joined devices");
+        }
+
+        let mut err = std::ptr::null_mut::<sys::rs2_error>();
+
+        let removed_len = sys::rs2_get_device_count(devices_removed, &mut err);
+        let added_len = sys::rs2_get_device_count(devices_joined, &mut err);
+
+        let removed_devices = core::mem::ManuallyDrop::new(DeviceIter::new(NonNull::new_unchecked(devices_removed), removed_len));
+        let added_devices = core::mem::ManuallyDrop::new(DeviceIter::new(NonNull::new_unchecked(devices_joined), added_len));
+
+        if data.is_null() {
+            panic!("empty data");
+        }
+
+        let f = &mut *(data as *mut F);
+        f(&removed_devices, &added_devices);
+    });
 }
