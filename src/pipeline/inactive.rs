@@ -106,7 +106,7 @@ impl InactivePipeline {
 
     pub fn start_streaming<F>(self, f: F) -> Result<StreamingPipeline> 
     where
-        F: FnMut(&impl IntoFrame) + Send + 'static
+        F: FnMut(&dyn IntoFrame) + Send + 'static
     {
         unsafe {
             let mut err = std::ptr::null_mut::<sys::rs2_error>();
