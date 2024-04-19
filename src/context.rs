@@ -244,15 +244,12 @@ impl Iterator for DeviceIter {
             return None;
         }
 
-        match Device::try_create(&self.dev_list, self.idx) {
-            Ok(dev) => {
-                self.idx += 1;
-                Some(dev)
-            }
-            Err(_) => {
-                self.idx += 1;
-                self.next()
-            }
+        unsafe {
+            let mut err = std::ptr::null_mut::<sys::rs2_error>();
+            let device_ptr = sys::rs2_create_device(self.dev_list.as_ptr(), self.idx, &mut err);
+
+            let nonnull_device_ptr = NonNull::new(device_ptr).unwrap();
+            Some(Device::from(nonnull_device_ptr))
         }
     }
 }
