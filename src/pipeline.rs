@@ -24,3 +24,4 @@ mod streaming;
 pub use active::{ActivePipeline, FrameWaitError};
 pub use inactive::{InactivePipeline, PipelineActivationError, PipelineConstructionError};
 pub use profile::{PipelineProfile, PipelineProfileConstructionError};
+pub use streaming::StreamingPipeline;
